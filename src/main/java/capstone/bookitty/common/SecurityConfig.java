@@ -44,7 +44,8 @@ public class SecurityConfig {
                                         antMatcher("/members/login"),
                                         antMatcher("/members/new"),
                                         antMatcher("/members/email/**"),
-                                        antMatcher("/swagger-ui/index.html")).permitAll()
+                                        antMatcher("/swagger-ui/**"),
+                                        antMatcher("/v3/**")).permitAll()
                                 //.requestMatchers(antMatcher("")).authenticated()
                                 .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
