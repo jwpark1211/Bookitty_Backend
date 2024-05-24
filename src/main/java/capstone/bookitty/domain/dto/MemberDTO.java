@@ -12,11 +12,13 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 public class MemberDTO {
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSaveRequest {
         @NotBlank(message = "Email is a required entry value.")
@@ -33,6 +35,7 @@ public class MemberDTO {
         @NotBlank(message = "name is a required entry value.")
         private String name;
     }
+
 
     @Data
     public static class MemberLoginRequest {

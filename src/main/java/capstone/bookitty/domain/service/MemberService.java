@@ -1,11 +1,18 @@
 package capstone.bookitty.domain.service;
 
+import capstone.bookitty.domain.dto.TokenResponseDTO;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.repository.MemberRepository;
+import capstone.bookitty.jwt.JwtToken;
+import capstone.bookitty.jwt.JwtTokenProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartException;
@@ -21,6 +28,9 @@ import static capstone.bookitty.domain.dto.MemberDTO.*;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
     private final S3Service s3Service;
 
     @Transactional
@@ -31,7 +41,7 @@ public class MemberService {
         Member member = Member.builder()
                 .email(request.getEmail())
                 .name(request.getName())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .birthDate(request.getBirthdate())
                 .gender(request.getGender())
                 .build();
@@ -45,11 +55,15 @@ public class MemberService {
     }
 
     @Transactional
-    public void login(MemberLoginRequest request) {
+    public TokenResponseDTO login(MemberLoginRequest request) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new EntityNotFoundException("Member not found."));
-        if(!member.getPassword().equals(request.getPassword()))
-            throw new IllegalArgumentException("Invalid login credentials.");
+        return new TokenResponseDTO(member.getId(), jwtToken);
     }
 
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {

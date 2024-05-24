@@ -3,6 +3,7 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
+import capstone.bookitty.domain.dto.TokenResponseDTO;
 import capstone.bookitty.domain.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,9 +59,8 @@ public class MemberController {
     public ResponseEntity<? extends BasicResponse> login(
             @RequestBody @Valid MemberLoginRequest request
     ){
-        memberService.login(request);
         return ResponseEntity.ok()
-                .body(new ResponseString("login success!"));
+                .body(new ResponseCounter<TokenResponseDTO>(memberService.login(request)));
     }
 
     @Operation(summary = "id로 회원 조회")

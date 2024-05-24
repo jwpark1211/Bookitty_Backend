@@ -32,7 +32,7 @@ public class Member {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    private Grade grade;
+    private Authority authority;
 
     @Builder
     public Member(String name, String email, String password, String profileImg,
@@ -45,7 +45,7 @@ public class Member {
         this.birthDate = birthDate;
         this.createdAt = LocalDateTime.now();
         this.profileImg = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
-        this.grade = Grade.USER;
+        this.authority = Authority.ROLE_USER;
     }
 
     public void updateProfile(String profileImg){
