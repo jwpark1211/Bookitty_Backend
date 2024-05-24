@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(antMatcher("/"),
+                                        antMatcher("/open/**"),
                                         antMatcher("/members/test"),
                                         antMatcher("/members/login"),
                                         antMatcher("/members/new"),
