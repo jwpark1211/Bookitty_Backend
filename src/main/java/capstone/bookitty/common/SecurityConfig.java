@@ -45,7 +45,7 @@ public class SecurityConfig {
                                         antMatcher("/members/new"),
                                         antMatcher("/members/email/**")).permitAll()
                                 //.requestMatchers(antMatcher("")).authenticated()
-                                .anyRequest().permitAll())
+                                .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout((logout) ->
                         logout
