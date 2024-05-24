@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 
 public class BookStateDTO {
 
@@ -65,6 +66,25 @@ public class BookStateDTO {
                     state.getState(),state.getCategoryName(),state.getBookTitle(),state.getBookAuthor(),
                     state.getBookImgUrl(),state.getReadAt());
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MonthlyStaticsResponse{
+        private int[] monthlyData;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CategoryStaticsResponse{
+        private int literature;
+        private int humanities;
+        private int businessEconomics;
+        private int selfImprovement;
+        private int scienceTechnology;
+        private int etc;
     }
 
 }

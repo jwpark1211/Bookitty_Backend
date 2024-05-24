@@ -12,6 +12,7 @@ import java.util.List;
 public interface BookStateRepository extends JpaRepository<BookState,Long> {
     Page<BookState> findByIsbn(String isbn, Pageable pageable);
     Page<BookState> findByMemberId(Long memberId,Pageable pageable);
+    List<BookState> findByMemberId(Long memberId);
     boolean existsByMemberIdAndIsbn(Long memberId, String isbn);
 
 }

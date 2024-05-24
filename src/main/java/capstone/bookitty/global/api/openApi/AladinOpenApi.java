@@ -4,6 +4,7 @@ import capstone.bookitty.global.api.dto.AladinBestSellerResponseDTO;
 import capstone.bookitty.global.api.dto.AladinBookListResponseDTO;
 import capstone.bookitty.global.api.dto.AladinBookSearchResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,13 +12,16 @@ import reactor.core.publisher.Mono;
 
 
 @Component
-@RequiredArgsConstructor
 public class AladinOpenApi {
 
     @Value("${api.aladin.ttb-key}")
     private String ttb;
 
     private final WebClient aladinWebClientApi;
+
+    public AladinOpenApi(@Qualifier("AladinWebClient") WebClient aladinWebClientApi){
+        this.aladinWebClientApi = aladinWebClientApi;
+    }
 
     private static final String BOOK_ISBN_URI = "/ItemLookUp.aspx";
     private static final String BOOK_SEARCH_URI = "/ItemSearch.aspx";
@@ -68,7 +72,7 @@ public class AladinOpenApi {
                         .queryParam("QueryType", "Bestseller")
                         .queryParam("SearchTarget","Book")
                         .queryParam("Version",20131101)
-                        //.queryParam("Cover","Big")
+                        .queryParam("Cover","Big")
                         .queryParam("output","js")
                         .build())
                 .retrieve()

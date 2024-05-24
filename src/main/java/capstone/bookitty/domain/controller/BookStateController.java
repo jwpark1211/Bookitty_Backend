@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,6 +71,14 @@ public class BookStateController {
                         bookStateService.findStateByMemberId(memberId,pageable)));
     }
 
+    @Operation(summary = "모든 bookState 확인")
+    @GetMapping(path = "/all")
+    public ResponseEntity<? extends BasicResponse> getAllState(){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<List<StateInfoResponse>>(
+                        bookStateService.findAll()));
+    }
+
     @Operation(summary = "state 정보 수정 / state=READING or WANT_TO_READ or READ_ALREADY")
     @PatchMapping(path = "/{state-id}")
     public ResponseEntity<? extends BasicResponse> updateState(
@@ -89,6 +98,27 @@ public class BookStateController {
         bookStateService.deleteState(stateId);
         return ResponseEntity.ok()
                 .body(new ResponseString("delete state!"));
+    }
+
+    @Operation(summary = "달별 책 개수: year(연도 기입 -> ex. 2024)")
+    @GetMapping(path = "/statics/members/{member-id}/month/{year}")
+    public ResponseEntity<? extends BasicResponse> StatWithMonthByMemberId(
+            @PathVariable("member-id") Long memberId,
+            @PathVariable("year") int year
+    ){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<MonthlyStaticsResponse>(
+                        bookStateService.findMonthlyStatByMemberId(memberId,year)));
+    }
+
+    @Operation(summary = "카테고리별 책 개수(문학,인문학,경영/경제,자기계발,컴퓨터/과학,그 외)")
+    @GetMapping(path = "/statics/members/{member-id}/category")
+    public ResponseEntity<? extends BasicResponse> statWithCategoryByMemberId(
+            @PathVariable("member-id") Long memberId
+    ){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<CategoryStaticsResponse>(
+                        bookStateService.findCategoryStateByMemberId(memberId)));
     }
 
 }

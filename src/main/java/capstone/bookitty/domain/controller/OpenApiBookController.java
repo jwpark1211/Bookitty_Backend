@@ -4,6 +4,7 @@ import capstone.bookitty.domain.service.OpenApiBookService;
 import capstone.bookitty.global.api.dto.AladinBestSellerResponseDTO;
 import capstone.bookitty.global.api.dto.AladinBookListResponseDTO;
 import capstone.bookitty.global.api.dto.AladinBookSearchResponseDTO;
+import capstone.bookitty.global.api.dto.NaruPopularBookListDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -64,4 +65,13 @@ public class OpenApiBookController {
     public Mono<AladinBestSellerResponseDTO> getBestSellerBlogChoice(){
         return openApiBookService.getBlogChoice();
     }
+
+    //TODO
+    /*@Operation(summary = "사용자별 도서 추천 Top 10")
+    @GetMapping(path = "/recommend/members/{member-id}")
+    public NaruPopularBookListDto getRecommendationByAgeAndGender(
+            @PathVariable("member-id") Long memberId
+    ){
+        return openApiBookService.getGenderAndAgeRecommendation(memberId);
+    }*/
 }

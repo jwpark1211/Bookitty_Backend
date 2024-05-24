@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 public class MemberDTO {
     @Data
+    @AllArgsConstructor
     public static class MemberSaveRequest {
         @NotBlank(message = "Email is a required entry value.")
         @Email(message = "Email format is not valid.")

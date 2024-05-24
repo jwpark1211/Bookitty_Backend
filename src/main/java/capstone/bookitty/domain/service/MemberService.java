@@ -85,7 +85,6 @@ public class MemberService {
         }
     }
 
-    //TODO : SPRING SECURITY AUTHORITY SETTING
     @Transactional
     public void deleteMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
