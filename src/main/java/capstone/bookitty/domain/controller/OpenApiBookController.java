@@ -66,12 +66,11 @@ public class OpenApiBookController {
         return openApiBookService.getBlogChoice();
     }
 
-    //TODO
-    /*@Operation(summary = "사용자별 도서 추천 Top 10")
+    @Operation(summary = "사용자별 도서 추천 Top 10")
     @GetMapping(path = "/recommend/members/{member-id}")
     public NaruPopularBookListDto getRecommendationByAgeAndGender(
             @PathVariable("member-id") Long memberId
     ){
         return openApiBookService.getGenderAndAgeRecommendation(memberId);
-    }*/
+    }
 }

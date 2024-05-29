@@ -9,7 +9,7 @@ public class NaruPopularBookDto {
     public PopularBook doc;
 
     public static class PopularBook {
-        public String bookName;
+        public String bookname;
         public String authors;
         public String publisher;
         public int ranking;

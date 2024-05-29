@@ -6,6 +6,7 @@ import capstone.bookitty.jwt.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // CORS 설정 추가
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .headers((headersConfig) ->
@@ -46,8 +48,12 @@ public class SecurityConfig {
                                         antMatcher("/members/new"),
                                         antMatcher("/members/email/**"),
                                         antMatcher("/swagger-ui/**"),
+                                        antMatcher("/star/all"),
+                                        antMatcher("/star/isbn/**"),
+                                        antMatcher("/comment/all"),
+                                        antMatcher("/comment/isbn/**"),
                                         antMatcher("/v3/**")).permitAll()
-                                //.requestMatchers(antMatcher("")).authenticated()
+                                .requestMatchers(antMatcher("/star/new")).authenticated() // 추가된 인증 경로
                                 .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout((logout) ->
@@ -65,5 +71,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
 }

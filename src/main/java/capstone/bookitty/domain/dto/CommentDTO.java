@@ -56,11 +56,14 @@ public class CommentDTO {
         private LocalDateTime createdAt;
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime modifiedAt;
+        private String memberName;
+        private String memberProfileImg;
 
-        public static CommentInfoResponse of(Comment comment, int like_count){
+        public static CommentInfoResponse of(Comment comment, int like_count,
+                                             String memberName, String memberProfileImg){
             return new CommentInfoResponse(comment.getId(), comment.getMember().getId(),comment.getIsbn(),
                     comment.getContent(), like_count ,comment.getCreatedAt(),
-                    comment.getModifiedAt());
+                    comment.getModifiedAt(),memberName,memberProfileImg);
         }
 
     }

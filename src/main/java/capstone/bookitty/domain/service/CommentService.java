@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static capstone.bookitty.domain.dto.CommentDTO.*;
 
 @Service
@@ -46,14 +48,18 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with ID " + commentId + " not found."));
         int like_count = likeRepository.findByCommentId(commentId).size();
-        return CommentInfoResponse.of(comment, like_count);
+        Member member = memberRepository.findById(comment.getMember().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Member with commentID " + commentId + " not found."));
+        return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
     }
 
     public Page<CommentInfoResponse> findAllComment(Pageable pageable) {
         return commentRepository.findAll(pageable)
                 .map(comment -> {
                     int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    return CommentInfoResponse.of(comment,like_count);
+                    Member member = memberRepository.findById(comment.getMember().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("Member with commentID " + comment.getId() + " not found."));
+                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
                 });
     }
 
@@ -61,7 +67,9 @@ public class CommentService {
         return commentRepository.findByIsbn(isbn,pageable)
                 .map(comment -> {
                     int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    return CommentInfoResponse.of(comment,like_count);
+                    Member member = memberRepository.findById(comment.getMember().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("Member with commentID " + comment.getId() + " not found."));
+                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
                 });
     }
 
@@ -71,7 +79,7 @@ public class CommentService {
         return commentRepository.findByMemberId(memberId,pageable)
                 .map(comment -> {
                     int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    return CommentInfoResponse.of(comment,like_count);
+                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
                 });
     }
 
@@ -95,8 +103,13 @@ public class CommentService {
                 .orElseThrow(() -> new EntityNotFoundException("Comment with ID " + commentId + " not found."));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()->new EntityNotFoundException("Member with ID "+memberId+" not found."));
-        if(likeRepository.existsByMemberIdAndCommentId(memberId,commentId))
-            throw new IllegalArgumentException("Like already exists");
+        List<Like> likesByComment = likeRepository.findByCommentId(commentId);
+
+        for(Like like : likesByComment){
+            if(like.getMember().getId() == memberId)
+                throw new IllegalArgumentException("like already exists");
+        }
+
         Like like = Like.builder()
                 .comment(comment)
                 .member(member)
@@ -112,6 +125,13 @@ public class CommentService {
                 .orElseThrow(()->new EntityNotFoundException("Member with ID " + memberId + " not found."));
         Like like = likeRepository.findByMemberIdAndCommentId(memberId,commentId)
                         .orElseThrow(()->new EntityNotFoundException("Like with commentId "+commentId+" not found."));
+        likeRepository.delete(like);
+    }
+
+    @Transactional
+    public void deleteLike(Long likeId){
+        Like like = likeRepository.findById(likeId)
+                .orElseThrow(()->new EntityNotFoundException("Like with likeId "+likeId+" not found."));
         likeRepository.delete(like);
     }
 }

@@ -123,4 +123,14 @@ public class CommentController {
                 .body(new ResponseString("decrease Like!"));
     }
 
+    @Operation(summary = "좋아요 id로 삭제")
+    @DeleteMapping(path = "/like/{like-id}")
+    public ResponseEntity<? extends BasicResponse> deleteLike(
+            @PathVariable("like-id") Long likeId
+    ){
+        commentService.deleteLike(likeId);
+        return ResponseEntity.ok()
+                .body(new ResponseString("delete Like!"));
+    }
+
 }
