@@ -30,41 +30,39 @@ public class OpenApiBookService {
         return aladinOpenApi.searchByBookISBN(isbn);
     }
 
-    public Mono<AladinBookSearchResponseDTO> searchByKeyword(String keyword){
+    public Mono<AladinBookSearchResponseDTO> searchByKeyword(String keyword) {
         return aladinOpenApi.searchByKeyword(keyword);
     }
 
     @Cacheable(value = "bestsellers", cacheManager = "cacheManager")
-    public Mono<AladinBestSellerResponseDTO> getBestSeller(){
+    public Mono<AladinBestSellerResponseDTO> getBestSeller() {
         return aladinOpenApi.getAllBestSeller();
     }
 
-    @Cacheable(value = "bestsellersByGenre", keyGenerator = "customKeyGenerator")
-    public Mono<AladinBestSellerResponseDTO> getBestSellerByGenre(int cid){
+    @Cacheable(value = "bestsellersByGenre", key = "#a0",unless="#result == null")
+    public Mono<AladinBestSellerResponseDTO> getBestSellerByGenre(int cid) {
         return aladinOpenApi.getBestSellerByGenre(cid);
     }
 
     @Cacheable(value = "newBooks", cacheManager = "cacheManager")
-    public Mono<AladinBestSellerResponseDTO> getBestSellerNewBook(){
+    public Mono<AladinBestSellerResponseDTO> getBestSellerNewBook() {
         return aladinOpenApi.getNewBook();
     }
 
     @Cacheable(value = "blogChoices", cacheManager = "cacheManager")
-    public Mono<AladinBestSellerResponseDTO> getBlogChoice(){
+    public Mono<AladinBestSellerResponseDTO> getBlogChoice() {
         return aladinOpenApi.getBlogChoice();
     }
 
-    public NaruPopularBookListDto getGenderAndAgeRecommendation(Long memberId){
+    @Cacheable(value = "genderAndAge", key = "#a0",unless="#result == null")
+    public NaruPopularBookListDto getGenderAndAgeRecommendation(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new EntityNotFoundException(
-                        "Member not found for ID: "+memberId));
-        int gender, age;
-        if(member.getGender()== Gender.MALE) gender = 1; else gender = 2;
+                .orElseThrow(() -> new EntityNotFoundException("Member not found for ID: " + memberId));
 
-        Period period = Period.between(member.getBirthDate(), LocalDate.now());
-        age = period.getYears();
-        age = (age/10)*10;
-        return naruOpenApi.getPopularBook(gender,age);
+        int gender = (member.getGender() == Gender.MALE) ? 1 : 2;
+        int age = Period.between(member.getBirthDate(), LocalDate.now()).getYears();
+        age = (age / 10) * 10;
+
+        return naruOpenApi.getPopularBook(gender, age);
     }
-
 }

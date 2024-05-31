@@ -5,7 +5,6 @@ import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.State;
 import capstone.bookitty.domain.repository.BookStateRepository;
 import capstone.bookitty.domain.repository.MemberRepository;
-import capstone.bookitty.global.api.openApi.NaruOpenApi;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static capstone.bookitty.domain.dto.BookStateDTO.*;
@@ -27,33 +27,39 @@ public class BookStateService {
 
     private final BookStateRepository stateRepository;
     private final MemberRepository memberRepository;
-    private final NaruOpenApi naruOpenApi;
-
     @Transactional
     public IdResponse saveState(StateSaveRequest request) {
 
         Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(()->new EntityNotFoundException(
-                        "Member not found for ID: "+request.getMemberId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Member not found for ID: " + request.getMemberId()));
 
-        if(stateRepository.existsByMemberIdAndIsbn(request.getMemberId(), request.getIsbn()))
-            throw new IllegalArgumentException("bookState already exists.");
+        Optional<BookState> existingStateOpt = stateRepository.findByMemberIdAndIsbn(request.getMemberId(), request.getIsbn());
 
-        BookState bookState = BookState.builder()
-                .member(member)
-                .state(request.getState())
-                .isbn(request.getIsbn())
-                .bookTitle(request.getBookTitle())
-                .bookAuthor(request.getBookAuthor())
-                .bookImgUrl(request.getBookImgUrl())
-                .categoryName(request.getCategoryName())
-                .build();
+        if (existingStateOpt.isPresent()) {
+            BookState existingState = existingStateOpt.get();
+            existingState.updateState(request.getState());
+            return new IdResponse(existingState.getId());
+        } else {
+            BookState newBookState = BookState.builder()
+                    .member(member)
+                    .state(request.getState())
+                    .isbn(request.getIsbn())
+                    .bookTitle(request.getBookTitle())
+                    .bookAuthor(request.getBookAuthor())
+                    .bookImgUrl(request.getBookImgUrl())
+                    .categoryName(request.getCategoryName())
+                    .build();
 
-        if(request.getState() == State.READ_ALREADY) bookState.readAtNow();
+            if (request.getState() == State.READ_ALREADY) {
+                newBookState.readAtNow();
+            }
 
-        stateRepository.save(bookState);
-        return new IdResponse(bookState.getId());
+            stateRepository.save(newBookState);
+            return new IdResponse(newBookState.getId());
+        }
     }
+
 
     public Page<StateInfoResponse> findStateByISBN(String isbn, Pageable pageable) {
         return stateRepository.findByIsbn(isbn, pageable)
@@ -106,9 +112,7 @@ public class BookStateService {
     public CategoryStaticsResponse findCategoryStateByMemberId(Long memberId) {
         List<BookState> statesC = stateRepository.findByMemberId(memberId);
         int total = statesC.size();
-        int literature = 0; int humanities = 0;
-        int businessEconomics = 0; int selfImprovement = 0;
-        int scienceTechnology = 0; int etc = 0;
+        int literature = 0,humanities = 0, businessEconomics = 0, selfImprovement = 0,scienceTechnology = 0, etc = 0;
         for(BookState state: statesC) {
             if (state.getState() == State.READ_ALREADY) {
                 if (state.getCategoryName().contains("경제경영") || state.getCategoryName().contains("경제/경영")) {

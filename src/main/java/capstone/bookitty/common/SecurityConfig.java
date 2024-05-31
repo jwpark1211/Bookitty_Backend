@@ -51,6 +51,7 @@ public class SecurityConfig {
                                         antMatcher("/star/all"),
                                         antMatcher("/star/isbn/**"),
                                         antMatcher("/comment/all"),
+                                        antMatcher("/state/all"),
                                         antMatcher("/comment/isbn/**"),
                                         antMatcher("/v3/**")).permitAll()
                                 .requestMatchers(antMatcher("/star/new")).authenticated() // 추가된 인증 경로
