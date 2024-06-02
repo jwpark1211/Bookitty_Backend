@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 
 public class StarDTO {
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class StarSaveRequest{
         @NotBlank(message = "Isbn is a required entry value.")
         private String isbn;
@@ -21,13 +23,23 @@ public class StarDTO {
         private Long memberId;
         @ValidScore
         private double score;
+
+        public static StarSaveRequest buildForTest(String isbn, Long memberId, double score){
+            return new StarSaveRequest(isbn, memberId,score);
+        }
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class StarUpdateRequest{
         @NotNull(message = "score is a required entry value.")
         @ValidScore
         private double score;
+
+        public static StarUpdateRequest buildForTest(double score){
+            return new StarUpdateRequest(score);
+        }
     }
 
     @Getter

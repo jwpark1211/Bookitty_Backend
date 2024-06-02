@@ -30,13 +30,17 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' //swagger
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis' //redis
 	implementation 'org.springframework.boot:spring-boot-starter-cache' //cache
-	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' //s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	testImplementation 'org.projectlombok:lombok:1.18.28'//s3
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	//Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'//junit5
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2' // junit5 runtime engine
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.mockito:mockito-junit-jupiter'
 	//JWT

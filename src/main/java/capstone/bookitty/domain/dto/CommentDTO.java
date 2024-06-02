@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 public class CommentDTO {
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class CommentSaveRequest{
         @NotBlank(message = "Isbn is a required entry value.")
         private String isbn;
@@ -24,13 +26,23 @@ public class CommentDTO {
         @NotEmpty(message = "content is a required entry value.")
         @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
         private String content;
+
+        public static CommentSaveRequest buildForTest(String isbn, Long memberId, String content){
+            return new CommentSaveRequest(isbn, memberId, content);
+        }
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class CommentUpdateRequest{
         @NotEmpty(message = "content is a required entry value.")
         @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
         private String content;
+
+        public static CommentUpdateRequest buildForTest(String content){
+            return new CommentUpdateRequest(content);
+        }
     }
 
     @Getter

@@ -17,6 +17,8 @@ import java.time.Month;
 public class BookStateDTO {
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class StateSaveRequest {
         @NotBlank(message = "ISBN is a requred entry value.")
         private String isbn;
@@ -28,6 +30,11 @@ public class BookStateDTO {
         private String bookTitle;
         private String bookAuthor;
         private String bookImgUrl;
+
+        public static StateSaveRequest buildForTest(String isbn, Long memberId,State state){
+            return new StateSaveRequest(isbn,memberId,state,"categoryName",
+                    "bookTitle","bookAuthor","bookImgUrl");
+        }
     }
 
     @Data

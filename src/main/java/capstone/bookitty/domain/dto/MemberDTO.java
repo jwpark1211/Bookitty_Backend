@@ -7,10 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -19,7 +16,7 @@ import java.time.LocalDate;
 public class MemberDTO {
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PUBLIC)
     public static class MemberSaveRequest {
         @NotBlank(message = "Email is a required entry value.")
         @Email(message = "Email format is not valid.")
@@ -34,16 +31,27 @@ public class MemberDTO {
         private LocalDate birthdate;
         @NotBlank(message = "name is a required entry value.")
         private String name;
+
+        public static MemberSaveRequest buildForTest(String email,String password,String name){
+            return new MemberSaveRequest(email,password,Gender.MALE,
+                    LocalDate.of(1999,2,3),name);
+        }
     }
 
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MemberLoginRequest {
         @NotBlank(message = "Email is a required entry value.")
         @Email(message = "Email format is not valid.")
         private String email;
         @NotBlank(message = "Password is a required entry value.")
         private String password;
+
+        public static MemberLoginRequest buildForTest(String email,String password){
+            return new MemberLoginRequest(email,password);
+        }
     }
 
     @Getter
