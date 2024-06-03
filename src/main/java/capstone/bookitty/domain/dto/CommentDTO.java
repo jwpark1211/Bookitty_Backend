@@ -58,6 +58,19 @@ public class CommentDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class CommentUpdateResponse{
+        private Long id;
+        private String content;
+        private LocalDateTime modifiedAt;
+        public static CommentUpdateResponse of(Comment comment){
+            return new CommentUpdateResponse(comment.getId(), comment.getContent(),comment.getModifiedAt());
+        }
+    }
+
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class CommentInfoResponse{
         private Long id;
         private Long memberId;

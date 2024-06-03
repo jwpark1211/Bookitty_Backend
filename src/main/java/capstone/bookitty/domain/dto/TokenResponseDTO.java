@@ -11,9 +11,13 @@ import lombok.Getter;
 public class TokenResponseDTO {
     private Long idx;
     private JwtToken jwtToken;
+    private String profileImg;
+    private String name;
 
-    public TokenResponseDTO(Long idx, JwtToken jwtToken) {
+    public TokenResponseDTO(Long idx, JwtToken jwtToken,String profileImg,String name) {
         this.idx = idx;
         this.jwtToken = jwtToken;
+        this.profileImg = profileImg;
+        this.name = name;
     }
 }

@@ -88,7 +88,8 @@ public class CommentController {
     ){
         commentService.updateComment(commentId, request);
         return ResponseEntity.ok()
-                .body(new ResponseString("update Comment!"));
+                .body(new ResponseCounter<CommentUpdateResponse>(
+                        commentService.updateComment(commentId,request)));
     }
 
     @Operation(summary = "코멘트 삭제")

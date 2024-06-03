@@ -85,9 +85,9 @@ public class BookStateController {
             @PathVariable("state-id") Long stateId,
             @RequestBody @Valid StateUpdateRequest request
     ){
-        bookStateService.updateState(stateId, request);
         return ResponseEntity.ok()
-                .body(new ResponseString("update state!"));
+                .body(new ResponseCounter<StateUpdateResponse>(
+                        bookStateService.updateState(stateId,request)));
     }
 
     @Operation(summary = "state 삭제")

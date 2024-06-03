@@ -84,10 +84,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, CommentUpdateRequest request) {
+    public CommentUpdateResponse updateComment(Long commentId, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with ID " + commentId + " not found."));
         comment.updateContent(request.getContent());
+        return new CommentUpdateResponse(comment.getId(), comment.getContent(), comment.getModifiedAt());
     }
 
     @Transactional

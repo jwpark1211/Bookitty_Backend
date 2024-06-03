@@ -87,9 +87,8 @@ public class StarController {
             @PathVariable("star-id") Long starId,
             @RequestBody @Valid StarUpdateRequest request
     ){
-        starService.updateStar(starId, request);
         return ResponseEntity.ok()
-                .body(new ResponseString("update star!"));
+                .body(new ResponseCounter<StarUpdateResponse>(starService.updateStar(starId,request)));
     }
 
     @Operation(summary = "평점 삭제")

@@ -63,7 +63,7 @@ public class MemberService {
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new EntityNotFoundException("Member not found."));
-        return new TokenResponseDTO(member.getId(), jwtToken);
+        return new TokenResponseDTO(member.getId(), jwtToken,member.getProfileImg(),member.getName());
     }
 
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
@@ -78,7 +78,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateProfile(Long memberId, MultipartFile profileImg)
+    public MemberInfoResponse updateProfile(Long memberId, MultipartFile profileImg)
             throws MultipartException, IOException {
         try {
             if (profileImg.isEmpty()) {
@@ -88,6 +88,8 @@ public class MemberService {
                     .orElseThrow(() -> new EntityNotFoundException("member not found."));
             String imageUrl = s3Service.uploadFile(profileImg);
             member.updateProfile(imageUrl);
+            return new MemberInfoResponse(member.getId(),member.getEmail(),member.getProfileImg(),
+                    member.getName(),member.getGender(),member.getBirthDate());
         } catch (MultipartException e) {
             throw e;
         } catch (EntityNotFoundException e) {

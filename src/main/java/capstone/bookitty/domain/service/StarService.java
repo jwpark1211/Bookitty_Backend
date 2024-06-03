@@ -62,10 +62,11 @@ public class StarService {
     }
 
     @Transactional
-    public void updateStar(Long starId, StarUpdateRequest request) {
+    public StarUpdateResponse updateStar(Long starId, StarUpdateRequest request) {
         Star star = starRepository.findById(starId)
                 .orElseThrow(()-> new EntityNotFoundException("Star with ID "+starId+" not found."));
         star.updateStar(request.getScore());
+        return StarUpdateResponse.of(star);
     }
 
     @Transactional

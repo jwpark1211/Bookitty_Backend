@@ -36,9 +36,19 @@ public class StarDTO {
         @NotNull(message = "score is a required entry value.")
         @ValidScore
         private double score;
-
         public static StarUpdateRequest buildForTest(double score){
             return new StarUpdateRequest(score);
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class StarUpdateResponse{
+        private Long id;
+        private double score;
+        public static StarUpdateResponse of (Star star) {
+            return new StarUpdateResponse(star.getId(),star.getScore());
         }
     }
 

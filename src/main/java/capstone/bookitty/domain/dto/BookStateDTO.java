@@ -46,6 +46,16 @@ public class BookStateDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class StateUpdateResponse{
+        private Long id;
+        private State state;
+        public static StateUpdateResponse of(BookState state){
+            return new StateUpdateResponse(state.getId(),state.getState());}
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class IdResponse{
         private Long id;
         public static IdResponse of (BookState bookState){

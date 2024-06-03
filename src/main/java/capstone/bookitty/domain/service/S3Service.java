@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,54 +22,60 @@ public class S3Service {
     private String bucket;
     private final AmazonS3 amazonS3;
 
+    private static final Map<String, String> contentTypeMap = new HashMap<>();
+    static {
+        contentTypeMap.put("jpeg", "image/jpeg");
+        contentTypeMap.put("jpg", "image/jpeg");
+        contentTypeMap.put("png", "image/png");
+        contentTypeMap.put("txt", "text/plain");
+        contentTypeMap.put("csv", "text/csv");
+        // Add more content types as needed
+    }
+
     public String uploadFile(MultipartFile multipartFile) throws IOException {
         String fileName = multipartFile.getOriginalFilename();
-
-        //파일 형식 구하기
-        String ext = fileName.split("\\.")[1];
-        String contentType = "";
-
-        //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이
-        // 돼서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
-        switch (ext) {
-            case "jpeg":
-                contentType = "image/jpeg";
-                break;
-            case "png":
-                contentType = "image/png";
-                break;
-            case "txt":
-                contentType = "text/plain";
-                break;
-            case "csv":
-                contentType = "text/csv";
-                break;
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IllegalArgumentException("Invalid file name.");
         }
 
-        try {
+        String ext = getExtension(fileName);
+        String contentType = contentTypeMap.getOrDefault(ext, "application/octet-stream");
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
+            metadata.setContentLength(multipartFile.getSize());
 
-            amazonS3.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
+            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonServiceException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to upload file to S3", e);
         } catch (SdkClientException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to connect to S3", e);
         }
 
-        //object 정보 가져오기
+        // Print object summaries
         ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(bucket);
         List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-
-        for (S3ObjectSummary object: objectSummaries) {
+        for (S3ObjectSummary object : objectSummaries) {
             System.out.println("object = " + object.toString());
         }
+
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    public void deleteImage(String filename){
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket,filename));
+    public void deleteImage(String filename) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, filename));
+        } catch (AmazonServiceException e) {
+            throw new RuntimeException("Failed to delete file from S3", e);
+        } catch (SdkClientException e) {
+            throw new RuntimeException("Failed to connect to S3", e);
+        }
     }
 
+    private String getExtension(String fileName) {
+        String[] parts = fileName.split("\\.");
+        return parts[parts.length - 1].toLowerCase();
+    }
 }

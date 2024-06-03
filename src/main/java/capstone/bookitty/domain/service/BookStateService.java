@@ -30,34 +30,33 @@ public class BookStateService {
     @Transactional
     public IdResponse saveState(StateSaveRequest request) {
 
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Member not found for ID: " + request.getMemberId()));
-
-        Optional<BookState> existingStateOpt = stateRepository.findByMemberIdAndIsbn(request.getMemberId(), request.getIsbn());
-
-        if (existingStateOpt.isPresent()) {
-            BookState existingState = existingStateOpt.get();
-            existingState.updateState(request.getState());
-            return new IdResponse(existingState.getId());
-        } else {
-            BookState newBookState = BookState.builder()
-                    .member(member)
-                    .state(request.getState())
-                    .isbn(request.getIsbn())
-                    .bookTitle(request.getBookTitle())
-                    .bookAuthor(request.getBookAuthor())
-                    .bookImgUrl(request.getBookImgUrl())
-                    .categoryName(request.getCategoryName())
-                    .build();
-
-            if (request.getState() == State.READ_ALREADY) {
-                newBookState.readAtNow();
-            }
-
-            stateRepository.save(newBookState);
-            return new IdResponse(newBookState.getId());
+        State reqState;
+        try {
+            reqState = request.getState();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid state: " + request.getState(), e);
         }
+
+        Member member = memberRepository.findById(request.getMemberId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        if(stateRepository.existsByMemberIdAndIsbn(request.getMemberId(), request.getIsbn()))
+            throw new IllegalArgumentException("bookState already exists");
+
+        BookState bookState = BookState.builder()
+                .member(member)
+                .state(reqState)
+                .isbn(request.getIsbn())
+                .bookTitle(request.getBookTitle())
+                .bookAuthor(request.getBookAuthor())
+                .bookImgUrl(request.getBookImgUrl())
+                .categoryName(request.getCategoryName())
+                .build();
+
+        if(reqState == State.READ_ALREADY) bookState.readAtNow();
+
+        stateRepository.save(bookState);
+        return new IdResponse(bookState.getId());
     }
 
 
@@ -82,11 +81,12 @@ public class BookStateService {
     }
 
     @Transactional
-    public void updateState(Long stateId, StateUpdateRequest request) {
+    public StateUpdateResponse updateState(Long stateId, StateUpdateRequest request) {
         BookState bookState = stateRepository.findById(stateId)
                 .orElseThrow(() -> new EntityNotFoundException("BookState not found for ID: " + stateId));
 
         bookState.updateState(request.getState());
+        return StateUpdateResponse.of(bookState);
     }
 
     @Transactional

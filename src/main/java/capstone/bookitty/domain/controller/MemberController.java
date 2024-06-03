@@ -90,8 +90,9 @@ public class MemberController {
             @PathVariable("id") Long memberId,
             @RequestPart(value = "profile") MultipartFile profileImg
             ) throws IOException {
-        memberService.updateProfile(memberId, profileImg);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<MemberInfoResponse>(
+                        memberService.updateProfile(memberId, profileImg)));
     }
 
     @Operation(summary = "회원 탈퇴")
