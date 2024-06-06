@@ -1,8 +1,7 @@
 package capstone.bookitty.common;
 
-import capstone.bookitty.jwt.JwtFilter;
-import capstone.bookitty.jwt.JwtProperties;
-import capstone.bookitty.jwt.JwtTokenProvider;
+import capstone.bookitty.jwt.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,13 +21,16 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider, JwtProperties jwtProperties) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.jwtProperties = jwtProperties;
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
@@ -45,6 +47,7 @@ public class SecurityConfig {
                                         antMatcher("/open/**"),
                                         antMatcher("/members/test"),
                                         antMatcher("/members/login"),
+                                        antMatcher("/members/reissue"),
                                         antMatcher("/members/new"),
                                         antMatcher("/members/email/**"),
                                         antMatcher("/swagger-ui/**"),
@@ -64,12 +67,12 @@ public class SecurityConfig {
                                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                                 .deleteCookies("JSESSIONID")
                 )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint(authenticationEntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .addFilterBefore(new JwtFilter(jwtTokenProvider, jwtProperties), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

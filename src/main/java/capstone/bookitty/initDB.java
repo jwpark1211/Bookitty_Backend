@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.beans.Encoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -47,7 +48,8 @@ public class initDB {
                     new Member("황예린", "ghkddPfls@gmail.com", pwEncoder.encode("Wo1902!si12"), null, Gender.FEMALE, LocalDate.of(1991, 11, 28)),
                     new Member("송현우", "thdgusdn@gmail.com", pwEncoder.encode("Wo1902!si13"), null, Gender.MALE, LocalDate.of(1999, 9, 8)),
                     new Member("정우진", "wjddnwls@gmail.com", pwEncoder.encode("Wo1902!si14"), null, Gender.MALE, LocalDate.of(2004, 1, 13)),
-                    new Member("서은우", "tjdnsdmj@gmail.com", pwEncoder.encode("Wo1902!si15"), null, Gender.MALE, LocalDate.of(2008, 2, 20))
+                    new Member("서은우", "tjdnsdmj@gmail.com", pwEncoder.encode("Wo1902!si15"), null, Gender.MALE, LocalDate.of(2008, 2, 20)),
+                    new Member("이예진","dldPwls@gmail.com", pwEncoder.encode("Testtest123!"),null,Gender.FEMALE,LocalDate.of(2001,2,16))
             );
 
             for (Member member : members) {

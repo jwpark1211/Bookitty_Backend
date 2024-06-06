@@ -2,6 +2,7 @@ package capstone.bookitty.common;
 
 import capstone.bookitty.domain.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         String roles = member.getAuthority().toString();
         for (String role : roles.split(",")) {
-            authorities.add(() -> role);
+            authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
     }
@@ -52,5 +53,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

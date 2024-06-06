@@ -3,12 +3,14 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
+import capstone.bookitty.domain.dto.TokenRequestDTO;
 import capstone.bookitty.domain.dto.TokenResponseDTO;
 import capstone.bookitty.domain.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,6 +24,7 @@ import static capstone.bookitty.domain.dto.MemberDTO.*;
 
 @Tag(name = "회원", description = "회원 관련 api 입니다.")
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
@@ -61,6 +64,31 @@ public class MemberController {
     ){
         return ResponseEntity.ok()
                 .body(new ResponseCounter<TokenResponseDTO>(memberService.login(request)));
+    }
+
+    @Operation(summary = "[추가] 토큰 재발행")
+    @PostMapping("/reissue")
+    public ResponseEntity<? extends BasicResponse> reissue(
+            @RequestBody @Valid TokenRequestDTO request
+    ){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<TokenResponseDTO>(memberService.reissue(request)));
+    }
+
+    @Operation(summary = "[추가] 로그인 한 회원 정보 조회")
+    @GetMapping("/me")
+    public ResponseEntity<? extends BasicResponse> getMyMemberInfo(){
+        log.info("api entry");
+        return ResponseEntity.ok(
+                new ResponseCounter<MemberInfoResponse>(
+                        memberService.getMyInfo()));
+    }
+
+    @Operation(summary = "[추가] 로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<? extends BasicResponse> logout(@RequestBody TokenRequestDTO tokenRequestDTO) {
+        memberService.logout(tokenRequestDTO);
+        return ResponseEntity.ok(new ResponseString("Logout successful"));
     }
 
     @Operation(summary = "id로 회원 조회")
