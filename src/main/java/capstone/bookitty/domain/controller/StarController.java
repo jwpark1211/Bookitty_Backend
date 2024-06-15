@@ -81,6 +81,17 @@ public class StarController {
                         starService.findStarByMemberId(memberId,pageable)));
     }
 
+    @Operation(summary = "member id와 isbn으로 평점 가져오기")
+    @GetMapping(path = "/member/{member-id}/isbn/{isbn}")
+    public ResponseEntity<? extends BasicResponse> getStarByIsbnAndMemberId(
+            @PathVariable("isbn") String isbn,
+            @PathVariable("member-id") Long memberId
+    ){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<StarInfoResponse>(
+                        starService.findStarByMemberIdAndIsbn(memberId,isbn)));
+    }
+
     @Operation(summary = "평점 수정")
     @PatchMapping(path="/{star-id}")
     public ResponseEntity<? extends BasicResponse> updateStar(

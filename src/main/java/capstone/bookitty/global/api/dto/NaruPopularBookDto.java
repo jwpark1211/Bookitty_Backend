@@ -8,6 +8,8 @@ import lombok.Setter;
 public class NaruPopularBookDto {
     public PopularBook doc;
 
+    @Getter
+    @Setter
     public static class PopularBook {
         public String bookname;
         public String authors;
@@ -15,6 +17,5 @@ public class NaruPopularBookDto {
         public int ranking;
         public String isbn13;
         public String bookImageURL;
-
     }
 }

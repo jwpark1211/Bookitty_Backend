@@ -59,6 +59,17 @@ public class BookStateController {
                         bookStateService.findStateByStateId(stateId)));
     }
 
+    @Operation(summary = "isbn과 memberId로 책 상태 가져오기")
+    @GetMapping(path = "/isbn/{isbn}/member/{member-id}")
+    public ResponseEntity<? extends BasicResponse> getStateByMemberIdAndIsbn(
+            @PathVariable("member-id") Long memberId,
+            @PathVariable("isbn") String isbn
+    ){
+        return ResponseEntity.ok()
+                .body(new ResponseCounter<StateInfoResponse>(
+                        bookStateService.findStateByMemberAndIsbn(isbn,memberId)));
+    }
+
     @Operation(summary = "memberId로 책 상태 리스트 가져오기 / page는 requestParam으로 요청할 수 있습니다. / "+
             "size(한 페이지 당 element 수, default = 10), page(요청하는 페이지, 0부터 시작)")
     @GetMapping(path = "/member/{member-id}")
@@ -89,6 +100,7 @@ public class BookStateController {
                 .body(new ResponseCounter<StateUpdateResponse>(
                         bookStateService.updateState(stateId,request)));
     }
+
 
     @Operation(summary = "state 삭제")
     @DeleteMapping(path = "/{state-id}")

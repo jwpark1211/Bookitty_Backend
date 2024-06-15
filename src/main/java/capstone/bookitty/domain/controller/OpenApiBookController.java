@@ -1,10 +1,7 @@
 package capstone.bookitty.domain.controller;
 
 import capstone.bookitty.domain.service.OpenApiBookService;
-import capstone.bookitty.global.api.dto.AladinBestSellerResponseDTO;
-import capstone.bookitty.global.api.dto.AladinBookListResponseDTO;
-import capstone.bookitty.global.api.dto.AladinBookSearchResponseDTO;
-import capstone.bookitty.global.api.dto.NaruPopularBookListDto;
+import capstone.bookitty.global.api.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Tag(name = "openApi(book)", description = "알라딘 api 입니다.")
 @RestController
@@ -66,11 +65,18 @@ public class OpenApiBookController {
         return openApiBookService.getBlogChoice();
     }
 
-    @Operation(summary = "사용자별 도서 추천 Top 10")
-    @GetMapping(path = "/recommend/members/{member-id}")
-    public NaruPopularBookListDto getRecommendationByAgeAndGender(
+    //@Operation(summary = "사용자별 도서 추천 Top 10")
+    //@GetMapping(path = "/recommend/members/{member-id}")
+    /*public NaruPopularBookListDto getRecommendationByAgeAndGender(
             @PathVariable("member-id") Long memberId
     ){
         return openApiBookService.getGenderAndAgeRecommendation(memberId);
+    }*/
+
+    @Operation(summary = "사용자별 도서 추천 Top 10")
+    @GetMapping(path = "/recommend/members/{member-id}")
+    public NaruPopularBookListDto getRecommendations(
+            @PathVariable("member-id") long memberId) {
+        return openApiBookService.getTop10ForMember(memberId);
     }
 }

@@ -1,11 +1,15 @@
 package capstone.bookitty.global.api.dto;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class AladinBookListResponseDTO {
 
     public List<DetailBook> item;
 
+    @Getter
     public static class DetailBook {
         public String title;
         public String link;

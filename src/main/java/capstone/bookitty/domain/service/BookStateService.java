@@ -65,6 +65,13 @@ public class BookStateService {
                 .map(StateInfoResponse::of);
     }
 
+    public StateInfoResponse findStateByMemberAndIsbn(String isbn, Long memberId){
+        BookState state = stateRepository.findByMemberIdAndIsbn(memberId,isbn)
+                .orElseThrow(()-> new EntityNotFoundException(
+                        "BookState with memberID:"+memberId+",Isbn:"+isbn+"not found."));
+        return StateInfoResponse.of(state);
+    }
+
     public StateInfoResponse findStateByStateId(Long stateId) {
         return stateRepository.findById(stateId)
                 .map(StateInfoResponse::of)

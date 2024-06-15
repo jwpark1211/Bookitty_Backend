@@ -33,7 +33,7 @@ public class RedisConfig {
     @Value("${spring.redis.timeout:60000}")
     private long timeout;
 
-    @Value("${spring.redis.cache.ttl:1800}")
+    @Value("${spring.redis.cache.ttl:10800}") //TTL = 3시간
     private long cacheTtl;
 
     @Bean

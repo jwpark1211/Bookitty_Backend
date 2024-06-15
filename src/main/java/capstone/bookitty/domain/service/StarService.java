@@ -80,4 +80,11 @@ public class StarService {
         return starRepository.findAll(pageable)
                 .map(StarInfoResponse::of);
     }
+
+    public StarInfoResponse findStarByMemberIdAndIsbn(Long memberId, String isbn) {
+        Star star = starRepository.findByMemberIdAndIsbn(memberId,isbn)
+                .orElseThrow(()-> new EntityNotFoundException(
+                        "Star with memberID:"+memberId+",Isbn:"+isbn+"not found."));
+        return StarInfoResponse.of(star);
+    }
 }

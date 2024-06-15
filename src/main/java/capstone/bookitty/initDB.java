@@ -19,7 +19,7 @@ import java.util.List;
 public class initDB {
     private final InitService initService;
 
-    //@PostConstruct
+    @PostConstruct
     public void init(){
         initService.dbInit();
     }
@@ -47,9 +47,9 @@ public class initDB {
                     new Member("안지성", "dkswltjd@gmail.com", pwEncoder.encode("Wo1902!si11"), null, Gender.MALE, LocalDate.of(2002, 8, 8)),
                     new Member("황예린", "ghkddPfls@gmail.com", pwEncoder.encode("Wo1902!si12"), null, Gender.FEMALE, LocalDate.of(1991, 11, 28)),
                     new Member("송현우", "thdgusdn@gmail.com", pwEncoder.encode("Wo1902!si13"), null, Gender.MALE, LocalDate.of(1999, 9, 8)),
-                    new Member("정우진", "wjddnwls@gmail.com", pwEncoder.encode("Wo1902!si14"), null, Gender.MALE, LocalDate.of(2004, 1, 13)),
+                    new Member("정우진", "wjddnwls@gmail.com", pwEncoder.encode("Wo1902!si14"), null, Gender.MALE, LocalDate.of(1964, 1, 13)),
                     new Member("서은우", "tjdnsdmj@gmail.com", pwEncoder.encode("Wo1902!si15"), null, Gender.MALE, LocalDate.of(2008, 2, 20)),
-                    new Member("이예진","dldPwls@gmail.com", pwEncoder.encode("Testtest123!"),null,Gender.FEMALE,LocalDate.of(2001,2,16))
+                    new Member("이예진","dldPwls@gmail.com", pwEncoder.encode("Wo1902!si16"),null,Gender.FEMALE,LocalDate.of(2001,2,16))
             );
 
             for (Member member : members) {
@@ -58,21 +58,107 @@ public class initDB {
 
             // Stars
             List<Star> stars = Arrays.asList(
-                    new Star(members.get(0), "9791189327156", 4.5),
-                    new Star(members.get(1), "9791189327156", 3.0),
-                    new Star(members.get(2), "9791189327156", 5.0),
-                    new Star(members.get(3), "9791189327156", 4.0),
-                    new Star(members.get(4), "9788901276533", 2.5),
-                    new Star(members.get(5), "9788901276533", 3.5),
+                    new Star(members.get(0), "9791189327156", 3.0),
+                    new Star(members.get(1), "9791189327156", 5.0),
+                    new Star(members.get(2), "9791189327156", 4.0),
+                    new Star(members.get(3), "9791189327156", 5.0),
+                    new Star(members.get(4), "9788901276533", 4.0),
+                    new Star(members.get(5), "9788901276533", 4.0),
                     new Star(members.get(6), "9788901276533", 4.0),
-                    new Star(members.get(7), "9788957365793", 5.0),
-                    new Star(members.get(8), "9788957365793", 1.5),
-                    new Star(members.get(9), "9788957365793", 3.0),
-                    new Star(members.get(10), "9791162203620", 4.5),
-                    new Star(members.get(11), "9791162203620", 4.0),
+                    new Star(members.get(7), "9788957365793", 3.0),
+                    new Star(members.get(8), "9788957365793", 2.0),
+                    new Star(members.get(9), "9788957365793", 4.0),
+                    new Star(members.get(10), "9791162203620", 5.0),
+                    new Star(members.get(11), "9791162203620", 3.0),
                     new Star(members.get(12), "9791162203620", 3.0),
-                    new Star(members.get(13), "9791190313186", 5.0),
-                    new Star(members.get(14), "9791190313186", 2.0)
+                    new Star(members.get(13), "9791190313186", 3.0),
+                    new Star(members.get(14), "9791190313186", 4.0),
+                    new Star(members.get(15), "9791190313186", 4.0),
+                    //추가
+                    new Star(members.get(0), "9791198632647",5.0),
+                    new Star(members.get(1), "9791141600778", 5.0),
+                    new Star(members.get(2), "9791198517425", 4.0),
+                    new Star(members.get(3), "9788998441012", 5.0),
+                    new Star(members.get(4), "9788932473901", 5.0),
+                    new Star(members.get(5), "9791193904046", 5.0),
+                    new Star(members.get(6), "9791130649672", 4.0),
+                    new Star(members.get(7), "9788998441012", 5.0),
+                    new Star(members.get(8), "9791198517425", 5.0),
+                    new Star(members.get(9), "9791141600778", 5.0),
+                    new Star(members.get(10), "9791193904046", 4.0),
+                    new Star(members.get(11), "9788934942740", 4.0),
+                    new Star(members.get(12), "9791198632647", 5.0),
+                    new Star(members.get(13), "9788932473901", 5.0),
+                    new Star(members.get(14), "9791191013634", 5.0),
+                    new Star(members.get(15), "9788901283470", 5.0),
+
+                    new Star(members.get(0), "9788954697941",5.0),
+                    new Star(members.get(1), "9788932473901", 4.0),
+                    new Star(members.get(2), "9791193154274", 5.0),
+                    new Star(members.get(3), "9791193528129", 4.0),
+                    new Star(members.get(4), "9788932473901", 4.0),
+                    new Star(members.get(5), "9788937460586", 4.0),
+                    new Star(members.get(6), "9791168341890", 5.0),
+                    new Star(members.get(7), "9791192389325", 5.0),
+                    new Star(members.get(8), "9791130646381", 5.0),
+                    new Star(members.get(9), "9788937460586", 5.0),
+                    new Star(members.get(10), "9788954697941", 5.0),
+                    new Star(members.get(11), "9791130646381", 5.0),
+                    new Star(members.get(12), "9791168341890", 4.0),
+                    new Star(members.get(13), "9791193154274", 4.0),
+                    new Star(members.get(14), "9791193528129", 4.0),
+                    new Star(members.get(15), "9791190182560", 4.0),
+
+                    new Star(members.get(0), "9788954636834",5.0),
+                    new Star(members.get(1), "9791190313186", 4.0),
+                    new Star(members.get(2), "9791192372600", 5.0),
+                    new Star(members.get(3), "9788997575169", 4.0),
+                    new Star(members.get(4), "9791171712014", 5.0),
+                    new Star(members.get(5), "9788954636834", 3.0),
+                    new Star(members.get(6), "9788932042787", 4.0),
+                    new Star(members.get(7), "9788997575169", 5.0),
+                    new Star(members.get(8), "9788937437564", 3.0),
+                    new Star(members.get(9), "9788934972204", 3.0),
+                    new Star(members.get(10), "9791190313186", 4.0),
+                    new Star(members.get(11), "9788937437564", 4.0),
+                    new Star(members.get(12), "9791192372600", 3.0),
+                    new Star(members.get(13), "9791158510619", 5.0),
+                    new Star(members.get(14), "9788932042787", 4.0),
+                    new Star(members.get(15), "9791171712014", 4.0),
+
+                    new Star(members.get(0), "9791198340924",5.0),
+                    new Star(members.get(1), "9788954695053", 3.0),
+                    new Star(members.get(2), "9788947549363", 5.0),
+                    new Star(members.get(3), "9791168340855", 4.0),
+                    new Star(members.get(4), "9791191114591", 4.0),
+                    new Star(members.get(5), "9788954696012", 4.0),
+                    new Star(members.get(6), "9791191114591", 4.0),
+                    new Star(members.get(7), "9791193869093", 5.0),
+                    new Star(members.get(8), "9788954695053", 5.0),
+                    new Star(members.get(9), "9788947549363", 3.0),
+                    new Star(members.get(10), "9791193869093", 4.0),
+                    new Star(members.get(11), "9788954681155", 4.0),
+                    new Star(members.get(12), "9788954442718", 3.0),
+                    new Star(members.get(13), "9788954696012", 5.0),
+                    new Star(members.get(14), "9791198340924", 4.0),
+                    new Star(members.get(15), "9788954681155", 4.0),
+
+                    new Star(members.get(0), "9791167741448",5.0),
+                    new Star(members.get(1), "9788936439545", 4.0),
+                    new Star(members.get(2), "9791167961709", 5.0),
+                    new Star(members.get(3), "9788955965254", 4.0),
+                    new Star(members.get(4), "9788937438363", 4.0),
+                    new Star(members.get(5), "9788937443848", 3.0),
+                    new Star(members.get(6), "9791167961709", 4.0),
+                    new Star(members.get(7), "9791193063484", 5.0),
+                    new Star(members.get(8), "9791162203620", 5.0),
+                    new Star(members.get(9), "9788934971351", 3.0),
+                    new Star(members.get(10), "9791167741448", 4.0),
+                    new Star(members.get(11), "9791190090261", 4.0),
+                    new Star(members.get(12), "9788937438363", 3.0),
+                    new Star(members.get(13), "9788955965254", 5.0),
+                    new Star(members.get(14), "9788937443848", 2.0),
+                    new Star(members.get(15), "9791193063484", 4.0)
             );
 
             for (Star star : stars) {
