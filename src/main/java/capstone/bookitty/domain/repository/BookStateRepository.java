@@ -26,5 +26,4 @@ public interface BookStateRepository extends JpaRepository<BookState,Long> {
     List<Object[]> findStateCountByGenderAndBirthDate(@Param("gender") Gender gender,
                                                       @Param("startDate") LocalDate startDate,
                                                       @Param("endDate") LocalDate endDate);
-
 }

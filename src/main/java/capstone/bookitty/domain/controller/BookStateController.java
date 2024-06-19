@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -75,7 +76,7 @@ public class BookStateController {
     @GetMapping(path = "/member/{member-id}")
     public ResponseEntity<? extends BasicResponse> getStateByMemberId(
             @PathVariable("member-id") Long memberId,
-            @PageableDefault(sort = "id", size=10) Pageable pageable
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size=10) Pageable pageable
     ){
         return ResponseEntity.ok()
                 .body(new ResponseCounter<Page<StateInfoResponse>>(
@@ -100,7 +101,6 @@ public class BookStateController {
                 .body(new ResponseCounter<StateUpdateResponse>(
                         bookStateService.updateState(stateId,request)));
     }
-
 
     @Operation(summary = "state 삭제")
     @DeleteMapping(path = "/{state-id}")
@@ -132,5 +132,4 @@ public class BookStateController {
                 .body(new ResponseCounter<CategoryStaticsResponse>(
                         bookStateService.findCategoryStateByMemberId(memberId)));
     }
-
 }

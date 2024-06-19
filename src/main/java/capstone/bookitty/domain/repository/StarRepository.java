@@ -17,6 +17,7 @@ public interface StarRepository extends JpaRepository<Star, Long> {
     boolean existsByMemberIdAndIsbn(Long memberId, String isbn);
     Page<Star> findByIsbn(String isbn, Pageable pageable);
     Page<Star> findByMemberId(Long memberId, Pageable pageable);
+    List<Star> findByMemberId(Long memberId);
     Optional<Star> findByMemberIdAndIsbn(Long memberId, String isbn);
     @Query("SELECT s.isbn, SUM(s.score) as totalScore " +
             "FROM Star s " +

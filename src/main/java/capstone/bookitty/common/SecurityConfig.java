@@ -57,7 +57,7 @@ public class SecurityConfig {
                                         antMatcher("/state/all"),
                                         antMatcher("/comment/isbn/**"),
                                         antMatcher("/v3/**")).permitAll()
-                                .requestMatchers(antMatcher("/star/new")).authenticated() // 추가된 인증 경로
+                                .requestMatchers(antMatcher("/star/new")).authenticated()
                                 .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout((logout) ->

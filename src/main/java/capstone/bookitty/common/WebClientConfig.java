@@ -17,7 +17,6 @@ public class WebClientConfig {
     @Value("${api.naru.uri}")
     private String naruUri;
 
-    /*알라딘 WebClient*/
     @Bean @Qualifier("AladinWebClient")
     public WebClient aladinWebClientApi(WebClient.Builder webClientBuilder) {
         return webClientBuilder
@@ -26,7 +25,6 @@ public class WebClientConfig {
                 .build();
     }
 
-    /*도서관 정보 나루 WebClient*/
     @Bean @Qualifier("NaruWebClient")
     public WebClient naruWebClientApi(WebClient.Builder webClientBuilder) {
         return webClientBuilder

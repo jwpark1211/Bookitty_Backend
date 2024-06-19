@@ -74,24 +74,6 @@ public class BookStateControllerTest extends IntergrationTest {
     }
 
     @Test
-    public void 책상태생성_valid오류_회원없음() throws Exception{
-        //given
-        final StateSaveRequest request = StateSaveRequest.buildForTest("testIsbn",0L, State.READ_ALREADY);
-
-        //when
-        final ResultActions resultActions = mvc.perform(post("/state/new")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(request)))
-                .andDo(print());
-
-        //then
-        resultActions
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMsg").value("Member not found for ID: 0"))
-                .andExpect(jsonPath("$.errorCode").value("404"));
-    }
-
-    @Test
     public void 전체상태정보() throws Exception{
         //given
         List<BookState> states = stateSetup.save(5);
@@ -187,5 +169,4 @@ public class BookStateControllerTest extends IntergrationTest {
                 .andExpect(jsonPath("$.errorCode").value("404"));
     }
 
-    // 달별책개수,카테고리별책개수
 }

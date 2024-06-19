@@ -5,6 +5,8 @@ import capstone.bookitty.global.api.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import java.util.List;
 public class OpenApiBookController {
 
     private final OpenApiBookService openApiBookService;
+    private static final Logger logger = LoggerFactory.getLogger(OpenApiBookController.class);
 
     @Operation(summary = "isbn(13)으로 책 세부 정보 확인")
     @GetMapping(path = "/search/book/{isbn}")
@@ -64,14 +67,6 @@ public class OpenApiBookController {
     public Mono<AladinBestSellerResponseDTO> getBestSellerBlogChoice(){
         return openApiBookService.getBlogChoice();
     }
-
-    //@Operation(summary = "사용자별 도서 추천 Top 10")
-    //@GetMapping(path = "/recommend/members/{member-id}")
-    /*public NaruPopularBookListDto getRecommendationByAgeAndGender(
-            @PathVariable("member-id") Long memberId
-    ){
-        return openApiBookService.getGenderAndAgeRecommendation(memberId);
-    }*/
 
     @Operation(summary = "사용자별 도서 추천 Top 10")
     @GetMapping(path = "/recommend/members/{member-id}")

@@ -29,7 +29,6 @@ public class S3Service {
         contentTypeMap.put("png", "image/png");
         contentTypeMap.put("txt", "text/plain");
         contentTypeMap.put("csv", "text/csv");
-        // Add more content types as needed
     }
 
     public String uploadFile(MultipartFile multipartFile) throws IOException {

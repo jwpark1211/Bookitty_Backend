@@ -27,7 +27,6 @@ public class AladinOpenApi {
     private static final String BOOK_SEARCH_URI = "/ItemSearch.aspx";
     private static final String BOOK_BESTSELLER_URI = "/ItemList.aspx";
 
-    /*ISBN을 통해 책 검색*/
     public Mono<AladinBookListResponseDTO> searchByBookISBN(String isbn) {
         return aladinWebClientApi
                 .get()
@@ -45,7 +44,6 @@ public class AladinOpenApi {
                 .bodyToMono(AladinBookListResponseDTO.class);
     }
 
-    /*책 검색*/
     public Mono<AladinBookSearchResponseDTO> searchByKeyword(String keyword){
         return aladinWebClientApi
                 .get()
@@ -62,7 +60,6 @@ public class AladinOpenApi {
                 .bodyToMono(AladinBookSearchResponseDTO.class);
     }
 
-    /*전체 베스트셀러 조회*/
     public Mono<AladinBestSellerResponseDTO> getAllBestSeller() {
         return aladinWebClientApi
                 .get()
@@ -88,8 +85,6 @@ public class AladinOpenApi {
         656 : 인문
         336 : 자기계발
         351 : 컴퓨터/모바일 */
-
-    /*베스트셀러 (장르별)*/
     public Mono<AladinBestSellerResponseDTO> getBestSellerByGenre(int category) {
         return aladinWebClientApi
                 .get()
@@ -107,7 +102,6 @@ public class AladinOpenApi {
                 .bodyToMono(AladinBestSellerResponseDTO.class);
     }
 
-    /*주목할 만한 신간*/
     public Mono<AladinBestSellerResponseDTO> getNewBook(){
         return aladinWebClientApi
                 .get()
@@ -124,7 +118,6 @@ public class AladinOpenApi {
                 .bodyToMono(AladinBestSellerResponseDTO.class);
     }
 
-    /*블로거 베스트셀러*/
     public Mono<AladinBestSellerResponseDTO> getBlogChoice(){
         return aladinWebClientApi
                 .get()

@@ -91,7 +91,6 @@ public class StarController {
                 .body(new ResponseCounter<StarInfoResponse>(
                         starService.findStarByMemberIdAndIsbn(memberId,isbn)));
     }
-
     @Operation(summary = "평점 수정")
     @PatchMapping(path="/{star-id}")
     public ResponseEntity<? extends BasicResponse> updateStar(
