@@ -1,27 +1,30 @@
-# Bookitty Backend
-> 독서 활동을 장려하고 독서 문화를 지속적으로 유지하기 위한 사용자 맞춤형 도서 추천 서비스
+## 북키티란 ✧/ᐠ-ꞈ-ᐟ\ 💓⁼³₌₃
+> 독서 활동을 장려하고 독서 문화를 지속적으로 발전시키기 위한 서비스
 
-# Tech Stack
-![image](https://github.com/jwpark1211/capstone_backend/assets/83337542/9bfa533e-c19b-47fe-a512-bf1c1255da98)
+<img width="1044" alt="image" src="https://github.com/user-attachments/assets/97b1c0c0-f2cc-4b59-abc0-5c2404b2eee1">
+<br><br>
 
-# API 
-### 💡 MEMBER
-- 회원가입
-- 이메일 중복 확인
-- 로그인
-- 회원 프로필 이미지 관리
-- 회원 탈퇴
-### 💡 BOOK
-- 책 세부 정보 조회
+## 주요기능 ミ☆
+<img width="1044" alt="image" src="https://github.com/user-attachments/assets/fb286cbe-b628-40ae-802e-135a72cc61d2">
+
+- 유저의 **성별, 나이, 평점 등의 정보를 분석하고 이를 바탕으로 사용자의 취향에 부합할 수 있는 도서를 추천**합니다. 
+[사용자별 개인 추천(평점 기반의 코사인 유사도 알고리즘 적용) 도서, 전체 베스트셀러, 카테고리별(경제경영/인문/문학/과학/자기계발) 베스트셀러 등]
 - 책 검색(검색 키워드: 저자, 출판사, 제목 ...)
-- 전체 베스트셀러 Top 10
-- 카테고리별 베스트셀러 Top 10(경제경영/인문/문학/과학/자기계발)
-- 신간 베스트셀러 Top 10
-- 블로거 베스트셀러 Top 10
-- 연령대/성별 베스트셀러 Top 10 
-- 책 읽음상태 관리
-### 💡 STAR & COMMENT
-- 평점 및 코멘트 생성
-- 코멘트 좋아요 관리
-- 평점 조회
-- 코멘트 조회
+- 도서를 기록하고, 의견을 나눌 수 있는 **커뮤니케이션 기능을 제공**합니다. 
+- 월별, 연도별 유저의 **도서 통계를 확인할 수 있는 기능을 제공**합니다. 
+<br><br>
+## =͟͟͞͞🏃=͟͟͞͞   개발 기간 
+2024.03 ~ 2024.06.19 (추후 유지보수 예정) 
+<br><br>
+##  기술 스택 ⋆◡̎⋆
+- Spring Boot, JPA, Gradle 
+- MySQL, Redis(Cache)
+- Github Actions, Docker, AWS (EC2, RDS, S3, Elasticache) 
+- JWT, Spring Security
+- Junit5(Integration Test), Mockito 
+<br><br>
+##  ✸ ERD
+<img width="1044" alt="image" src="https://github.com/user-attachments/assets/c74d36d6-eeac-4520-92cb-45a0b9ccd2f1">
+
+
+
