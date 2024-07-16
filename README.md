@@ -5,7 +5,8 @@
 <br><br>
 
 ## 주요기능 ミ☆
-<img width="1044" alt="image" src="https://github.com/user-attachments/assets/fb286cbe-b628-40ae-802e-135a72cc61d2">
+<img width="1306" alt="image" src="https://github.com/user-attachments/assets/45b5fc42-34ad-43e3-86cf-d86200b06e6c">
+
 
 - 유저의 **성별, 나이, 평점 등의 정보를 분석하고 이를 바탕으로 사용자의 취향에 부합할 수 있는 도서를 추천**합니다. 
 [사용자별 개인 추천(평점 기반의 코사인 유사도 알고리즘 적용) 도서, 전체 베스트셀러, 카테고리별(경제경영/인문/문학/과학/자기계발) 베스트셀러 등]
