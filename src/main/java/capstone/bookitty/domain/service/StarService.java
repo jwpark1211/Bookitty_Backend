@@ -5,6 +5,7 @@ import capstone.bookitty.domain.entity.Star;
 import capstone.bookitty.domain.repository.MemberRepository;
 import capstone.bookitty.domain.repository.StarRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,10 +64,15 @@ public class StarService {
 
     @Transactional
     public StarUpdateResponse updateStar(Long starId, StarUpdateRequest request) {
-        Star star = starRepository.findById(starId)
-                .orElseThrow(()-> new EntityNotFoundException("Star with ID "+starId+" not found."));
-        star.updateStar(request.getScore());
-        return StarUpdateResponse.of(star);
+        try {
+            Star star = starRepository.findById(starId)
+                    .orElseThrow(() -> new EntityNotFoundException("Star with ID " + starId + " not found."));
+
+            star.updateStar(request.getScore());
+            return StarUpdateResponse.of(star);
+        } catch (OptimisticLockException e) {
+            throw new IllegalStateException("Concurrent update detected for Star with ID " + starId, e);
+        }
     }
 
     @Transactional

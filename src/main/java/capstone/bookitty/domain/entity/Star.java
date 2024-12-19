@@ -25,6 +25,9 @@ public class Star {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
+    @Version
+    private int version;
+
     private String isbn;
     private double score;
 

@@ -14,9 +14,6 @@ public class WebClientConfig {
     @Value("${api.aladin.uri}")
     private String aladinUri;
 
-    @Value("${api.naru.uri}")
-    private String naruUri;
-
     @Bean @Qualifier("AladinWebClient")
     public WebClient aladinWebClientApi(WebClient.Builder webClientBuilder) {
         return webClientBuilder
@@ -25,11 +22,4 @@ public class WebClientConfig {
                 .build();
     }
 
-    @Bean @Qualifier("NaruWebClient")
-    public WebClient naruWebClientApi(WebClient.Builder webClientBuilder) {
-        return webClientBuilder
-                .clone()
-                .baseUrl(naruUri)
-                .build();
-    }
 }

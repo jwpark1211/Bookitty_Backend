@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Tag(name = "openApi(book)", description = "알라딘 api 입니다.")
 @RestController
 @RequiredArgsConstructor
