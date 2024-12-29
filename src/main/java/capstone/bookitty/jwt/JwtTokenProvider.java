@@ -66,11 +66,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return JwtToken.builder()
-                .grantType(jwtProperties.getAuthType())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return JwtToken.of(jwtProperties.getAuthType(),accessToken,refreshToken);
     }
 
     public Authentication getAuthentication(String accessToken) {

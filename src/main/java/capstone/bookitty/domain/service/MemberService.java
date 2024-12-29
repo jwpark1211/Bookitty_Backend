@@ -72,7 +72,7 @@ public class MemberService {
                 .orElseThrow(()-> new EntityNotFoundException("Member not found."));
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
-                .value(jwtToken.getRefreshToken())
+                .value(jwtToken.refreshToken())
                 .build();
         refreshTokenRepository.save(refreshToken);
         return new TokenResponse(member.getId(), jwtToken,member.getProfileImg(),member.getName());
@@ -90,7 +90,7 @@ public class MemberService {
             throw new RuntimeException("The user information in the refresh token does not match.");
         }
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
-        RefreshToken newRefreshToken = refreshToken.updateValue(jwtToken.getRefreshToken());
+        RefreshToken newRefreshToken = refreshToken.updateValue(jwtToken.refreshToken());
         refreshTokenRepository.save(newRefreshToken);
 
         log.info("refreshToken.getKey():"+refreshToken.getKey());
