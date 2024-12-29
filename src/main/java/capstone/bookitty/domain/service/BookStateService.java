@@ -1,5 +1,7 @@
 package capstone.bookitty.domain.service;
 
+import capstone.bookitty.domain.dto.bookStateDto.*;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
 import capstone.bookitty.domain.entity.BookState;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.State;
@@ -15,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static capstone.bookitty.domain.dto.BookStateDTO.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,25 +31,25 @@ public class BookStateService {
 
         State reqState;
         try {
-            reqState = request.getState();
+            reqState = request.state();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid state: " + request.getState(), e);
+            throw new IllegalArgumentException("Invalid state: " + request.state(), e);
         }
 
-        Member member = memberRepository.findById(request.getMemberId())
+        Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(EntityNotFoundException::new);
 
-        if(stateRepository.existsByMemberIdAndIsbn(request.getMemberId(), request.getIsbn()))
+        if(stateRepository.existsByMemberIdAndIsbn(request.memberId(), request.isbn()))
             throw new IllegalArgumentException("bookState already exists");
 
         BookState bookState = BookState.builder()
                 .member(member)
                 .state(reqState)
-                .isbn(request.getIsbn())
-                .bookTitle(request.getBookTitle())
-                .bookAuthor(request.getBookAuthor())
-                .bookImgUrl(request.getBookImgUrl())
-                .categoryName(request.getCategoryName())
+                .isbn(request.isbn())
+                .bookTitle(request.bookTitle())
+                .bookAuthor(request.bookAuthor())
+                .bookImgUrl(request.bookImgUrl())
+                .categoryName(request.categoryName())
                 .build();
 
         if(reqState == State.READ_ALREADY) bookState.readAtNow();
@@ -62,19 +61,19 @@ public class BookStateService {
 
     public Page<StateInfoResponse> findStateByISBN(String isbn, Pageable pageable) {
         return stateRepository.findByIsbn(isbn, pageable)
-                .map(StateInfoResponse::of);
+                .map(StateInfoResponse::from);
     }
 
     public StateInfoResponse findStateByMemberAndIsbn(String isbn, Long memberId){
         BookState state = stateRepository.findByMemberIdAndIsbn(memberId,isbn)
                 .orElseThrow(()-> new EntityNotFoundException(
                         "BookState with memberID:"+memberId+",Isbn:"+isbn+"not found."));
-        return StateInfoResponse.of(state);
+        return StateInfoResponse.from(state);
     }
 
     public StateInfoResponse findStateByStateId(Long stateId) {
         return stateRepository.findById(stateId)
-                .map(StateInfoResponse::of)
+                .map(StateInfoResponse::from)
                 .orElseThrow(() -> new EntityNotFoundException("BookState with ID " + stateId + " not found."));
     }
 
@@ -84,7 +83,7 @@ public class BookStateService {
                         "Member with ID: "+memberId+" not found."));
 
         return stateRepository.findByMemberId(memberId,pageable)
-                .map(StateInfoResponse::of);
+                .map(StateInfoResponse::from);
     }
 
     @Transactional
@@ -92,8 +91,8 @@ public class BookStateService {
         BookState bookState = stateRepository.findById(stateId)
                 .orElseThrow(() -> new EntityNotFoundException("BookState not found for ID: " + stateId));
 
-        bookState.updateState(request.getState());
-        return StateUpdateResponse.of(bookState);
+        bookState.updateState(request.state());
+        return StateUpdateResponse.from(bookState);
     }
 
     @Transactional
@@ -144,7 +143,7 @@ public class BookStateService {
 
     public List<StateInfoResponse> findAll() {
         return stateRepository.findAll().stream()
-                .map(StateInfoResponse::of)
+                .map(StateInfoResponse::from)
                 .collect(Collectors.toList());
     }
 }

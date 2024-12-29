@@ -1,6 +1,7 @@
 package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
+import capstone.bookitty.domain.dto.bookStateDto.StateSaveRequest;
 import capstone.bookitty.domain.entity.BookState;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.State;
@@ -10,7 +11,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static capstone.bookitty.domain.dto.BookStateDTO.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -61,7 +61,8 @@ public class BookStateControllerTest extends IntergrationTest {
     public void 책상태생성() throws Exception{
        //given
        final Member member = memberSetup.save();
-       final StateSaveRequest request = StateSaveRequest.buildForTest("testIsbn",member.getId(), State.READ_ALREADY);
+       final StateSaveRequest request = StateSaveRequest.of("testIsbn",member.getId(), State.READ_ALREADY,
+               "categoryName", "bookTitle","bookAuthor","bookImgUrl");
 
        //when
        final ResultActions resultActions = mvc.perform(post("/state/new")

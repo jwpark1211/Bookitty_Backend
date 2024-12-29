@@ -3,6 +3,11 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
+import capstone.bookitty.domain.dto.commentDto.CommentInfoResponse;
+import capstone.bookitty.domain.dto.commentDto.CommentSaveRequest;
+import capstone.bookitty.domain.dto.commentDto.CommentUpdateRequest;
+import capstone.bookitty.domain.dto.commentDto.CommentUpdateResponse;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
 import capstone.bookitty.domain.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,8 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static capstone.bookitty.domain.dto.CommentDTO.*;
 
 @Tag(name="코멘트", description = "코멘트 관리 api 입니다.")
 @RestController

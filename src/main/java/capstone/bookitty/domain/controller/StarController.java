@@ -3,6 +3,11 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
+import capstone.bookitty.domain.dto.starDto.StarInfoResponse;
+import capstone.bookitty.domain.dto.starDto.StarSaveRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateResponse;
 import capstone.bookitty.domain.service.StarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +20,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static capstone.bookitty.domain.dto.StarDTO.*;
 
 @Tag(name="평점", description = "평점 관리 api 입니다.")
 @RestController

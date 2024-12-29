@@ -3,6 +3,8 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
+import capstone.bookitty.domain.dto.bookStateDto.*;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
 import capstone.bookitty.domain.service.BookStateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,12 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static capstone.bookitty.domain.dto.BookStateDTO.*;
 
 @Tag(name = "책 상태", description = "책 상태 관련 api 입니다.")
 @RestController

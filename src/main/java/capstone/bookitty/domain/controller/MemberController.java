@@ -3,8 +3,13 @@ package capstone.bookitty.domain.controller;
 import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
 import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
 import capstone.bookitty.domain.dto.ResponseType.ResponseString;
-import capstone.bookitty.domain.dto.TokenRequestDTO;
-import capstone.bookitty.domain.dto.TokenResponseDTO;
+import capstone.bookitty.domain.dto.commonDto.BoolResponse;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
+import capstone.bookitty.domain.dto.memberDto.MemberInfoResponse;
+import capstone.bookitty.domain.dto.memberDto.MemberLoginRequest;
+import capstone.bookitty.domain.dto.memberDto.MemberSaveRequest;
+import capstone.bookitty.domain.dto.tokenDto.TokenRequest;
+import capstone.bookitty.domain.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,11 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-
-import static capstone.bookitty.domain.dto.MemberDTO.*;
 
 @Tag(name = "회원", description = "회원 관련 api 입니다.")
 @RestController
@@ -63,16 +63,16 @@ public class MemberController {
             @RequestBody @Valid MemberLoginRequest request
     ){
         return ResponseEntity.ok()
-                .body(new ResponseCounter<TokenResponseDTO>(memberService.login(request)));
+                .body(new ResponseCounter<TokenResponse>(memberService.login(request)));
     }
 
     @Operation(summary = "[추가] 토큰 재발행")
     @PostMapping("/reissue")
     public ResponseEntity<? extends BasicResponse> reissue(
-            @RequestBody @Valid TokenRequestDTO request
+            @RequestBody @Valid TokenRequest request
     ){
         return ResponseEntity.ok()
-                .body(new ResponseCounter<TokenResponseDTO>(memberService.reissue(request)));
+                .body(new ResponseCounter<TokenResponse>(memberService.reissue(request)));
     }
 
     @Operation(summary = "[추가] 로그인 한 회원 정보 조회")
@@ -86,7 +86,7 @@ public class MemberController {
 
     @Operation(summary = "[추가] 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<? extends BasicResponse> logout(@RequestBody TokenRequestDTO tokenRequestDTO) {
+    public ResponseEntity<? extends BasicResponse> logout(@RequestBody TokenRequest tokenRequestDTO) {
         memberService.logout(tokenRequestDTO);
         return ResponseEntity.ok(new ResponseString("Logout successful"));
     }
@@ -112,7 +112,7 @@ public class MemberController {
                         memberService.getAllMemberInfo(pageable)));
     }
 
-    @Operation(summary = "회원 프로필 업로드 / requestPart 이름 : profile")
+    /* @Operation(summary = "회원 프로필 업로드 / requestPart 이름 : profile")
     @PostMapping(path = "/{id}/profile")
     public ResponseEntity<? extends BasicResponse> updateMemberProfile(
             @PathVariable("id") Long memberId,
@@ -121,7 +121,7 @@ public class MemberController {
         return ResponseEntity.ok()
                 .body(new ResponseCounter<MemberInfoResponse>(
                         memberService.updateProfile(memberId, profileImg)));
-    }
+    }*/
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping(path = "/{id}")

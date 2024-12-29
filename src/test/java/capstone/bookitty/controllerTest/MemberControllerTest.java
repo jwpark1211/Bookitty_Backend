@@ -1,12 +1,13 @@
 package capstone.bookitty.controllerTest;
 
-import static capstone.bookitty.domain.dto.MemberDTO.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import capstone.bookitty.IntergrationTest;
+import capstone.bookitty.domain.dto.memberDto.MemberLoginRequest;
+import capstone.bookitty.domain.dto.memberDto.MemberSaveRequest;
 import capstone.bookitty.domain.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -102,7 +103,7 @@ public class MemberControllerTest extends IntergrationTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.unique").value(true));
+                .andExpect(jsonPath("$.data.isUnique").value(true));
     }
 
     @Test
@@ -119,14 +120,14 @@ public class MemberControllerTest extends IntergrationTest {
         //then
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.unique").value(false));
+                .andExpect(jsonPath("$.data.isUnique").value(false));
     }
 
     @Test
     public void 로그인() throws Exception{
         //given
         Member member = memberSetup.save();
-        MemberLoginRequest request = MemberLoginRequest.buildForTest(
+        MemberLoginRequest request = MemberLoginRequest.of(
                 member.getEmail(),memberSetup.getDefaultPassword());
 
         //when
@@ -145,7 +146,7 @@ public class MemberControllerTest extends IntergrationTest {
     @Test
     public void 로그인_실패() throws Exception{
         //given
-        MemberLoginRequest request = MemberLoginRequest.buildForTest(
+        MemberLoginRequest request = MemberLoginRequest.of(
                 "fault@email.com","faultPw!2");
 
         //when

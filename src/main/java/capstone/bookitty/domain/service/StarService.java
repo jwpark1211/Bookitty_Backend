@@ -1,5 +1,10 @@
 package capstone.bookitty.domain.service;
 
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
+import capstone.bookitty.domain.dto.starDto.StarInfoResponse;
+import capstone.bookitty.domain.dto.starDto.StarSaveRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateResponse;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.Star;
 import capstone.bookitty.domain.repository.MemberRepository;
@@ -12,11 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
-
-import static capstone.bookitty.domain.dto.StarDTO.*;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -27,16 +27,16 @@ public class StarService {
 
     @Transactional
     public IdResponse saveStar(StarSaveRequest request) {
-        Member member = memberRepository.findById(request.getMemberId())
+        Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(()->new EntityNotFoundException(
-                        "Member with ID "+request.getMemberId()+" not found."));
+                        "Member with ID "+request.memberId()+" not found."));
 
-        if(starRepository.existsByMemberIdAndIsbn(request.getMemberId(),request.getIsbn()))
+        if(starRepository.existsByMemberIdAndIsbn(request.memberId(),request.isbn()))
             throw new IllegalArgumentException("star already exists.");
 
         Star star = Star.builder()
-                .score(request.getScore())
-                .isbn(request.getIsbn())
+                .score(request.score())
+                .isbn(request.isbn())
                 .member(member)
                 .build();
 
@@ -46,20 +46,20 @@ public class StarService {
 
     public StarInfoResponse findStarByStarId(Long starId) {
         return starRepository.findById(starId)
-                .map(StarInfoResponse::of)
+                .map(StarInfoResponse::from)
                 .orElseThrow(()->new EntityNotFoundException("Star with ID "+starId+" not found."));
     }
 
     public Page<StarInfoResponse> findStarByISBN(String isbn, Pageable pageable) {
         return starRepository.findByIsbn(isbn,pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     public Page<StarInfoResponse> findStarByMemberId(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new EntityNotFoundException("Member with ID "+ memberId+" not found."));
         return starRepository.findByMemberId(memberId,pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     @Transactional
@@ -68,8 +68,8 @@ public class StarService {
             Star star = starRepository.findById(starId)
                     .orElseThrow(() -> new EntityNotFoundException("Star with ID " + starId + " not found."));
 
-            star.updateStar(request.getScore());
-            return StarUpdateResponse.of(star);
+            star.updateStar(request.score());
+            return StarUpdateResponse.from(star);
         } catch (OptimisticLockException e) {
             throw new IllegalStateException("Concurrent update detected for Star with ID " + starId, e);
         }
@@ -84,13 +84,14 @@ public class StarService {
 
     public Page<StarInfoResponse> findAllStar(Pageable pageable) {
         return starRepository.findAll(pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     public StarInfoResponse findStarByMemberIdAndIsbn(Long memberId, String isbn) {
         Star star = starRepository.findByMemberIdAndIsbn(memberId,isbn)
                 .orElseThrow(()-> new EntityNotFoundException(
                         "Star with memberID:"+memberId+",Isbn:"+isbn+"not found."));
-        return StarInfoResponse.of(star);
+        return StarInfoResponse.from(star);
     }
+
 }

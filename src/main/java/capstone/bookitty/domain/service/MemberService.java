@@ -1,7 +1,12 @@
 package capstone.bookitty.domain.service;
 
-import capstone.bookitty.domain.dto.TokenRequestDTO;
-import capstone.bookitty.domain.dto.TokenResponseDTO;
+import capstone.bookitty.domain.dto.commonDto.BoolResponse;
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
+import capstone.bookitty.domain.dto.memberDto.MemberInfoResponse;
+import capstone.bookitty.domain.dto.memberDto.MemberLoginRequest;
+import capstone.bookitty.domain.dto.memberDto.MemberSaveRequest;
+import capstone.bookitty.domain.dto.tokenDto.TokenRequest;
+import capstone.bookitty.domain.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.RefreshToken;
 import capstone.bookitty.domain.repository.MemberRepository;
@@ -21,13 +26,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.multipart.MultipartFile;
-
-
-import java.io.IOException;
-
-import static capstone.bookitty.domain.dto.MemberDTO.*;
 
 @Service
 @Slf4j
@@ -39,56 +37,56 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final S3Service s3Service;
+    //private final S3Service s3Service;
     private final RedisUtil redisUtil;
 
     @Transactional
     public IdResponse saveMember(MemberSaveRequest request) {
-        if(memberRepository.existsByEmail(request.getEmail()))
+        if(memberRepository.existsByEmail(request.email()))
             throw new IllegalArgumentException("Email already in use.");
 
         Member member = Member.builder()
-                .email(request.getEmail())
-                .name(request.getName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .birthDate(request.getBirthdate())
-                .gender(request.getGender())
+                .email(request.email())
+                .name(request.name())
+                .password(passwordEncoder.encode(request.password()))
+                .birthDate(request.birthdate())
+                .gender(request.gender())
                 .build();
 
         memberRepository.save(member);
-        return new IdResponse(member.getId());
+        return IdResponse.of(member);
     }
 
     public BoolResponse isEmailUnique(String email) {
-        return new BoolResponse(!memberRepository.existsByEmail(email));
+        return BoolResponse.of(!memberRepository.existsByEmail(email));
     }
 
     @Transactional
-    public TokenResponseDTO login(MemberLoginRequest request) {
+    public TokenResponse login(MemberLoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+                new UsernamePasswordAuthenticationToken(request.email(), request.password());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
-        Member member = memberRepository.findByEmail(request.getEmail())
+        Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(()-> new EntityNotFoundException("Member not found."));
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
                 .value(jwtToken.getRefreshToken())
                 .build();
         refreshTokenRepository.save(refreshToken);
-        return new TokenResponseDTO(member.getId(), jwtToken,member.getProfileImg(),member.getName());
+        return new TokenResponse(member.getId(), jwtToken,member.getProfileImg(),member.getName());
     }
 
     @Transactional
-    public TokenResponseDTO reissue(TokenRequestDTO tokenRequestDto) {
-        if (!jwtTokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+    public TokenResponse reissue(TokenRequest tokenRequest) {
+        if (!jwtTokenProvider.validateToken(tokenRequest.refreshToken())) {
             throw new RuntimeException("Refresh Token is not valid.");
         }
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequest.accessToken());
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User is already logged out."));
-        if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
+        if (!refreshToken.getValue().equals(tokenRequest.refreshToken())) {
             throw new RuntimeException("The user information in the refresh token does not match.");
         }
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
@@ -99,36 +97,36 @@ public class MemberService {
         Member member = memberRepository.findByEmail(refreshToken.getKey())
                 .orElseThrow(()->new EntityNotFoundException("Member not found."));
 
-        return new TokenResponseDTO(member.getId(),jwtToken,member.getProfileImg(),member.getName());
+        return TokenResponse.of(member.getId(),jwtToken,member.getProfileImg(),member.getName());
     }
 
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
         return memberRepository.findById(memberId)
-                .map(MemberInfoResponse::of)
+                .map(MemberInfoResponse::from)
                 .orElseThrow(()-> new EntityNotFoundException("Member not found."));
     }
 
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
         return memberRepository.findAll(pageable)
-                .map(MemberInfoResponse::of);
+                .map(MemberInfoResponse::from);
     }
 
     public MemberInfoResponse getMyInfo(){
         log.info("service entry");
         log.info("SecurityUtil.getCurrentMemberEmail{}",SecurityUtil.getCurrentMemberEmail());
         return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
-                .map(MemberInfoResponse::of)
+                .map(MemberInfoResponse::from)
                 .orElseThrow(() -> new RuntimeException("No login user information."));
     }
 
     @Transactional
-    public void logout(TokenRequestDTO tokenRequestDTO) {
-        String refreshToken = tokenRequestDTO.getRefreshToken();
+    public void logout(TokenRequest tokenRequest) {
+        String refreshToken = tokenRequest.refreshToken();
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new RuntimeException("Invalid Refresh Token");
         }
 
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequestDTO.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequest.accessToken());
         String userEmail = authentication.getName();
 
         RefreshToken token = refreshTokenRepository.findByKey(userEmail)
@@ -136,11 +134,11 @@ public class MemberService {
 
         refreshTokenRepository.delete(token);
 
-        Long expiration = jwtTokenProvider.getExpiration(tokenRequestDTO.getAccessToken());
-        redisUtil.setBlackList(tokenRequestDTO.getAccessToken(), "access_token", expiration);
+        Long expiration = jwtTokenProvider.getExpiration(tokenRequest.accessToken());
+        redisUtil.setBlackList(tokenRequest.accessToken(), "access_token", expiration);
     }
 
-    @Transactional
+    /*@Transactional
     public MemberInfoResponse updateProfile(Long memberId, MultipartFile profileImg)
             throws MultipartException, IOException {
         try {
@@ -162,7 +160,7 @@ public class MemberService {
         } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred while updating the profile.", e);
         }
-    }
+    }*/
 
     @Transactional
     public void deleteMember(Long memberId) {
