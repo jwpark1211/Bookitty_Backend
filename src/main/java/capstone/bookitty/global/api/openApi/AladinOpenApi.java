@@ -1,9 +1,7 @@
 package capstone.bookitty.global.api.openApi;
 
-import capstone.bookitty.global.api.dto.AladinBestSellerResponseDTO;
-import capstone.bookitty.global.api.dto.AladinBookListResponseDTO;
-import capstone.bookitty.global.api.dto.AladinBookSearchResponseDTO;
-import lombok.RequiredArgsConstructor;
+import capstone.bookitty.global.api.dto.aladin.AladinBestSellerListResponse;
+import capstone.bookitty.global.api.dto.aladin.AladinBookSearchListResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,7 +25,7 @@ public class AladinOpenApi {
     private static final String BOOK_SEARCH_URI = "/ItemSearch.aspx";
     private static final String BOOK_BESTSELLER_URI = "/ItemList.aspx";
 
-    public Mono<AladinBookListResponseDTO> searchByBookISBN(String isbn) {
+    public Mono<AladinBookSearchListResponse> searchByBookISBN(String isbn) {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -41,10 +39,10 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBookListResponseDTO.class);
+                .bodyToMono(AladinBookSearchListResponse.class);
     }
 
-    public Mono<AladinBookSearchResponseDTO> searchByKeyword(String keyword){
+    public Mono<AladinBookSearchListResponse> searchByKeyword(String keyword){
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -57,10 +55,10 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBookSearchResponseDTO.class);
+                .bodyToMono(AladinBookSearchListResponse.class);
     }
 
-    public Mono<AladinBestSellerResponseDTO> getAllBestSeller() {
+    public Mono<AladinBestSellerListResponse> getAllBestSeller() {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -73,7 +71,7 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBestSellerResponseDTO.class);
+                .bodyToMono(AladinBestSellerListResponse.class);
     }
 
 
@@ -85,7 +83,7 @@ public class AladinOpenApi {
         656 : 인문
         336 : 자기계발
         351 : 컴퓨터/모바일 */
-    public Mono<AladinBestSellerResponseDTO> getBestSellerByGenre(int category) {
+    public Mono<AladinBestSellerListResponse> getBestSellerByGenre(int category) {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -99,10 +97,10 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBestSellerResponseDTO.class);
+                .bodyToMono(AladinBestSellerListResponse.class);
     }
 
-    public Mono<AladinBestSellerResponseDTO> getNewBook(){
+    public Mono<AladinBestSellerListResponse> getNewBook(){
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -115,10 +113,10 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBestSellerResponseDTO.class);
+                .bodyToMono(AladinBestSellerListResponse.class);
     }
 
-    public Mono<AladinBestSellerResponseDTO> getBlogChoice(){
+    public Mono<AladinBestSellerListResponse> getBlogChoice(){
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -131,7 +129,7 @@ public class AladinOpenApi {
                         .queryParam("output","js")
                         .build())
                 .retrieve()
-                .bodyToMono(AladinBestSellerResponseDTO.class);
+                .bodyToMono(AladinBestSellerListResponse.class);
     }
 
 }
