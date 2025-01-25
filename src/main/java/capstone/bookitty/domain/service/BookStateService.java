@@ -5,6 +5,8 @@ import capstone.bookitty.domain.dto.commonDto.IdResponse;
 import capstone.bookitty.domain.entity.BookState;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.State;
+import capstone.bookitty.domain.exception.MemberNotFoundException;
+import capstone.bookitty.domain.exception.StateNotFoundException;
 import capstone.bookitty.domain.repository.BookStateRepository;
 import capstone.bookitty.domain.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,18 +28,14 @@ public class BookStateService {
 
     private final BookStateRepository stateRepository;
     private final MemberRepository memberRepository;
+
     @Transactional
     public IdResponse saveState(StateSaveRequest request) {
-
-        State reqState;
-        try {
-            reqState = request.state();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid state: " + request.state(), e);
-        }
+        State reqState = request.state();
+        if(reqState == null) throw new IllegalArgumentException("state is invalid");
 
         Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(()-> new MemberNotFoundException(request.memberId()));
 
         if(stateRepository.existsByMemberIdAndIsbn(request.memberId(), request.isbn()))
             throw new IllegalArgumentException("bookState already exists");
@@ -66,21 +64,19 @@ public class BookStateService {
 
     public StateInfoResponse findStateByMemberAndIsbn(String isbn, Long memberId){
         BookState state = stateRepository.findByMemberIdAndIsbn(memberId,isbn)
-                .orElseThrow(()-> new EntityNotFoundException(
-                        "BookState with memberID:"+memberId+",Isbn:"+isbn+"not found."));
+                .orElseThrow(()-> new MemberNotFoundException(memberId));
         return StateInfoResponse.from(state);
     }
 
     public StateInfoResponse findStateByStateId(Long stateId) {
         return stateRepository.findById(stateId)
                 .map(StateInfoResponse::from)
-                .orElseThrow(() -> new EntityNotFoundException("BookState with ID " + stateId + " not found."));
+                .orElseThrow(() -> new StateNotFoundException(stateId));
     }
 
     public Page<StateInfoResponse> findStateByMemberId(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new EntityNotFoundException(
-                        "Member with ID: "+memberId+" not found."));
+                .orElseThrow(()->new MemberNotFoundException(memberId));
 
         return stateRepository.findByMemberId(memberId,pageable)
                 .map(StateInfoResponse::from);
@@ -89,7 +85,7 @@ public class BookStateService {
     @Transactional
     public StateUpdateResponse updateState(Long stateId, StateUpdateRequest request) {
         BookState bookState = stateRepository.findById(stateId)
-                .orElseThrow(() -> new EntityNotFoundException("BookState not found for ID: " + stateId));
+                .orElseThrow(() -> new StateNotFoundException(stateId));
 
         bookState.updateState(request.state());
         return StateUpdateResponse.from(bookState);
@@ -98,7 +94,7 @@ public class BookStateService {
     @Transactional
     public void deleteState(Long stateId) {
         BookState bookState = stateRepository.findById(stateId)
-                .orElseThrow(() -> new EntityNotFoundException("BookState not found for ID: " + stateId));
+                .orElseThrow(() -> new StateNotFoundException(stateId));
         stateRepository.delete(bookState);
     }
 

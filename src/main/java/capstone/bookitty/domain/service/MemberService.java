@@ -9,6 +9,7 @@ import capstone.bookitty.domain.dto.tokenDto.TokenRequest;
 import capstone.bookitty.domain.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.RefreshToken;
+import capstone.bookitty.domain.exception.MemberNotFoundException;
 import capstone.bookitty.domain.repository.MemberRepository;
 import capstone.bookitty.domain.repository.RefreshTokenRepository;
 import capstone.bookitty.jwt.JwtToken;
@@ -103,7 +104,7 @@ public class MemberService {
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
         return memberRepository.findById(memberId)
                 .map(MemberInfoResponse::from)
-                .orElseThrow(()-> new EntityNotFoundException("Member not found."));
+                .orElseThrow(()-> new MemberNotFoundException(memberId));
     }
 
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
@@ -165,7 +166,7 @@ public class MemberService {
     @Transactional
     public void deleteMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new EntityNotFoundException("member not found."));
+                .orElseThrow(()-> new MemberNotFoundException(memberId));
         memberRepository.delete(member);
     }
 }
