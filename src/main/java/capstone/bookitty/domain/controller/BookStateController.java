@@ -1,8 +1,5 @@
 package capstone.bookitty.domain.controller;
 
-import capstone.bookitty.domain.dto.ResponseType.BasicResponse;
-import capstone.bookitty.domain.dto.ResponseType.ResponseCounter;
-import capstone.bookitty.domain.dto.ResponseType.ResponseString;
 import capstone.bookitty.domain.dto.bookStateDto.*;
 import capstone.bookitty.domain.dto.commonDto.IdResponse;
 import capstone.bookitty.domain.service.BookStateService;
@@ -29,106 +26,96 @@ public class BookStateController {
 
     @Operation(summary = "책 상태 생성 / state=READING or WANT_TO_READ or READ_ALREADY")
     @PostMapping(path = "/new")
-    public ResponseEntity<? extends BasicResponse> saveBookState(
+    public ResponseEntity<IdResponse> saveBookState(
             @RequestBody @Valid StateSaveRequest request
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<IdResponse>(
-                        bookStateService.saveState(request)));
+        IdResponse response = bookStateService.saveState(request);
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "isbn으로 책 상태 리스트 가져오기 / page는 requestParam으로 요청할 수 있습니다. / "+
             "size(한 페이지 당 element 수, default = 10), page(요청하는 페이지, 0부터 시작)")
     @GetMapping(path = "/isbn/{isbn}")
-    public ResponseEntity<? extends BasicResponse> getStateByISBN(
+    public ResponseEntity<Page<StateInfoResponse>> getStateByISBN(
             @PathVariable("isbn") String isbn,
             @PageableDefault(sort = "id", size=10) Pageable pageable
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<Page<StateInfoResponse>>(
-                        bookStateService.findStateByISBN(isbn, pageable)));
+        Page<StateInfoResponse> responseList = bookStateService.findStateByISBN(isbn, pageable);
+        return ResponseEntity.ok().body(responseList);
     }
 
     @Operation(summary = "stateId로 책 상태 가져오기")
     @GetMapping(path = "/{state-id}")
-    public ResponseEntity<? extends BasicResponse> getStateById(
+    public ResponseEntity<StateInfoResponse> getStateById(
             @PathVariable("state-id") Long stateId
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<StateInfoResponse>(
-                        bookStateService.findStateByStateId(stateId)));
+        StateInfoResponse response = bookStateService.findStateByStateId(stateId);
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "isbn과 memberId로 책 상태 가져오기")
     @GetMapping(path = "/isbn/{isbn}/member/{member-id}")
-    public ResponseEntity<? extends BasicResponse> getStateByMemberIdAndIsbn(
+    public ResponseEntity<StateInfoResponse> getStateByMemberIdAndIsbn(
             @PathVariable("member-id") Long memberId,
             @PathVariable("isbn") String isbn
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<StateInfoResponse>(
-                        bookStateService.findStateByMemberAndIsbn(isbn,memberId)));
+        StateInfoResponse response = bookStateService.findStateByMemberAndIsbn(isbn,memberId);
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "memberId로 책 상태 리스트 가져오기 / page는 requestParam으로 요청할 수 있습니다. / "+
             "size(한 페이지 당 element 수, default = 10), page(요청하는 페이지, 0부터 시작)")
     @GetMapping(path = "/member/{member-id}")
-    public ResponseEntity<? extends BasicResponse> getStateByMemberId(
+    public ResponseEntity<Page<StateInfoResponse>> getStateByMemberId(
             @PathVariable("member-id") Long memberId,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size=10) Pageable pageable
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<Page<StateInfoResponse>>(
-                        bookStateService.findStateByMemberId(memberId,pageable)));
+        Page<StateInfoResponse> responseList =
+                bookStateService.findStateByMemberId(memberId, pageable);
+        return ResponseEntity.ok().body(responseList);
     }
 
     @Operation(summary = "모든 bookState 확인")
     @GetMapping(path = "/all")
-    public ResponseEntity<? extends BasicResponse> getAllState(){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<List<StateInfoResponse>>(
-                        bookStateService.findAll()));
+    public ResponseEntity<List<StateInfoResponse>> getAllState(){
+        List<StateInfoResponse> responseList = bookStateService.findAll();
+        return ResponseEntity.ok().body(responseList);
     }
 
     @Operation(summary = "state 정보 수정 / state=READING or WANT_TO_READ or READ_ALREADY")
     @PatchMapping(path = "/{state-id}")
-    public ResponseEntity<? extends BasicResponse> updateState(
+    public ResponseEntity<StateUpdateResponse> updateState(
             @PathVariable("state-id") Long stateId,
             @RequestBody @Valid StateUpdateRequest request
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<StateUpdateResponse>(
-                        bookStateService.updateState(stateId,request)));
+        StateUpdateResponse response = bookStateService.updateState(stateId, request);
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "state 삭제")
     @DeleteMapping(path = "/{state-id}")
-    public ResponseEntity<? extends BasicResponse> deleteState(
+    public void deleteState(
             @PathVariable("state-id") Long stateId
     ){
         bookStateService.deleteState(stateId);
-        return ResponseEntity.ok()
-                .body(new ResponseString("delete state!"));
     }
 
     @Operation(summary = "달별 책 개수: year(연도 기입 -> ex. 2024)")
     @GetMapping(path = "/statics/members/{member-id}/month/{year}")
-    public ResponseEntity<? extends BasicResponse> StatWithMonthByMemberId(
+    public ResponseEntity<MonthlyStaticsResponse> StatWithMonthByMemberId(
             @PathVariable("member-id") Long memberId,
             @PathVariable("year") int year
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<MonthlyStaticsResponse>(
-                        bookStateService.findMonthlyStatByMemberId(memberId,year)));
+        MonthlyStaticsResponse response = bookStateService.findMonthlyStatByMemberId(memberId,year);
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "카테고리별 책 개수(문학,인문학,경영/경제,자기계발,컴퓨터/과학,그 외)")
     @GetMapping(path = "/statics/members/{member-id}/category")
-    public ResponseEntity<? extends BasicResponse> statWithCategoryByMemberId(
+    public ResponseEntity<CategoryStaticsResponse> statWithCategoryByMemberId(
             @PathVariable("member-id") Long memberId
     ){
-        return ResponseEntity.ok()
-                .body(new ResponseCounter<CategoryStaticsResponse>(
-                        bookStateService.findCategoryStateByMemberId(memberId)));
+        CategoryStaticsResponse response = bookStateService.findCategoryStateByMemberId(memberId);
+        return ResponseEntity.ok().body(response);
     }
 }
