@@ -1,4 +1,4 @@
-package capstone.bookitty.common;
+package capstone.bookitty.common.config;
 
 import capstone.bookitty.jwt.*;
 import lombok.RequiredArgsConstructor;
