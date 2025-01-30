@@ -64,13 +64,9 @@ public class StarService {
 
     @Transactional
     public void updateStar(Long starId, StarUpdateRequest request) {
-        try {
-            Star star = starRepository.findById(starId)
-                    .orElseThrow(() -> new StarNotFoundException(starId));
-            star.updateStar(request.score());
-        } catch (OptimisticLockException e) {
-            throw new IllegalStateException("Concurrent update detected for Star with ID " + starId, e);
-        }
+        Star star = starRepository.findById(starId)
+                .orElseThrow(() -> new StarNotFoundException(starId));
+        star.updateStar(request.score());
     }
 
     @Transactional
