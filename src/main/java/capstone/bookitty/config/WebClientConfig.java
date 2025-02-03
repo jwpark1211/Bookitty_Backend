@@ -1,4 +1,4 @@
-package capstone.bookitty.common.config;
+package capstone.bookitty.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;

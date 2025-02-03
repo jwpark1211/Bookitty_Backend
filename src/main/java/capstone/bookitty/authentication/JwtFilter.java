@@ -1,4 +1,4 @@
-package capstone.bookitty.jwt;
+package capstone.bookitty.authentication;
 
 
 import jakarta.servlet.FilterChain;

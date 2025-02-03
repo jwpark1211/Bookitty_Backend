@@ -1,6 +1,6 @@
-package capstone.bookitty.common.config;
+package capstone.bookitty.config;
 
-import capstone.bookitty.jwt.*;
+import capstone.bookitty.authentication.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

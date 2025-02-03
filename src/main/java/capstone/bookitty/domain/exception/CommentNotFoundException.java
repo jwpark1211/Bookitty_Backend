@@ -1,6 +1,6 @@
 package capstone.bookitty.domain.exception;
 
-import capstone.bookitty.common.error.exception.EntityNotFoundException;
+import capstone.bookitty.error.exception.EntityNotFoundException;
 
 public class CommentNotFoundException extends EntityNotFoundException {
 

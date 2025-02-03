@@ -1,9 +1,6 @@
 package capstone.bookitty.domain.dto.tokenDto;
 
-import capstone.bookitty.jwt.JwtToken;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import capstone.bookitty.authentication.JwtToken;
 
 
 public record TokenResponse(

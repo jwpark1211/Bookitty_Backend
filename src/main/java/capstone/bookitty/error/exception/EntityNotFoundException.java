@@ -1,4 +1,4 @@
-package capstone.bookitty.common.error.exception;
+package capstone.bookitty.error.exception;
 
 public class EntityNotFoundException extends BusinessException {
 

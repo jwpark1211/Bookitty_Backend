@@ -1,4 +1,4 @@
-package capstone.bookitty.common;
+package capstone.bookitty.authentication;
 
 import capstone.bookitty.domain.entity.Member;
 import org.springframework.security.core.GrantedAuthority;

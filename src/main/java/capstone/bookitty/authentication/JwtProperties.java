@@ -1,4 +1,4 @@
-package capstone.bookitty.jwt;
+package capstone.bookitty.authentication;
 
 import lombok.Getter;
 import lombok.Setter;

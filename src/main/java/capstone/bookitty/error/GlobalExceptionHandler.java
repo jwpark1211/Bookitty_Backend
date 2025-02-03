@@ -1,11 +1,9 @@
-package capstone.bookitty.common.error;
+package capstone.bookitty.error;
 
 
-import capstone.bookitty.common.error.exception.BusinessException;
-import capstone.bookitty.common.error.exception.ErrorCode;
-import jakarta.persistence.EntityNotFoundException;
+import capstone.bookitty.error.exception.BusinessException;
+import capstone.bookitty.error.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

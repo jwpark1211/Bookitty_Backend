@@ -1,4 +1,4 @@
-package capstone.bookitty.jwt;
+package capstone.bookitty.authentication;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
-package capstone.bookitty.common.error;
+package capstone.bookitty.error;
 
-import capstone.bookitty.common.error.exception.ErrorCode;
+import capstone.bookitty.error.exception.ErrorCode;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 

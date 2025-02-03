@@ -1,8 +1,4 @@
-package capstone.bookitty.jwt;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+package capstone.bookitty.authentication;
 
 public record JwtToken (
     String grantType,
