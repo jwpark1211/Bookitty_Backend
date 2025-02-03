@@ -1,7 +1,7 @@
-package capstone.bookitty.global.api.openApi;
+package capstone.bookitty.client;
 
-import capstone.bookitty.global.api.dto.aladin.AladinBestSellerListResponse;
-import capstone.bookitty.global.api.dto.aladin.AladinBookSearchListResponse;
+import capstone.bookitty.domain.dto.openApiDto.AladinBestSellerListResponse;
+import capstone.bookitty.domain.dto.openApiDto.AladinBookSearchListResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,14 +10,14 @@ import reactor.core.publisher.Mono;
 
 
 @Component
-public class AladinOpenApi {
+public class AladinOpenApiClient {
 
     @Value("${api.aladin.ttb-key}")
     private String ttb;
 
     private final WebClient aladinWebClientApi;
 
-    public AladinOpenApi(@Qualifier("AladinWebClient") WebClient aladinWebClientApi){
+    public AladinOpenApiClient(@Qualifier("AladinWebClient") WebClient aladinWebClientApi){
         this.aladinWebClientApi = aladinWebClientApi;
     }
 

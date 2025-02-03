@@ -1,4 +1,4 @@
-package capstone.bookitty.global.api.dto.aladin;
+package capstone.bookitty.domain.dto.openApiDto;
 
 import java.util.List;
 

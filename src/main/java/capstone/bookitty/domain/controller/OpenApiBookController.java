@@ -1,9 +1,8 @@
 package capstone.bookitty.domain.controller;
 
 import capstone.bookitty.domain.service.OpenApiBookService;
-import capstone.bookitty.global.api.dto.*;
-import capstone.bookitty.global.api.dto.aladin.AladinBestSellerListResponse;
-import capstone.bookitty.global.api.dto.aladin.AladinBookSearchListResponse;
+import capstone.bookitty.domain.dto.openApiDto.AladinBestSellerListResponse;
+import capstone.bookitty.domain.dto.openApiDto.AladinBookSearchListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -72,8 +71,8 @@ public class OpenApiBookController {
 
     @Operation(summary = "사용자별 도서 추천 Top 10")
     @GetMapping(path = "/recommend/members/{member-id}")
-    public List<AladinBookSearchListResponse> getRecommendations(
+    public List<String> getRecommendations(
             @PathVariable("member-id") long memberId) {
-        return openApiBookService.getTop10ForMember(memberId);
+        return openApiBookService.getRecommendationsForUser(memberId);
     }
 }
