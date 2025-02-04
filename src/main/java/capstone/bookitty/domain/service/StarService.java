@@ -1,20 +1,22 @@
 package capstone.bookitty.domain.service;
 
+import capstone.bookitty.domain.dto.commonDto.IdResponse;
+import capstone.bookitty.domain.dto.starDto.StarInfoResponse;
+import capstone.bookitty.domain.dto.starDto.StarSaveRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateRequest;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.Star;
+import capstone.bookitty.domain.exception.MemberNotFoundException;
+import capstone.bookitty.domain.exception.StarNotFoundException;
 import capstone.bookitty.domain.repository.MemberRepository;
 import capstone.bookitty.domain.repository.StarRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
-
-import static capstone.bookitty.domain.dto.StarDTO.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,16 +28,15 @@ public class StarService {
 
     @Transactional
     public IdResponse saveStar(StarSaveRequest request) {
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(()->new EntityNotFoundException(
-                        "Member with ID "+request.getMemberId()+" not found."));
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(()->new MemberNotFoundException(request.memberId()));
 
-        if(starRepository.existsByMemberIdAndIsbn(request.getMemberId(),request.getIsbn()))
+        if(starRepository.existsByMemberIdAndIsbn(request.memberId(),request.isbn()))
             throw new IllegalArgumentException("star already exists.");
 
         Star star = Star.builder()
-                .score(request.getScore())
-                .isbn(request.getIsbn())
+                .score(request.score())
+                .isbn(request.isbn())
                 .member(member)
                 .build();
 
@@ -45,46 +46,46 @@ public class StarService {
 
     public StarInfoResponse findStarByStarId(Long starId) {
         return starRepository.findById(starId)
-                .map(StarInfoResponse::of)
-                .orElseThrow(()->new EntityNotFoundException("Star with ID "+starId+" not found."));
+                .map(StarInfoResponse::from)
+                .orElseThrow(()->new StarNotFoundException(starId));
     }
 
     public Page<StarInfoResponse> findStarByISBN(String isbn, Pageable pageable) {
         return starRepository.findByIsbn(isbn,pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     public Page<StarInfoResponse> findStarByMemberId(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new EntityNotFoundException("Member with ID "+ memberId+" not found."));
+                .orElseThrow(()-> new MemberNotFoundException(memberId));
         return starRepository.findByMemberId(memberId,pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     @Transactional
-    public StarUpdateResponse updateStar(Long starId, StarUpdateRequest request) {
+    public void updateStar(Long starId, StarUpdateRequest request) {
         Star star = starRepository.findById(starId)
-                .orElseThrow(()-> new EntityNotFoundException("Star with ID "+starId+" not found."));
-        star.updateStar(request.getScore());
-        return StarUpdateResponse.of(star);
+                .orElseThrow(() -> new StarNotFoundException(starId));
+        star.updateStar(request.score());
     }
 
     @Transactional
     public void deleteStar(Long starId) {
         Star star = starRepository.findById(starId)
-                .orElseThrow(()-> new EntityNotFoundException("Star with ID "+starId+" not found."));
+                .orElseThrow(()-> new StarNotFoundException(starId));
         starRepository.delete(star);
     }
 
     public Page<StarInfoResponse> findAllStar(Pageable pageable) {
         return starRepository.findAll(pageable)
-                .map(StarInfoResponse::of);
+                .map(StarInfoResponse::from);
     }
 
     public StarInfoResponse findStarByMemberIdAndIsbn(Long memberId, String isbn) {
         Star star = starRepository.findByMemberIdAndIsbn(memberId,isbn)
                 .orElseThrow(()-> new EntityNotFoundException(
                         "Star with memberID:"+memberId+",Isbn:"+isbn+"not found."));
-        return StarInfoResponse.of(star);
+        return StarInfoResponse.from(star);
     }
+
 }

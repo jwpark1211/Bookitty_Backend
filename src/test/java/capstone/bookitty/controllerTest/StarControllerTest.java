@@ -1,6 +1,8 @@
 package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
+import capstone.bookitty.domain.dto.starDto.StarSaveRequest;
+import capstone.bookitty.domain.dto.starDto.StarUpdateRequest;
 import capstone.bookitty.domain.entity.Member;
 import capstone.bookitty.domain.entity.Star;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static capstone.bookitty.domain.dto.StarDTO.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,7 +58,7 @@ public class StarControllerTest extends IntergrationTest {
     public void 평점생성() throws Exception{
         //given
         final Member member = memberSetup.save();
-        final StarSaveRequest request = StarSaveRequest.buildForTest("isbn",member.getId(),4);
+        final StarSaveRequest request = StarSaveRequest.of("isbn",member.getId(),4);
 
         //when
         final ResultActions resultActions = mvc.perform(post("/star/new")
@@ -72,7 +73,7 @@ public class StarControllerTest extends IntergrationTest {
     @Test
     public void 평점생성_valid오류_회원없음() throws Exception{
         //given
-        final StarSaveRequest request = StarSaveRequest.buildForTest("isbn",0L,4);
+        final StarSaveRequest request = StarSaveRequest.of("isbn",0L,4);
 
         //when
         final ResultActions resultActions = mvc.perform(post("/star/new")
@@ -141,7 +142,7 @@ public class StarControllerTest extends IntergrationTest {
     public void 평점수정() throws Exception{
         //given
         Star star = starSetup.save();
-        StarUpdateRequest request = StarUpdateRequest.buildForTest(3);
+        StarUpdateRequest request = StarUpdateRequest.of(3);
 
         //when
         final ResultActions resultActions = mvc.perform(patch("/star/{star-id}",star.getId())
@@ -157,7 +158,7 @@ public class StarControllerTest extends IntergrationTest {
     @Test
     public void 평점수정_평점없음() throws Exception{
         //given
-        StarUpdateRequest request = StarUpdateRequest.buildForTest(3);
+        StarUpdateRequest request = StarUpdateRequest.of(3);
 
         //when
         final ResultActions resultActions = mvc.perform(patch("/star/{star-id}",0L)

@@ -2,6 +2,8 @@ package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
 
+import capstone.bookitty.domain.dto.commentDto.CommentSaveRequest;
+import capstone.bookitty.domain.dto.commentDto.CommentUpdateRequest;
 import capstone.bookitty.domain.entity.Comment;
 import capstone.bookitty.domain.entity.Like;
 import capstone.bookitty.domain.entity.Member;
@@ -11,7 +13,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static capstone.bookitty.domain.dto.CommentDTO.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -60,7 +61,7 @@ public class CommentControllerTest extends IntergrationTest {
     public void 코멘트생성() throws Exception{
         //given
         final Member member = memberSetup.save();
-        final CommentSaveRequest request = CommentSaveRequest.buildForTest("isbn",member.getId(),"content");
+        final CommentSaveRequest request = CommentSaveRequest.of("isbn",member.getId(),"content");
 
         //when
         final ResultActions resultActions = mvc.perform(post("/comment/new")
@@ -76,7 +77,7 @@ public class CommentControllerTest extends IntergrationTest {
     @Test
     public void 코멘트생성_멤버없음() throws Exception{
         //given
-        final CommentSaveRequest request = CommentSaveRequest.buildForTest("isbn",0L,"content");
+        final CommentSaveRequest request = CommentSaveRequest.of("isbn",0L,"content");
 
         //when
         final ResultActions resultActions = mvc.perform(post("/comment/new")
@@ -143,7 +144,7 @@ public class CommentControllerTest extends IntergrationTest {
     public void 코멘트수정() throws Exception{
         //given
         Comment comment = commentSetup.save();
-        CommentUpdateRequest request = CommentUpdateRequest.buildForTest("modify");
+        CommentUpdateRequest request = CommentUpdateRequest.of("modify");
 
         //when
         final ResultActions resultActions = mvc.perform(patch("/comment/{comment-id}",comment.getId())
@@ -159,7 +160,7 @@ public class CommentControllerTest extends IntergrationTest {
     @Test
     public void 코멘트수정_코멘트없음() throws Exception{
         //given
-        CommentUpdateRequest request = CommentUpdateRequest.buildForTest("modify");
+        CommentUpdateRequest request = CommentUpdateRequest.of("modify");
 
         //when
         final ResultActions resultActions = mvc.perform(patch("/comment/{comment-id}",0L)

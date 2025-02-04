@@ -1,6 +1,6 @@
 package capstone.bookitty.util;
 
-import capstone.bookitty.common.CustomUserDetails;
+import capstone.bookitty.authentication.CustomUserDetails;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
