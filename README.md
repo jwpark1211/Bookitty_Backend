@@ -16,10 +16,11 @@
 - 월별, 연도별, 카테고리별 유저의 **도서 통계를 확인할 수 있는 기능을 제공**합니다. 
 <br><br>
 ## 개발 기간 
-2024.03 ~ 2024.06.19 (추후 유지보수 예정) 
+2024.03 ~ 유지보수 중 
 <br><br>
 ##  기술 스택 
-- Spring Boot, JPA, Gradle 
+- Spring Boot, JPA, Gradle
+- Spring Batch  
 - MySQL, Redis(Cache)
 - Github Actions, Docker
 - AWS (EC2, RDS, S3, Elasticache) 
