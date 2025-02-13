@@ -1,10 +1,10 @@
 package capstone.bookitty.setup;
 
-import capstone.bookitty.domain.entity.Comment;
-import capstone.bookitty.domain.entity.Like;
-import capstone.bookitty.domain.entity.Member;
-import capstone.bookitty.domain.repository.CommentRepository;
-import capstone.bookitty.domain.repository.LikeRepository;
+import capstone.bookitty.domain.comment.domain.Comment;
+import capstone.bookitty.domain.comment.domain.Like;
+import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.comment.dao.CommentRepository;
+import capstone.bookitty.domain.comment.dao.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

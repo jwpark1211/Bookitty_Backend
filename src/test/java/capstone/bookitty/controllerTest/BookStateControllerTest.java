@@ -1,10 +1,10 @@
 package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
-import capstone.bookitty.domain.dto.bookStateDto.StateSaveRequest;
-import capstone.bookitty.domain.entity.BookState;
-import capstone.bookitty.domain.entity.Member;
-import capstone.bookitty.domain.entity.State;
+import capstone.bookitty.domain.bookState.dto.StateSaveRequest;
+import capstone.bookitty.domain.bookState.entity.BookState;
+import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.bookState.entity.State;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
