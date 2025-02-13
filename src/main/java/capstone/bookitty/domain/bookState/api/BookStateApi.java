@@ -1,8 +1,6 @@
 package capstone.bookitty.domain.bookState.api;
 
 import capstone.bookitty.domain.bookState.dto.*;
-import capstone.bookitty.domain.dto.*;
-import capstone.bookitty.domain.dto.bookStateDto.*;
 import capstone.bookitty.global.dto.IdResponse;
 import capstone.bookitty.domain.bookState.application.BookStateService;
 import io.swagger.v3.oas.annotations.Operation;

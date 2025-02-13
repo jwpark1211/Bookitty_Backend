@@ -1,6 +1,5 @@
 package capstone.bookitty.global.config;
 
-import capstone.bookitty.authentication.*;
 import capstone.bookitty.global.authentication.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
