@@ -1,4 +1,4 @@
-## 북키티
+## 북키티 : 사용자 맞춤형 도서 추천! 
 > 독서 활동을 장려하고 독서 문화를 지속적으로 발전시키기 위한 서비스
 
 <img width="1044" alt="image" src="https://github.com/user-attachments/assets/97b1c0c0-f2cc-4b59-abc0-5c2404b2eee1">
@@ -16,10 +16,11 @@
 - 월별, 연도별, 카테고리별 유저의 **도서 통계를 확인할 수 있는 기능을 제공**합니다. 
 <br><br>
 ## 개발 기간 
-2024.03 ~ 2024.06.19 (추후 유지보수 예정) 
+2024.03 ~ 유지보수 중 
 <br><br>
 ##  기술 스택 
-- Spring Boot, JPA, Gradle 
+- Spring Boot, JPA, Gradle
+- Spring Batch  
 - MySQL, Redis(Cache)
 - Github Actions, Docker
 - AWS (EC2, RDS, S3, Elasticache) 
