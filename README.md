@@ -1,4 +1,4 @@
-## 북키티
+## 북키티 : 사용자 맞춤형 도서 추천! 
 > 독서 활동을 장려하고 독서 문화를 지속적으로 발전시키기 위한 서비스
 
 <img width="1044" alt="image" src="https://github.com/user-attachments/assets/97b1c0c0-f2cc-4b59-abc0-5c2404b2eee1">
