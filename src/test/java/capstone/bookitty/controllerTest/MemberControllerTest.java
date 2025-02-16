@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import capstone.bookitty.IntergrationTest;
-import capstone.bookitty.domain.dto.memberDto.MemberLoginRequest;
-import capstone.bookitty.domain.dto.memberDto.MemberSaveRequest;
-import capstone.bookitty.domain.entity.Member;
+import capstone.bookitty.domain.member.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.domain.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;

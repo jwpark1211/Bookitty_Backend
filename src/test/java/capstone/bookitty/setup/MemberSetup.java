@@ -1,8 +1,8 @@
 package capstone.bookitty.setup;
 
-import capstone.bookitty.domain.entity.Gender;
-import capstone.bookitty.domain.entity.Member;
-import capstone.bookitty.domain.repository.MemberRepository;
+import capstone.bookitty.domain.member.domain.Gender;
+import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

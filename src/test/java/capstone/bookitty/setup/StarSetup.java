@@ -1,8 +1,8 @@
 package capstone.bookitty.setup;
 
-import capstone.bookitty.domain.entity.Member;
-import capstone.bookitty.domain.entity.Star;
-import capstone.bookitty.domain.repository.StarRepository;
+import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.star.domain.Star;
+import capstone.bookitty.domain.star.dao.StarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

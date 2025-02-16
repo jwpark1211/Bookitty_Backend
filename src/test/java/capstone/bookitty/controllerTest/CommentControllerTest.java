@@ -2,11 +2,11 @@ package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
 
-import capstone.bookitty.domain.dto.commentDto.CommentSaveRequest;
-import capstone.bookitty.domain.dto.commentDto.CommentUpdateRequest;
-import capstone.bookitty.domain.entity.Comment;
-import capstone.bookitty.domain.entity.Like;
-import capstone.bookitty.domain.entity.Member;
+import capstone.bookitty.domain.comment.dto.CommentSaveRequest;
+import capstone.bookitty.domain.comment.dto.CommentUpdateRequest;
+import capstone.bookitty.domain.comment.domain.Comment;
+import capstone.bookitty.domain.comment.domain.Like;
+import capstone.bookitty.domain.member.domain.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;

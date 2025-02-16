@@ -1,10 +1,10 @@
 package capstone.bookitty.controllerTest;
 
 import capstone.bookitty.IntergrationTest;
-import capstone.bookitty.domain.dto.starDto.StarSaveRequest;
-import capstone.bookitty.domain.dto.starDto.StarUpdateRequest;
-import capstone.bookitty.domain.entity.Member;
-import capstone.bookitty.domain.entity.Star;
+import capstone.bookitty.domain.star.dto.StarSaveRequest;
+import capstone.bookitty.domain.star.dto.StarUpdateRequest;
+import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.star.domain.Star;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
