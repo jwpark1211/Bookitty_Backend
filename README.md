@@ -13,11 +13,6 @@
 - 도서를 기록하고, 의견을 나눌 수 있는 커뮤니케이션 공간
 - 월별, 연도별, 카테고리별 유저의 도서 통계
 <br><br>
-## 프로토타입
-<img width="819" alt="image" src="https://github.com/user-attachments/assets/4f004514-af85-44cb-9055-2d17040e7521" />
-<img width="819" alt="image" src="https://github.com/user-attachments/assets/28d01ef3-6123-4f9d-a436-3477e9d33f9f" />
-
-<br><br>
 ## 개발 기간 
 2024.03 ~ 유지보수 중 
 <br><br>
