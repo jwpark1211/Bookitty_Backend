@@ -17,7 +17,10 @@ import java.util.Map;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "capstone.bookitty.domain.repository",
+        basePackages = {
+                "capstone.bookitty.domain",
+                "capstone.bookitty.global.authentication"
+        },
         entityManagerFactoryRef = "dataEntityManager",
         transactionManagerRef = "dataTransactionManager"
 )
@@ -39,12 +42,12 @@ public class DataDBConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         em.setDataSource(dataSource);
-        em.setPackagesToScan("capstone.bookitty.domain.entity");
+        em.setPackagesToScan("capstone.bookitty");
         em.setPersistenceUnitName("dataEntityManager");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto", "none");
+        properties.put("hibernate.hbm2ddl.auto", "");
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         em.setJpaPropertyMap(properties);
