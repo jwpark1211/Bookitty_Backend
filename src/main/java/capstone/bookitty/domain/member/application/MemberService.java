@@ -10,7 +10,7 @@ import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.global.authentication.RefreshToken;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
-import capstone.bookitty.domain.member.dao.MemberRepository;
+import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.RefreshTokenRepository;
 import capstone.bookitty.global.authentication.JwtToken;
 import capstone.bookitty.global.authentication.JwtTokenProvider;

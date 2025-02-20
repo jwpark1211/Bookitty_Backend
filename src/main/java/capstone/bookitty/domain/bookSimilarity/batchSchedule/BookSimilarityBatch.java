@@ -1,9 +1,10 @@
-package capstone.bookitty.global.batchSchedule;
+package capstone.bookitty.domain.bookSimilarity.batchSchedule;
 
 import capstone.bookitty.domain.book.dto.BookPair;
+import capstone.bookitty.domain.book.dto.RatingPair;
 import capstone.bookitty.domain.bookSimilarity.domain.BookSimilarity;
-import capstone.bookitty.domain.bookSimilarity.dao.BookSimilarityRepository;
-import capstone.bookitty.domain.star.dao.StarRepository;
+import capstone.bookitty.domain.bookSimilarity.repository.BookSimilarityRepository;
+import capstone.bookitty.domain.star.repository.StarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -73,17 +74,17 @@ public class BookSimilarityBatch {
     public ItemProcessor<BookPair, BookSimilarity> bookSimilarityProcessor() {
         return bookPair -> {
             // 두 도서를 동시에 평가한 평점 데이터를 조회 (각 행: [score1, score2])
-            List<Double[]> commonRatings = starRepository.findCommonRatings(bookPair.isbn1(), bookPair.isbn2());
+            List<RatingPair> commonRatings = starRepository.findCommonRatings(bookPair.isbn1(), bookPair.isbn2());
 
             if (commonRatings.isEmpty()) return null;
 
             double dotProduct = 0.0;
             double normA = 0.0;
             double normB = 0.0;
-            for (Double[] row : commonRatings) {
-                dotProduct += row[0] * row[1];
-                normA += row[0] * row[0];
-                normB += row[1] * row[1];
+            for (RatingPair row : commonRatings) {
+                dotProduct += row.score1() * row.score2();
+                normA += row.score1() * row.score1();
+                normB += row.score2() * row.score2();
             }
             double cosineSimilarity = (normA != 0 && normB != 0)
                     ? dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)) : 0.0;

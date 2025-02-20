@@ -1,7 +1,7 @@
 package capstone.bookitty.global.authentication;
 
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dao.MemberRepository;
+import capstone.bookitty.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

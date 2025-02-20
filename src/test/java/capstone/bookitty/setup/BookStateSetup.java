@@ -1,9 +1,9 @@
 package capstone.bookitty.setup;
 
-import capstone.bookitty.domain.bookState.entity.BookState;
+import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.bookState.entity.State;
-import capstone.bookitty.domain.bookState.dao.BookStateRepository;
+import capstone.bookitty.domain.bookState.domain.State;
+import capstone.bookitty.domain.bookState.repository.BookStateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class BookStateSetup {
     private final MemberSetup memberSetup;
     private final BookStateRepository stateRepository;

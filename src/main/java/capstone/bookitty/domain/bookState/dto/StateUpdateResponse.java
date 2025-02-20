@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.bookState.dto;
 
-import capstone.bookitty.domain.bookState.entity.BookState;
-import capstone.bookitty.domain.bookState.entity.State;
+import capstone.bookitty.domain.bookState.domain.BookState;
+import capstone.bookitty.domain.bookState.domain.State;
 
 public record StateUpdateResponse(
         Long id,

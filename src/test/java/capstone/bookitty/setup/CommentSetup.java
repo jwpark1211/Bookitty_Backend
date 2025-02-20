@@ -3,8 +3,9 @@ package capstone.bookitty.setup;
 import capstone.bookitty.domain.comment.domain.Comment;
 import capstone.bookitty.domain.comment.domain.Like;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.comment.dao.CommentRepository;
-import capstone.bookitty.domain.comment.dao.LikeRepository;
+import capstone.bookitty.domain.comment.repository.CommentRepository;
+import capstone.bookitty.domain.comment.repository.LikeRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class CommentSetup {
     private final MemberSetup memberSetup;
     private final CommentRepository commentRepository;

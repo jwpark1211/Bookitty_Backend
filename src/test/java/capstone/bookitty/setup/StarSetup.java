@@ -2,7 +2,7 @@ package capstone.bookitty.setup;
 
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.star.domain.Star;
-import capstone.bookitty.domain.star.dao.StarRepository;
+import capstone.bookitty.domain.star.repository.StarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 public class StarSetup {
     private final MemberSetup memberSetup;
     private final StarRepository starRepository;
+
 
     public Star save(){
         final Member member = memberSetup.save();
