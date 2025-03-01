@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.dao;
+package capstone.bookitty.domain.member.repository;
 
 import capstone.bookitty.domain.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

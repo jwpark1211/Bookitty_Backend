@@ -2,13 +2,13 @@ package capstone.bookitty.domain.bookState.application;
 
 import capstone.bookitty.domain.bookState.dto.*;
 import capstone.bookitty.global.dto.IdResponse;
-import capstone.bookitty.domain.bookState.entity.BookState;
+import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.bookState.entity.State;
+import capstone.bookitty.domain.bookState.domain.State;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.bookState.exception.StateNotFoundException;
-import capstone.bookitty.domain.bookState.dao.BookStateRepository;
-import capstone.bookitty.domain.member.dao.MemberRepository;
+import capstone.bookitty.domain.bookState.repository.BookStateRepository;
+import capstone.bookitty.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;

@@ -29,6 +29,9 @@ public class Star {
     private String isbn;
     private double score;
 
+    @Version
+    private int version;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

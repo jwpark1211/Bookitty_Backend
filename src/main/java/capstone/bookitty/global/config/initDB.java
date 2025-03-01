@@ -1,7 +1,7 @@
 package capstone.bookitty.global.config;
 
-import capstone.bookitty.domain.bookState.entity.BookState;
-import capstone.bookitty.domain.bookState.entity.State;
+import capstone.bookitty.domain.bookState.domain.BookState;
+import capstone.bookitty.domain.bookState.domain.State;
 import capstone.bookitty.domain.comment.domain.Comment;
 import capstone.bookitty.domain.comment.domain.Like;
 import capstone.bookitty.domain.member.domain.Gender;

@@ -1,6 +1,6 @@
 package capstone.bookitty.global.dto;
 
-import capstone.bookitty.domain.bookState.entity.BookState;
+import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.comment.domain.Comment;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.star.domain.Star;

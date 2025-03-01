@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.bookState.entity;
+package capstone.bookitty.domain.bookState.domain;
 
 import capstone.bookitty.domain.member.domain.Member;
 import jakarta.persistence.*;

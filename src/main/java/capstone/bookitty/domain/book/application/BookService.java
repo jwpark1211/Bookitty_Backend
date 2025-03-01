@@ -2,8 +2,8 @@ package capstone.bookitty.domain.book.application;
 
 import capstone.bookitty.domain.bookSimilarity.domain.BookSimilarity;
 import capstone.bookitty.domain.star.domain.Star;
-import capstone.bookitty.domain.bookSimilarity.dao.BookSimilarityRepository;
-import capstone.bookitty.domain.star.dao.StarRepository;
+import capstone.bookitty.domain.bookSimilarity.repository.BookSimilarityRepository;
+import capstone.bookitty.domain.star.repository.StarRepository;
 import capstone.bookitty.domain.book.dto.AladinBestSellerListResponse;
 import capstone.bookitty.domain.book.dto.AladinBookSearchListResponse;
 import capstone.bookitty.domain.book.client.AladinOpenApiClient;

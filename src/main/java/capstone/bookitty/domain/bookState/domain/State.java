@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.bookState.entity;
+package capstone.bookitty.domain.bookState.domain;
 
 import lombok.RequiredArgsConstructor;
 

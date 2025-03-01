@@ -1,4 +1,4 @@
-package capstone.bookitty.global.batchSchedule;
+package capstone.bookitty.domain.bookSimilarity.batchSchedule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

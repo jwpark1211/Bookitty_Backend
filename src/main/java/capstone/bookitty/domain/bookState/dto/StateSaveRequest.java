@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.bookState.dto;
 
 import capstone.bookitty.global.annotation.ValidEnum;
-import capstone.bookitty.domain.bookState.entity.State;
+import capstone.bookitty.domain.bookState.domain.State;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

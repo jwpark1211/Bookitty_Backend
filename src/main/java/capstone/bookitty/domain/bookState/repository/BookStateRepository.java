@@ -1,6 +1,6 @@
-package capstone.bookitty.domain.bookState.dao;
+package capstone.bookitty.domain.bookState.repository;
 
-import capstone.bookitty.domain.bookState.entity.BookState;
+import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.member.domain.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +19,4 @@ public interface BookStateRepository extends JpaRepository<BookState,Long> {
     List<BookState> findByMemberId(Long memberId);
     boolean existsByMemberIdAndIsbn(Long memberId, String isbn);
     Optional<BookState> findByMemberIdAndIsbn(Long memberId, String isbn);
-    @Query("SELECT b.isbn, COUNT(b) as stateCount " +
-            "FROM BookState b " +
-            "WHERE b.member.gender = :gender AND b.member.birthDate BETWEEN :startDate AND :endDate " +
-            "GROUP BY b.isbn")
-    List<Object[]> findStateCountByGenderAndBirthDate(@Param("gender") Gender gender,
-                                                      @Param("startDate") LocalDate startDate,
-                                                      @Param("endDate") LocalDate endDate);
 }

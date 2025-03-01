@@ -2,7 +2,7 @@ package capstone.bookitty.setup;
 
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dao.MemberRepository;
+import capstone.bookitty.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class MemberSetup {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
