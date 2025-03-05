@@ -18,16 +18,13 @@
 <br><br>
 ##  기술 스택 
 - Spring Boot, JPA, Gradle
-- Spring Batch  
+- Spring Batch, Spring Security
 - MySQL, Redis(Cache)
 - Github Actions, Docker
 - AWS (EC2, RDS, S3, Elasticache) 
 - JWT, Spring Security
 - Junit5(Integration Test), Mockito 
-<br><br>
-## 아키텍쳐
-<img width="819" alt="image" src="https://github.com/user-attachments/assets/a1a2787b-fac7-4613-889c-29748400aece" />
-<br>
+
 
 
 
