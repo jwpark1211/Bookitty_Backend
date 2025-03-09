@@ -28,12 +28,6 @@ public class MemberApi {
 
     private final MemberService memberService;
 
-    @Operation(summary = "deploy test")
-    @GetMapping("/test")
-    public String test(){
-        return "DEPLOY 0517";
-    }
-
     @Operation(summary = "회원가입/"+"비밀번호=영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자/"
     +"gender=MALE or FEMALE/"+"birthdate=yyyy-mm-dd/"+"email=이메일 format 준수")
     @PostMapping(path = "/new")
