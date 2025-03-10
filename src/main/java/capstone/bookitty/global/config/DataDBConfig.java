@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -30,12 +31,14 @@ public class DataDBConfig {
     public static final String DATA_ENTITY_MANAGER = "dataEntityManager";
     public static final String DATA_TRANSACTION_MANAGER = "dataTransactionManager";
 
+    @Primary
     @Bean(name = DATA_DATASOURCE)
     @ConfigurationProperties(prefix = "spring.datasource.data")
     public DataSource dataDataSource() {
         return DataSourceBuilder.create().build();
     }
 
+    @Primary
     @Bean(name = DATA_ENTITY_MANAGER)
     public LocalContainerEntityManagerFactoryBean dataEntityManager(
             @Qualifier(DATA_DATASOURCE) DataSource dataSource) {
@@ -47,7 +50,7 @@ public class DataDBConfig {
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto", "");
+        properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         em.setJpaPropertyMap(properties);
@@ -55,6 +58,7 @@ public class DataDBConfig {
         return em;
     }
 
+    @Primary
     @Bean(name = DATA_TRANSACTION_MANAGER)
     public PlatformTransactionManager dataTransactionManager(
             @Qualifier(DATA_ENTITY_MANAGER) LocalContainerEntityManagerFactoryBean entityManagerFactory) {

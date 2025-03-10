@@ -15,6 +15,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,10 @@ import java.util.*;
 public class BookSimilarityBatch {
 
     private final JobRepository jobRepository;
+
+    @Qualifier("dataTransactionManager")
     private final PlatformTransactionManager transactionManager;
+
     private final StarRepository starRepository;
     private final BookSimilarityRepository bookSimilarityRepository;
 

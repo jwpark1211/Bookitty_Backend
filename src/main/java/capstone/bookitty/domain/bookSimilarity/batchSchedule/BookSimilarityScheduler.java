@@ -19,7 +19,7 @@ public class BookSimilarityScheduler {
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
 
-    @Scheduled(cron = "10 * * * * *", zone = "Asia/Seoul") // 매 분 10초에 실행됨
+    //@Scheduled(cron = "10 * * * * *", zone = "Asia/Seoul") // 매 분 10초에 실행됨
     //@Scheduled(cron = "0 0 4 * * ?") // 매일 새벽 4시
     public void runCalSimilarityJob() throws Exception {
         log.info("** 코사인 유사도 테이블 업데이트 스케줄링 시작 ");
