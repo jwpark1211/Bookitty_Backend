@@ -34,8 +34,8 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     private static final List<String> PERMIT_ALL_PATHS = List.of(
-            "/", "/open/**", "/members/login", "/members/reissue",
-            "/members/new", "/members/email/**", "/swagger-ui/**",
+            "/", "/books/**", "/comments/n-plus-one/**", "/members/login", "/members/reissue",
+            "/members", "/members/email/unique", "/swagger-ui/**",
             "/actuator/**", "/v3/**"
     );
 
