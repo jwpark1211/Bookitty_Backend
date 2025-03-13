@@ -22,10 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -49,6 +50,7 @@ public class CommentService {
         return new IdResponse(comment.getId());
     }
 
+    @Transactional(readOnly = true)
     public CommentInfoResponse findCommentByCommentId(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
@@ -57,38 +59,6 @@ public class CommentService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
         return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
-    }
-
-    public Page<CommentInfoResponse> findAllComment(Pageable pageable) {
-        return commentRepository.findAll(pageable)
-                .map(comment -> {
-                    int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    Long memberId = comment.getMember().getId();
-                    Member member = memberRepository.findById(memberId)
-                            .orElseThrow(() -> new MemberNotFoundException(memberId));
-                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
-                });
-    }
-
-    public Page<CommentInfoResponse> findCommentByIsbn(String isbn, Pageable pageable) {
-        return commentRepository.findByIsbn(isbn,pageable)
-                .map(comment -> {
-                    int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    Long memberId = comment.getMember().getId();
-                    Member member = memberRepository.findById(memberId)
-                            .orElseThrow(() -> new MemberNotFoundException(memberId));
-                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
-                });
-    }
-
-    public Page<CommentInfoResponse> findCommentByMemberId(Long memberId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new MemberNotFoundException(memberId));
-        return commentRepository.findByMemberId(memberId,pageable)
-                .map(comment -> {
-                    int like_count = likeRepository.findByCommentId(comment.getId()).size();
-                    return CommentInfoResponse.of(comment, like_count,member.getName(),member.getProfileImg());
-                });
     }
 
     @Transactional
@@ -143,4 +113,23 @@ public class CommentService {
                 .orElseThrow(()->new LikeNotFoundException(likeId));
         likeRepository.delete(like);
     }
+
+    @Transactional(readOnly = true)
+    public Page<CommentInfoResponse> findComments(String isbn, Long memberId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByFilters(isbn, memberId, pageable);
+        List<Long> commentIds = comments.stream().map(Comment::getId).toList();
+
+        List<Like> likes = commentIds.isEmpty() ? List.of() : likeRepository.findByCommentIdIn(commentIds);
+        Map<Long, Integer> likeCountMap = likes.stream()
+                .collect(Collectors.groupingBy(like -> like.getComment().getId(), Collectors.summingInt(like -> 1)));
+
+        return comments.map(comment -> {
+            int likeCount = likeCountMap.getOrDefault(comment.getId(), 0);
+            //NPE 방지
+            String memberName = comment.getMember() != null ? comment.getMember().getName() : "Unknown";
+            String memberProfileImg = comment.getMember() != null ? comment.getMember().getProfileImg() : null;
+            return CommentInfoResponse.of(comment, likeCount, memberName, memberProfileImg);
+        });
+    }
+
 }
