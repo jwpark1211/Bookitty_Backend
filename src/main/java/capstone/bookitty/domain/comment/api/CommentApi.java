@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,8 +18,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 @Tag(name="comment", description = "댓글 관리 api 입니다.")
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/comments")
 public class CommentApi {
@@ -31,7 +35,7 @@ public class CommentApi {
             @RequestBody @Valid final CommentSaveRequest request
     ){
         IdResponse response = commentService.saveComment(request);
-        return ResponseEntity.status(201).body(response); //201 created
+        return ResponseEntity.status(201).body(response);
     }
 
     @Operation(summary = "commentId로 코멘트 가져오기")
@@ -43,32 +47,14 @@ public class CommentApi {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "전체 코멘트 가져오기 (페이지네이션 지원)")
+    @Operation(summary = "코멘트 가져오기(전체, isbn, memberId 중 선택)")
     @GetMapping
-    public ResponseEntity<Page<CommentInfoResponse>> getAll(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    public ResponseEntity<Page<CommentInfoResponse>> getComments(
+            @RequestParam(name = "isbn", required = false) String isbn,
+            @RequestParam(name = "memberId", required = false) Long memberId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable
     ){
-        Page<CommentInfoResponse> responseList = commentService.findAllComment(pageable);
-        return ResponseEntity.ok(responseList);
-    }
-
-    @Operation(summary = "isbn으로 코멘트 리스트 가져오기")
-    @GetMapping(path = "/isbn/{isbn}")
-    public ResponseEntity<Page<CommentInfoResponse>> getCommentByISBN(
-            @PathVariable("isbn") String isbn,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ){
-        Page<CommentInfoResponse> responseList = commentService.findCommentByIsbn(isbn,pageable);
-        return ResponseEntity.ok(responseList);
-    }
-
-    @Operation(summary = "memberId로 코멘트 리스트 가져오기")
-    @GetMapping(path = "/members/{member-id}")
-    public ResponseEntity<Page<CommentInfoResponse>> getCommentByMemberId(
-            @PathVariable("member-id") Long memberId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ){
-        Page<CommentInfoResponse> responseList = commentService.findCommentByMemberId(memberId, pageable);
+        Page<CommentInfoResponse> responseList = commentService.findComments(isbn, memberId, pageable);
         return ResponseEntity.ok(responseList);
     }
 
@@ -79,7 +65,7 @@ public class CommentApi {
             @RequestBody @Valid CommentUpdateRequest request
     ){
         commentService.updateComment(commentId, request);
-        return ResponseEntity.noContent().build(); //204 No Content;
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "코멘트 삭제")
@@ -88,7 +74,7 @@ public class CommentApi {
             @PathVariable("comment-id") Long commentId
     ){
         commentService.deleteComment(commentId);
-        return ResponseEntity.noContent().build(); //204 No Content;
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "코멘트 좋아요 등록")
@@ -98,7 +84,7 @@ public class CommentApi {
             @PathVariable("member-id") Long memberId
     ){
         commentService.increaseLike(commentId,memberId);
-        return ResponseEntity.status(201).build(); //201 Created
+        return ResponseEntity.status(201).build();
     }
 
     @Operation(summary = "코멘트 좋아요 삭제")
@@ -108,7 +94,7 @@ public class CommentApi {
             @PathVariable("member-id") Long memberId
     ){
         commentService.decreaseLike(commentId,memberId);
-        return ResponseEntity.noContent().build(); //204 No Content;
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "좋아요 id로 삭제")
@@ -117,7 +103,7 @@ public class CommentApi {
             @PathVariable("like-id") Long likeId
     ){
         commentService.deleteLike(likeId);
-        return ResponseEntity.noContent().build(); //204 No Content;
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -2,7 +2,10 @@ package capstone.bookitty.domain.star.repository;
 
 import capstone.bookitty.domain.book.dto.BookPair;
 import capstone.bookitty.domain.book.dto.RatingPair;
+import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.star.domain.QStar;
+import capstone.bookitty.domain.star.domain.Star;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +47,33 @@ public class StarCustomRepositoryImpl implements StarCustomRepository{
                 .fetchOne();
 
         return new PageImpl<>(bookPairList, pageable, total != null ? total : 0);
+    }
+
+    @Override
+    public Page<Star> findByFilters(String isbn, Long memberId, Pageable pageable) {
+        BooleanBuilder whereClause = new BooleanBuilder();
+
+        if (isbn != null) {
+            whereClause.and(s1.isbn.eq(isbn));
+        }
+        if (memberId != null) {
+            whereClause.and(s1.member.id.eq(memberId));
+        }
+
+        List<Star> starList = queryFactory
+                .selectFrom(s1)
+                .where(whereClause)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory
+                .select(s1.count())
+                .from(s1)
+                .where(whereClause)
+                .fetchOne();
+
+        return new PageImpl<>(starList, pageable, total != null ? total : 0);
     }
 
     @Override

@@ -50,18 +50,6 @@ public class StarService {
                 .orElseThrow(()->new StarNotFoundException(starId));
     }
 
-    public Page<StarInfoResponse> findStarByISBN(String isbn, Pageable pageable) {
-        return starRepository.findByIsbn(isbn,pageable)
-                .map(StarInfoResponse::from);
-    }
-
-    public Page<StarInfoResponse> findStarByMemberId(Long memberId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
-        return starRepository.findByMemberId(memberId,pageable)
-                .map(StarInfoResponse::from);
-    }
-
     @Transactional
     public void updateStar(Long starId, StarUpdateRequest request) {
         try {
@@ -80,16 +68,8 @@ public class StarService {
         starRepository.delete(star);
     }
 
-    public Page<StarInfoResponse> findAllStar(Pageable pageable) {
-        return starRepository.findAll(pageable)
-                .map(StarInfoResponse::from);
+    public Page<StarInfoResponse> findStars(String isbn, Long memberId, Pageable pageable) {
+        Page<Star> stars = starRepository.findByFilters(isbn, memberId, pageable);
+        return stars.map(StarInfoResponse::from);
     }
-
-    public StarInfoResponse findStarByMemberIdAndIsbn(Long memberId, String isbn) {
-        Star star = starRepository.findByMemberIdAndIsbn(memberId,isbn)
-                .orElseThrow(()-> new EntityNotFoundException(
-                        "Star with memberID:"+memberId+",Isbn:"+isbn+"not found."));
-        return StarInfoResponse.from(star);
-    }
-
 }

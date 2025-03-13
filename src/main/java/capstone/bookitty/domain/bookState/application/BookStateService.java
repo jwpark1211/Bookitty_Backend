@@ -55,30 +55,15 @@ public class BookStateService {
         return new IdResponse(bookState.getId());
     }
 
-
-    public Page<StateInfoResponse> findStateByISBN(String isbn, Pageable pageable) {
-        return stateRepository.findByIsbn(isbn, pageable)
-                .map(StateInfoResponse::from);
-    }
-
-    public StateInfoResponse findStateByMemberAndIsbn(String isbn, Long memberId){
-        BookState state = stateRepository.findByMemberIdAndIsbn(memberId,isbn)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
-        return StateInfoResponse.from(state);
-    }
-
     public StateInfoResponse findStateByStateId(Long stateId) {
         return stateRepository.findById(stateId)
                 .map(StateInfoResponse::from)
                 .orElseThrow(() -> new StateNotFoundException(stateId));
     }
 
-    public Page<StateInfoResponse> findStateByMemberId(Long memberId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new MemberNotFoundException(memberId));
-
-        return stateRepository.findByMemberId(memberId,pageable)
-                .map(StateInfoResponse::from);
+    public Page<StateInfoResponse> findStates(String isbn, Long memberId, Pageable pageable) {
+        Page<BookState> bookStates = stateRepository.findByFilters(isbn, memberId, pageable);
+        return bookStates.map(StateInfoResponse::from);
     }
 
     @Transactional
@@ -136,9 +121,4 @@ public class BookStateService {
                 selfImprovement,scienceTechnology,etc);
     }
 
-    public List<StateInfoResponse> findAll() {
-        return stateRepository.findAll().stream()
-                .map(StateInfoResponse::from)
-                .collect(Collectors.toList());
-    }
 }

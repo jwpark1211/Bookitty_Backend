@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentCustomRepository{
     boolean existsByMemberIdAndIsbn(Long memberId, String isbn);
+    Page<Comment> findAllByIsbnAndMemberId(String isbn, Long memberId, Pageable pageable);
     Page<Comment> findByMemberId(Long memberId, Pageable pageable);
     Page<Comment> findByIsbn(String isbn, Pageable pageable);
 }

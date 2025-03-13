@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookStateRepository extends JpaRepository<BookState,Long> {
+public interface BookStateRepository extends JpaRepository<BookState,Long>,BookStateCustomRepository {
     Page<BookState> findByIsbn(String isbn, Pageable pageable);
     Page<BookState> findByMemberId(Long memberId,Pageable pageable);
     List<BookState> findByMemberId(Long memberId);
