@@ -78,11 +78,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        return new CorsFilter(corsConfigurationSource());
-    }
-
-    @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000"); // 프론트엔드 URL
