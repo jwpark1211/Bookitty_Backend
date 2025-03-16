@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,14 +19,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
-    private final List<String> permitAllPaths;
 
-    public JwtFilter(JwtTokenProvider jwtTokenProvider,
-                     JwtProperties jwtProperties,
-                     List<String> permitAllPaths) {
+    public JwtFilter(JwtTokenProvider jwtTokenProvider, JwtProperties jwtProperties) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.jwtProperties = jwtProperties;
-        this.permitAllPaths = permitAllPaths;  // 동일 리스트 참조
     }
 
     @Override
@@ -36,16 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. permitAll 경로면 필터를 통과시킴
-        if (isPermitAllPath(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // 2. JWT 토큰 검사
+        // 1. 요청에서 JWT 토큰 추출
         String jwt = resolveToken(request);
         log.debug("JWT Token: {}", jwt);
 
+        // 2. JWT 유효성 검사 및 인증 처리
         if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -58,11 +49,9 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPermitAllPath(HttpServletRequest request) {
-        return permitAllPaths.stream()
-                .anyMatch(path -> new AntPathRequestMatcher(path).matches(request));
-    }
-
+    /**
+     * 요청의 Authorization 헤더에서 JWT 토큰을 추출
+     */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(jwtProperties.getAccessTokenHeader());
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(jwtProperties.getAuthType() + " ")) {
@@ -70,4 +59,13 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        List<String> excludeUrls = List.of("/books/**", "/members/login", "/members/reissue",
+                "/members/email/unique", "/swagger-ui/**", "/actuator/**");
+
+        return excludeUrls.stream().anyMatch(url -> new AntPathRequestMatcher(url).matches(request));
+    }
+
 }
