@@ -43,8 +43,12 @@ public class MemberService {
 
     @Transactional
     public IdResponse saveMember(MemberSaveRequest request) {
-        if(memberRepository.existsByEmail(request.email()))
+        log.info("회원 저장 요청 - email: {}", request.email());
+
+        if(memberRepository.existsByEmail(request.email())) {
+            log.warn("회원 가입 실패 - email 중복: {}", request.email());
             throw new IllegalArgumentException("Email already in use.");
+        }
 
         Member member = Member.builder()
                 .email(request.email())
@@ -55,66 +59,91 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+        log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
         return IdResponse.of(member);
     }
 
     public BoolResponse isEmailUnique(String email) {
-        return BoolResponse.of(!memberRepository.existsByEmail(email));
+        log.info("이메일 중복 검사 요청 - email: {}", email);
+        boolean isUnique = !memberRepository.existsByEmail(email);
+        log.info("이메일 중복 검사 결과 - email: {}, isUnique: {}", email, isUnique);
+        return BoolResponse.of(isUnique);
     }
 
     @Transactional
     public TokenResponse login(MemberLoginRequest request) {
+        log.debug("사용자 인증 진행 - email: {}", request.email());
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.email(), request.password());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        log.debug("인증 완료 - email: {}", request.email());
 
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
+        log.debug("JWT 토큰 생성 완료 - email: {}, accessToken: {}, refreshToken: {}",
+                request.email(), jwtToken.accessToken(), jwtToken.refreshToken());
+
         Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(()-> new EntityNotFoundException("Member not found."));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found."));
+        log.info("회원 정보 조회 완료 - memberId: {}, email: {}", member.getId(), request.email());
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
                 .value(jwtToken.refreshToken())
                 .build();
         refreshTokenRepository.save(refreshToken);
-        return new TokenResponse(member.getId(), jwtToken,member.getProfileImg(),member.getName());
+        log.debug("RefreshToken 저장 완료 - key: {}", authentication.getName());
+
+        log.info("로그인 성공 - memberId: {}, email: {}", member.getId(), request.email());
+        return new TokenResponse(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
+
 
     @Transactional
     public TokenResponse reissue(TokenRequest tokenRequest) {
+        log.info("토큰 재발급 요청");
+
         if (!jwtTokenProvider.validateToken(tokenRequest.refreshToken())) {
+            log.warn("토큰 재발급 실패 - 유효하지 않은 Refresh Token");
             throw new RuntimeException("Refresh Token is not valid.");
         }
+
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequest.accessToken());
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User is already logged out."));
+
         if (!refreshToken.getValue().equals(tokenRequest.refreshToken())) {
+            log.warn("토큰 재발급 실패 - Refresh Token 불일치");
             throw new RuntimeException("The user information in the refresh token does not match.");
         }
+
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
-        RefreshToken newRefreshToken = refreshToken.updateValue(jwtToken.refreshToken());
-        refreshTokenRepository.save(newRefreshToken);
+        refreshToken.updateValue(jwtToken.refreshToken());
+        refreshTokenRepository.save(refreshToken);
 
-        log.info("refreshToken.getKey():"+refreshToken.getKey());
+        log.info("토큰 재발급 성공 - userEmail: {}", refreshToken.getKey());
+
         Member member = memberRepository.findByEmail(refreshToken.getKey())
-                .orElseThrow(()->new EntityNotFoundException("Member not found."));
+                .orElseThrow(() -> new EntityNotFoundException("Member not found."));
 
-        return TokenResponse.of(member.getId(),jwtToken,member.getProfileImg(),member.getName());
+        return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
+        log.info("회원 정보 조회 요청 - memberId: {}", memberId);
         return memberRepository.findById(memberId)
                 .map(MemberInfoResponse::from)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
+        log.info("전체 회원 정보 조회 요청");
         return memberRepository.findAll(pageable)
                 .map(MemberInfoResponse::from);
     }
 
     public MemberInfoResponse getMyInfo(){
-        log.info("service entry");
-        log.info("SecurityUtil.getCurrentMemberEmail{}",SecurityUtil.getCurrentMemberEmail());
+        log.info("로그인 한 회원의 정보 조회 요청");
         return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
                 .map(MemberInfoResponse::from)
                 .orElseThrow(() -> new RuntimeException("No login user information."));
@@ -122,8 +151,11 @@ public class MemberService {
 
     @Transactional
     public void logout(TokenRequest tokenRequest) {
+        log.info("로그아웃 요청 - accessToken: {}", tokenRequest.accessToken());
+
         String refreshToken = tokenRequest.refreshToken();
         if (!jwtTokenProvider.validateToken(refreshToken)) {
+            log.warn("로그아웃 실패 - 유효하지 않은 Refresh Token");
             throw new RuntimeException("Invalid Refresh Token");
         }
 
@@ -134,9 +166,10 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("User is already logged out or token is invalid."));
 
         refreshTokenRepository.delete(token);
-
         Long expiration = jwtTokenProvider.getExpiration(tokenRequest.accessToken());
         redisUtil.setBlackList(tokenRequest.accessToken(), "access_token", expiration);
+
+        log.info("로그아웃 성공 - email: {}", userEmail);
     }
 
     /*@Transactional
@@ -165,8 +198,11 @@ public class MemberService {
 
     @Transactional
     public void deleteMember(Long memberId) {
+        log.info("회원 삭제 요청 - memberId: {}", memberId);
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
         memberRepository.delete(member);
+        log.info("회원 삭제 완료 - memberId: {}", memberId);
     }
 }
