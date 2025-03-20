@@ -11,6 +11,7 @@ import capstone.bookitty.domain.bookState.repository.BookStateRepository;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,13 +32,12 @@ public class BookStateService {
     @Transactional
     public IdResponse saveState(StateSaveRequest request) {
         State reqState = request.state();
-        if(reqState == null) throw new IllegalArgumentException("state is invalid");
+        if (reqState == null) {
+            throw new IllegalArgumentException("state is invalid");
+        }
 
         Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(()-> new MemberNotFoundException(request.memberId()));
-
-        if(stateRepository.existsByMemberIdAndIsbn(request.memberId(), request.isbn()))
-            throw new IllegalArgumentException("bookState already exists");
+                .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         BookState bookState = BookState.builder()
                 .member(member)
@@ -49,11 +49,19 @@ public class BookStateService {
                 .categoryName(request.categoryName())
                 .build();
 
-        if(reqState == State.READ_ALREADY) bookState.readAtNow();
+        if (reqState == State.READ_ALREADY) {
+            bookState.readAtNow();
+        }
 
-        stateRepository.save(bookState);
+        try {
+            stateRepository.saveAndFlush(bookState);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("BookState already exists for this member and ISBN.");
+        }
+
         return new IdResponse(bookState.getId());
     }
+
 
     public StateInfoResponse findStateByStateId(Long stateId) {
         return stateRepository.findById(stateId)

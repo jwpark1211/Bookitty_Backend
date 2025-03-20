@@ -14,7 +14,12 @@ import java.time.LocalDateTime;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="comment")
+@Table(
+        name = "comment",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "unique_member_isbn", columnNames = {"member_id", "isbn"})
+        }
+)
 public class Comment {
 
     @Id @Column(name = "comment_id")

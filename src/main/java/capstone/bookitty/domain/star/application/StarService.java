@@ -10,9 +10,9 @@ import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.star.exception.StarNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.domain.star.repository.StarRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,10 +29,7 @@ public class StarService {
     @Transactional
     public IdResponse saveStar(StarSaveRequest request) {
         Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(()->new MemberNotFoundException(request.memberId()));
-
-        if(starRepository.existsByMemberIdAndIsbn(request.memberId(),request.isbn()))
-            throw new IllegalArgumentException("star already exists.");
+                .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         Star star = Star.builder()
                 .score(request.score())
@@ -40,7 +37,12 @@ public class StarService {
                 .member(member)
                 .build();
 
-        starRepository.save(star);
+        try {
+            starRepository.saveAndFlush(star);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Star rating already exists for this member and ISBN.");
+        }
+
         return new IdResponse(star.getId());
     }
 

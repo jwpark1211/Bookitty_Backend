@@ -16,11 +16,14 @@ import capstone.bookitty.domain.comment.repository.LikeRepository;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,16 +39,19 @@ public class CommentService {
     @Transactional
     public IdResponse saveComment(CommentSaveRequest request) {
         Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(()->new MemberNotFoundException(request.memberId()));
-        if(commentRepository.existsByMemberIdAndIsbn(request.memberId(),request.isbn()))
-            throw new IllegalArgumentException("comment already exists.");
+                .orElseThrow(() -> new MemberNotFoundException(request.memberId()));
 
         Comment comment = Comment.builder()
                 .member(member)
                 .isbn(request.isbn())
                 .content(request.content())
                 .build();
-        commentRepository.save(comment);
+
+        try {
+            comment = commentRepository.saveAndFlush(comment);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Comment already exists for this member and ISBN.");
+        }
 
         return new IdResponse(comment.getId());
     }
@@ -62,11 +68,10 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentUpdateResponse updateComment(Long commentId, CommentUpdateRequest request) {
+    public void updateComment(Long commentId, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
         comment.updateContent(request.content());
-        return new CommentUpdateResponse(comment.getId(), comment.getContent(), comment.getModifiedAt());
     }
 
     @Transactional
