@@ -61,8 +61,6 @@ public class MemberService {
         return IdResponse.of(member);
     }
 
-
-    @Transactional(readOnly = true)
     public BoolResponse isEmailUnique(String email) {
         log.info("이메일 중복 검사 요청 - email: {}", email);
         boolean isUnique = !memberRepository.existsByEmail(email);
@@ -129,7 +127,6 @@ public class MemberService {
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
-    @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
         log.info("회원 정보 조회 요청 - memberId: {}", memberId);
         return memberRepository.findById(memberId)
@@ -137,14 +134,12 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 
-    @Transactional(readOnly = true)
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
         log.info("전체 회원 정보 조회 요청");
         return memberRepository.findAll(pageable)
                 .map(MemberInfoResponse::from);
     }
 
-    @Transactional(readOnly = true)
     public MemberInfoResponse getMyInfo(){
         log.info("로그인 한 회원의 정보 조회 요청");
         return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
