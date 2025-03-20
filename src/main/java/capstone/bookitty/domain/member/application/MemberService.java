@@ -19,6 +19,7 @@ import capstone.bookitty.global.util.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -41,15 +41,8 @@ public class MemberService {
     //private final S3Service s3Service;
     private final RedisUtil redisUtil;
 
-    @Transactional
     public IdResponse saveMember(MemberSaveRequest request) {
         log.info("회원 저장 요청 - email: {}", request.email());
-
-        if(memberRepository.existsByEmail(request.email())) {
-            log.warn("회원 가입 실패 - email 중복: {}", request.email());
-            throw new IllegalArgumentException("Email already in use.");
-        }
-
         Member member = Member.builder()
                 .email(request.email())
                 .name(request.name())
@@ -58,11 +51,18 @@ public class MemberService {
                 .gender(request.gender())
                 .build();
 
-        memberRepository.save(member);
-        log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
+        try {
+            memberRepository.saveAndFlush(member);
+            log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Email already in use.");
+        }
+
         return IdResponse.of(member);
     }
 
+
+    @Transactional(readOnly = true)
     public BoolResponse isEmailUnique(String email) {
         log.info("이메일 중복 검사 요청 - email: {}", email);
         boolean isUnique = !memberRepository.existsByEmail(email);
@@ -129,6 +129,7 @@ public class MemberService {
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
+    @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
         log.info("회원 정보 조회 요청 - memberId: {}", memberId);
         return memberRepository.findById(memberId)
@@ -136,12 +137,14 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
     }
 
+    @Transactional(readOnly = true)
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
         log.info("전체 회원 정보 조회 요청");
         return memberRepository.findAll(pageable)
                 .map(MemberInfoResponse::from);
     }
 
+    @Transactional(readOnly = true)
     public MemberInfoResponse getMyInfo(){
         log.info("로그인 한 회원의 정보 조회 요청");
         return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
