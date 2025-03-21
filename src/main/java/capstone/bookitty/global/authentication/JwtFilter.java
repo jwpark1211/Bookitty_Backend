@@ -62,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        List<String> excludeUrls = List.of("/books/**", "/members/login", "/members/reissue",
+        List<String> excludeUrls = List.of("/books/**", "/members/login","/members/new", "/members/reissue",
                 "/members/email/unique", "/swagger-ui/**", "/actuator/**");
 
         return excludeUrls.stream().anyMatch(url -> new AntPathRequestMatcher(url).matches(request));
