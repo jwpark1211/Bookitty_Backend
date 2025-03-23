@@ -1,4 +1,4 @@
-`## 📚 북키티 (Bookitty) : 사용자 맞춤형 도서 추천 서비스
+## 📚 북키티 (Bookitty) : 사용자 맞춤형 도서 추천 서비스
 
 <img src="https://github.com/user-attachments/assets/f2b1a69b-1551-41d9-bcb1-c74702a6b28d" width="700"/>
 
