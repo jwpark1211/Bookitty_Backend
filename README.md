@@ -2,7 +2,8 @@
 
 <img src="https://github.com/user-attachments/assets/f2b1a69b-1551-41d9-bcb1-c74702a6b28d" width="700"/>
 
----
+<br>
+<br>
 
 ## 🧭 Intro
 
@@ -15,9 +16,8 @@
 - 개인 맞춤형 도서 외에도 **베스트셀러, 신간, 장르별 인기 도서 추천** 기능을 제공하며, 사용자 간 소통(댓글, 피드 등)을 통해 **독서 경험을 공유할 수 있는 커뮤니케이션 기능**도 함께 구현하였습니다.
 
 <br>
+<br>
 
-
----
 
 ## ✨ Feature Highlights
 
@@ -30,7 +30,8 @@
 - 도서를 기록하고, 의견을 나눌 수 있는 **커뮤니케이션 공간**
 - 월별 / 연도별 / 카테고리별 **사용자 독서 통계** 제공
 
----
+<br>
+<br>
 
 ## 🏗️ Architecture
 
@@ -60,20 +61,24 @@
 - Prometheus
 - Grafana
 
----
+<br>
+<br>
 
 ## 🧩 ERD
 
 <img src="https://github.com/user-attachments/assets/51157f25-f1f5-4c27-8a69-295105b76835" width="700"/>
 
----
+<br>
+<br>
 
 ## 📌 Project Info
 
 - 👤 **Team**: 개인 프로젝트 (1인 개발)
 - 🗓️ **Period**: 2024.03 ~ 
 
----
+<br>
+<br>
+
 ## 📁 Project Structure
 <pre>
 📦 capstone.bookitty  
