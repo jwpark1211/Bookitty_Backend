@@ -89,21 +89,20 @@
 │       ├── 📁 comment                     
 │       ├── 📁 star                        
 │       └── 📁 member                      
-│                  ├── 📁 api                     
-│                  ├── 📁 application            
-│                  ├── 📁 domain                 
-│                  ├── 📁 dto                    
-│                  ├── 📁 exception              
-│                  └── 📁 repository             
+│             ├── 📁 api                     
+│             ├── 📁 application            
+│             ├── 📁 domain                 
+│             ├── 📁 dto                    
+│             ├── 📁 exception              
+│             └── 📁 repository             
 │
 ├── 📁 global                          
-│       ├── 📁 annotation                  
-│       ├── 📁 application                
-│       ├── 📁 authentication             
-│       ├── 📁 config                     
-│       ├── 📁 dto                        
-│       ├── 📁 error                      
-│       └── 📁 util                       
+│    ├── 📁 annotation                  
+│    ├── 📁 application                
+│    ├── 📁 authentication             
+│    ├── 📁 config                     
+│    ├── 📁 dto                        
+│    ├── 📁 error                      
+│    └── 📁 util                       
 │
 └── 📄 BookittyApplication.java
-<pre>
