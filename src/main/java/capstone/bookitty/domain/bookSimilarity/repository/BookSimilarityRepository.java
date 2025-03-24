@@ -10,5 +10,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BookSimilarityRepository extends JpaRepository<BookSimilarity, BookSimilarityId>, BookSimilarityCustomRepository {
+public interface BookSimilarityRepository extends JpaRepository<BookSimilarity, BookSimilarityId>{
+    @Query(value = """
+        (SELECT * FROM BookSimilarity WHERE isbn1 = :isbn)
+        UNION ALL
+        (SELECT * FROM BookSimilarity WHERE isbn2 = :isbn)
+        ORDER BY similarity DESC
+    """, nativeQuery = true)
+    List<BookSimilarity> findTopSimilarBooks(@Param("isbn") String isbn);
 }
