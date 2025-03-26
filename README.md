@@ -34,8 +34,7 @@
 <br>
 
 ## 🏗️ Architecture
-
-<img width="1051" alt="architecture" src="https://github.com/user-attachments/assets/07b142bd-da76-4b54-8210-3f8540210ec6" />
+<img width="663" alt="image" src="https://github.com/user-attachments/assets/fdb2d8de-87d9-429d-ada4-e5af7baf34da" />
 
 ### Backend
 - Java, Spring Boot 3
