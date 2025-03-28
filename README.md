@@ -37,7 +37,7 @@
 <img width="663" alt="image" src="https://github.com/user-attachments/assets/fdb2d8de-87d9-429d-ada4-e5af7baf34da" />
 
 ### Backend
-- Java, Spring Boot 3
+- Java, Spring Boot
 - Spring Security, Spring Batch, Spring WebFlux
 - Spring Data JPA, QueryDSL
 
@@ -46,7 +46,7 @@
 - Redis
 
 ### Testing
-- JUnit 5
+- JUnit
 - Mockito
 - Apache JMeter
 
