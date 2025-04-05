@@ -1,5 +1,7 @@
 package capstone.bookitty;
 
+import capstone.bookitty.global.config.MetaDBConfig;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -11,7 +13,12 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-@EnableCaching @EnableScheduling
+@EnableCaching
+@EnableScheduling
+@EnableBatchProcessing(
+		dataSourceRef = MetaDBConfig.META_DATASOURCE,
+		transactionManagerRef = MetaDBConfig.META_TRANSACTION_MANAGER
+)
 public class BookittyApplication {
 
 	public static void main(String[] args) {

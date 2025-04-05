@@ -13,4 +13,5 @@ public interface StarCustomRepository {
     Page<Star> findByFilters(String isbn, Long memberId, Pageable pageable);
 
     List<RatingPair> findCommonRatings(String isbn1, String isbn2);
+    List<String> findIsbnsRatedWith(String isbn);
 }

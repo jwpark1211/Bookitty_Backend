@@ -1,5 +1,7 @@
 package capstone.bookitty.domain.star.application;
 
+import capstone.bookitty.domain.bookSimilarity.domain.RatingEvent;
+import capstone.bookitty.domain.bookSimilarity.repository.RatingEventRepository;
 import capstone.bookitty.global.dto.IdResponse;
 import capstone.bookitty.domain.star.dto.StarInfoResponse;
 import capstone.bookitty.domain.star.dto.StarSaveRequest;
@@ -25,6 +27,7 @@ public class StarService {
 
     private final StarRepository starRepository;
     private final MemberRepository memberRepository;
+    private final RatingEventRepository ratingEventRepository;
 
     @Transactional
     public IdResponse saveStar(StarSaveRequest request) {
@@ -42,7 +45,8 @@ public class StarService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Star rating already exists for this member and ISBN.");
         }
-
+        //평점 저장 시 이벤트 기록 추가
+        ratingEventRepository.save(new RatingEvent(request.memberId(), request.isbn()));
         return new IdResponse(star.getId());
     }
 
@@ -58,6 +62,8 @@ public class StarService {
             Star star = starRepository.findById(starId)
                     .orElseThrow(() -> new StarNotFoundException(starId));
             star.updateStar(request.score());
+            //평점 저장 시 이벤트 기록 추가
+            ratingEventRepository.save(new RatingEvent(star.getMember().getId(),star.getIsbn()));
         } catch (OptimisticLockException e) {
             throw new IllegalStateException("Concurrent update detected for Star with ID " + starId, e);
         }

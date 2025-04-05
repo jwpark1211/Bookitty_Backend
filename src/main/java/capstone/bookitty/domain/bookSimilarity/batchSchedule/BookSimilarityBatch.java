@@ -28,18 +28,16 @@ import java.util.*;
 public class BookSimilarityBatch {
 
     private final JobRepository jobRepository;
-
     @Qualifier("dataTransactionManager")
     private final PlatformTransactionManager transactionManager;
-
     private final StarRepository starRepository;
     private final BookSimilarityRepository bookSimilarityRepository;
 
     @Bean
-    public Job bookSimilarityJob() {
-        return new JobBuilder("bookSimilarityJob", jobRepository)
-                .start(calculateBookSimilarityStep())
-                .build();
+        public Job bookSimilarityJob() {
+            return new JobBuilder("bookSimilarityJob", jobRepository)
+                    .start(calculateBookSimilarityStep())
+                    .build();
     }
 
     @Bean

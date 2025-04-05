@@ -87,4 +87,16 @@ public class StarCustomRepositoryImpl implements StarCustomRepository{
                 .fetch();
     }
 
+    @Override
+    public List<String> findIsbnsRatedWith(String isbn) {
+        return queryFactory
+                .select(s2.isbn)
+                .distinct()
+                .from(s1)
+                .join(s2)
+                .on(s1.member.id.eq(s2.member.id))
+                .where(s1.isbn.eq(isbn).and(s2.isbn.ne(isbn)))
+                .fetch();
+    }
+
 }
