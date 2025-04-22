@@ -25,9 +25,11 @@ public class BookService {
     private final StarRepository starRepository;
     private final BookSimilarityRepository bookSimilarityRepository;
 
+    @Cacheable(value = "bookDetail", key = "'book:' + #isbn", unless = "#result == null")
     public Mono<AladinBookSearchListResponse> searchByBookISBN(String isbn) {
         return aladinOpenApi.searchByBookISBN(isbn);
     }
+
 
     public Mono<AladinBookSearchListResponse> searchByKeyword(String keyword) {
         return aladinOpenApi.searchByKeyword(keyword);
@@ -53,7 +55,6 @@ public class BookService {
         return aladinOpenApi.getBlogChoice();
     }
 
-    @Cacheable(value = "bookRecommendations", key = "#a0", unless = "#result == null")
     public List<AladinBookSearchListResponse> getRecommendationsForUser(Long memberId) {
         log.info("1. 사용자의 평점 기록 조회");
         List<Star> userRatings = starRepository.findByMemberId(memberId);
