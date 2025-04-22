@@ -14,9 +14,5 @@ import java.util.Optional;
 
 @Repository
 public interface BookStateRepository extends JpaRepository<BookState,Long>,BookStateCustomRepository {
-    Page<BookState> findByIsbn(String isbn, Pageable pageable);
-    Page<BookState> findByMemberId(Long memberId,Pageable pageable);
     List<BookState> findByMemberId(Long memberId);
-    boolean existsByMemberIdAndIsbn(Long memberId, String isbn);
-    Optional<BookState> findByMemberIdAndIsbn(Long memberId, String isbn);
 }
