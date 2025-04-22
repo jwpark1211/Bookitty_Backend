@@ -90,8 +90,6 @@ public class BookSimilarityBatch {
                     ? dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
                     : 0.0;
 
-            // → 여기가 추가된 부분: 0~1 사이의 분포를 넓히기 위해 지수 변환
-            //    2차(제곱), 3차(세제곱) 등으로 조절 가능
             double adjustedSimilarity = Math.pow(cosineSimilarity, 4);
 
             return BookSimilarity.builder()
