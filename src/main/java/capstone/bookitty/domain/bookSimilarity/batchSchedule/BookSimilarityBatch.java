@@ -75,29 +75,33 @@ public class BookSimilarityBatch {
     @Bean
     public ItemProcessor<BookPair, BookSimilarity> bookSimilarityProcessor() {
         return bookPair -> {
-            // 두 도서를 동시에 평가한 평점 데이터를 조회 (각 행: [score1, score2])
             List<RatingPair> commonRatings = starRepository.findCommonRatings(bookPair.isbn1(), bookPair.isbn2());
-
             if (commonRatings.isEmpty()) return null;
 
             double dotProduct = 0.0;
-            double normA = 0.0;
-            double normB = 0.0;
+            double normA      = 0.0;
+            double normB      = 0.0;
             for (RatingPair row : commonRatings) {
                 dotProduct += row.score1() * row.score2();
-                normA += row.score1() * row.score1();
-                normB += row.score2() * row.score2();
+                normA      += row.score1() * row.score1();
+                normB      += row.score2() * row.score2();
             }
             double cosineSimilarity = (normA != 0 && normB != 0)
-                    ? dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)) : 0.0;
+                    ? dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
+                    : 0.0;
+
+            // → 여기가 추가된 부분: 0~1 사이의 분포를 넓히기 위해 지수 변환
+            //    2차(제곱), 3차(세제곱) 등으로 조절 가능
+            double adjustedSimilarity = Math.pow(cosineSimilarity, 4);
 
             return BookSimilarity.builder()
                     .isbn1(bookPair.isbn1())
                     .isbn2(bookPair.isbn2())
-                    .similarity(cosineSimilarity)
+                    .similarity(adjustedSimilarity)
                     .build();
         };
     }
+
 
     /**
      * Writer: 계산된 BookSimilarity 객체들을 for문을 사용해 null 체크 후 DB에 저장합니다.
