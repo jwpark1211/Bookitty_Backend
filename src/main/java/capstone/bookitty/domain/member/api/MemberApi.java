@@ -29,7 +29,7 @@ public class MemberApi {
     private final MemberService memberService;
 
     @Operation(summary = "회원가입")
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<IdResponse> createMember(
             @RequestBody @Valid MemberSaveRequest request){
 
