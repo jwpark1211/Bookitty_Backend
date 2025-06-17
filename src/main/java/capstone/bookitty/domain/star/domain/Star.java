@@ -32,7 +32,9 @@ public class Star {
     private Member member;
 
     private String isbn;
-    private double score;
+
+    @Getter(AccessLevel.NONE)
+    private int score;
 
     @Version
     private int version;
@@ -46,12 +48,22 @@ public class Star {
     public Star(Member member, String isbn, double score) {
         this.member = member;
         this.isbn = isbn;
-        this.score = score;
+        this.score = toInternalScore(score);
         this.createdAt = LocalDateTime.now();
     }
 
     public void updateStar(double score){
         this.modifiedAt = LocalDateTime.now();
-        this.score = score;
+        this.score = toInternalScore(score);
+    }
+
+    /** 사용자에게 보여줄 점수 (예: 7 → 3.5) */
+    public double getScore() {
+        return score / 2.0;
+    }
+
+    /** 내부적으로 저장할 점수로 변환 (예: 3.5 → 7) */
+    private int toInternalScore(double inputScore) {
+        return (int) (inputScore * 2);
     }
 }
