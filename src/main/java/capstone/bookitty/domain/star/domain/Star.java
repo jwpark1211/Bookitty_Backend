@@ -30,9 +30,11 @@ public class Star {
     @JoinColumn(name = "member_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
-
     private String isbn;
-    private double score;
+
+    /** 2 ~ 10 사이의 정수 값 (0.5 단위 저장: 1.0 → 2, 1.5 → 3, ..., 5.0 → 10) */
+    @Getter(AccessLevel.NONE)
+    private int score;
 
     @Version
     private int version;
@@ -46,12 +48,22 @@ public class Star {
     public Star(Member member, String isbn, double score) {
         this.member = member;
         this.isbn = isbn;
-        this.score = score;
+        this.score = toInternalScore(score);
         this.createdAt = LocalDateTime.now();
     }
 
     public void updateStar(double score){
         this.modifiedAt = LocalDateTime.now();
-        this.score = score;
+        this.score = toInternalScore(score);
+    }
+
+    /** getter Override */
+    public double getScore() {
+        return score / 2.0;
+    }
+
+    /** 내부적으로 저장할 점수로 변환 (예: 3.5 → 7) */
+    private int toInternalScore(double inputScore) {
+        return (int) (inputScore * 2);
     }
 }
