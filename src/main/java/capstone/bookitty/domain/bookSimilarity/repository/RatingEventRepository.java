@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface RatingEventRepository extends JpaRepository<RatingEvent, Long> {
     List<RatingEvent> findByIsbnAndStatus(String isbn, RatingEvent.Status status);
+    Page<RatingEvent> findByStatus(RatingEvent.Status status, Pageable pageable);
 }
