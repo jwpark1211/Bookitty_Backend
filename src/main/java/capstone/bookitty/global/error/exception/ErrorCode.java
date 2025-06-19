@@ -16,7 +16,8 @@ public enum ErrorCode {
 
     // Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
-    LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid")
+    LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
+    REFRESH_TOKEN_SAVE_INVALID(500, "M003", "Refresh Token is invalid")
     ;
 
     private final String code;

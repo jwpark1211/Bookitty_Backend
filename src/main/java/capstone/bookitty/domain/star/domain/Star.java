@@ -58,6 +58,7 @@ public class Star {
     }
 
     /** getter Override */
+    /** 사용자에게 보여줄 점수 (예: 7 → 3.5) */
     public double getScore() {
         return score / 2.0;
     }

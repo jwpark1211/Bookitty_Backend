@@ -1,5 +1,7 @@
 package capstone.bookitty.domain.member.application;
 
+import capstone.bookitty.domain.member.exception.DuplicateEmailException;
+import capstone.bookitty.domain.member.exception.RefreshTokenSaveException;
 import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.dto.IdResponse;
 import capstone.bookitty.domain.member.dto.MemberInfoResponse;
@@ -16,10 +18,8 @@ import capstone.bookitty.global.authentication.JwtToken;
 import capstone.bookitty.global.authentication.JwtTokenProvider;
 import capstone.bookitty.global.util.RedisUtil;
 import capstone.bookitty.global.util.SecurityUtil;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +41,15 @@ public class MemberService {
     //private final S3Service s3Service;
     private final RedisUtil redisUtil;
 
+    @Transactional
     public IdResponse saveMember(MemberSaveRequest request) {
         log.info("회원 저장 요청 - email: {}", request.email());
+
+        if (memberRepository.existsByEmail(request.email())) {
+            log.warn("회원 저장 실패 - 중복 이메일: {}", request.email());
+            throw new DuplicateEmailException(request.email());
+        }
+
         Member member = Member.builder()
                 .email(request.email())
                 .name(request.name())
@@ -51,12 +58,8 @@ public class MemberService {
                 .gender(request.gender())
                 .build();
 
-        try {
-            memberRepository.saveAndFlush(member);
-            log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("Email already in use.");
-        }
+        memberRepository.save(member);
+        log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
 
         return IdResponse.of(member);
     }
@@ -72,30 +75,14 @@ public class MemberService {
     public TokenResponse login(MemberLoginRequest request) {
         log.debug("사용자 인증 진행 - email: {}", request.email());
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(request.email(), request.password());
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        log.debug("인증 완료 - email: {}", request.email());
-
-        JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
-        log.debug("JWT 토큰 생성 완료 - email: {}, accessToken: {}, refreshToken: {}",
-                request.email(), jwtToken.accessToken(), jwtToken.refreshToken());
-
-        Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new EntityNotFoundException("Member not found."));
-        log.info("회원 정보 조회 완료 - memberId: {}, email: {}", member.getId(), request.email());
-
-        RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
-                .value(jwtToken.refreshToken())
-                .build();
-        refreshTokenRepository.save(refreshToken);
-        log.debug("RefreshToken 저장 완료 - key: {}", authentication.getName());
+        Authentication authentication = authenticateUser(request);
+        JwtToken jwtToken = generateTokens(authentication);
+        Member member = findMemberByEmail(request.email());
+        saveRefreshToken(authentication, jwtToken);
 
         log.info("로그인 성공 - memberId: {}, email: {}", member.getId(), request.email());
         return new TokenResponse(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
-
 
     @Transactional
     public TokenResponse reissue(TokenRequest tokenRequest) {
@@ -120,31 +107,9 @@ public class MemberService {
         refreshTokenRepository.save(refreshToken);
 
         log.info("토큰 재발급 성공 - userEmail: {}", refreshToken.getKey());
-
-        Member member = memberRepository.findByEmail(refreshToken.getKey())
-                .orElseThrow(() -> new EntityNotFoundException("Member not found."));
+        Member member = findMemberByEmail(refreshToken.getKey());
 
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
-    }
-
-    public MemberInfoResponse getMemberInfoWithId(Long memberId) {
-        log.info("회원 정보 조회 요청 - memberId: {}", memberId);
-        return memberRepository.findById(memberId)
-                .map(MemberInfoResponse::from)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-    }
-
-    public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
-        log.info("전체 회원 정보 조회 요청");
-        return memberRepository.findAll(pageable)
-                .map(MemberInfoResponse::from);
-    }
-
-    public MemberInfoResponse getMyInfo(){
-        log.info("로그인 한 회원의 정보 조회 요청");
-        return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
-                .map(MemberInfoResponse::from)
-                .orElseThrow(() -> new RuntimeException("No login user information."));
     }
 
     @Transactional
@@ -168,6 +133,36 @@ public class MemberService {
         redisUtil.setBlackList(tokenRequest.accessToken(), "access_token", expiration);
 
         log.info("로그아웃 성공 - email: {}", userEmail);
+    }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        log.info("회원 삭제 요청 - memberId: {}", memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        memberRepository.delete(member);
+        log.info("회원 삭제 완료 - memberId: {}", memberId);
+    }
+
+    public MemberInfoResponse getMemberInfoWithId(Long memberId) {
+        log.info("회원 정보 조회 요청 - memberId: {}", memberId);
+        return memberRepository.findById(memberId)
+                .map(MemberInfoResponse::from)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
+
+    public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
+        log.info("전체 회원 정보 조회 요청");
+        return memberRepository.findAll(pageable)
+                .map(MemberInfoResponse::from);
+    }
+
+    public MemberInfoResponse getMyInfo(){
+        log.info("로그인 한 회원의 정보 조회 요청");
+        return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
+                .map(MemberInfoResponse::from)
+                .orElseThrow(() -> new RuntimeException("No login user information."));
     }
 
     /*@Transactional
@@ -194,13 +189,35 @@ public class MemberService {
         }
     }*/
 
-    @Transactional
-    public void deleteMember(Long memberId) {
-        log.info("회원 삭제 요청 - memberId: {}", memberId);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+    private Authentication authenticateUser(MemberLoginRequest request) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        return authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+    }
 
-        memberRepository.delete(member);
-        log.info("회원 삭제 완료 - memberId: {}", memberId);
+    private JwtToken generateTokens(Authentication authentication) {
+        JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
+        log.debug("JWT 토큰 생성 완료 - accessToken: {}, refreshToken: {}",
+                jwtToken.accessToken(), jwtToken.refreshToken());
+        return jwtToken;
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException());
+    }
+
+    private void saveRefreshToken(Authentication authentication, JwtToken jwtToken) {
+        try {
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .key(authentication.getName())
+                    .value(jwtToken.refreshToken())
+                    .build();
+            refreshTokenRepository.save(refreshToken);
+            log.debug("RefreshToken 저장 완료 - key: {}", authentication.getName());
+        } catch (Exception e) {
+            log.error("RefreshToken 저장 실패 - key: {}", authentication.getName(), e);
+            throw new RefreshTokenSaveException("리프레시 토큰 저장 중 오류가 발생했습니다.");
+        }
     }
 }
