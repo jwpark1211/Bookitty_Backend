@@ -1,6 +1,8 @@
 package capstone.bookitty.global.error;
 
 
+import capstone.bookitty.domain.member.exception.DuplicateEmailException;
+import capstone.bookitty.domain.member.exception.RefreshTokenSaveException;
 import capstone.bookitty.global.error.exception.BusinessException;
 import capstone.bookitty.global.error.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +17,7 @@ import java.nio.file.AccessDeniedException;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error("handleEntityNotFoundException", e);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 
     @ExceptionHandler(IllegalArgumentException.class) //잘못된 인자 전달
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e){
@@ -58,4 +55,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.MULTIPART_INVALID.getStatus()));
     }
 
+    @ExceptionHandler(DuplicateEmailException.class) //이메일 중복
+    public ResponseEntity<ErrorResponse> handleDuplicateEmailException(DuplicateEmailException e) {
+        log.warn("DuplicateEmailException: {}", e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.EMAIL_DUPLICATION);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.EMAIL_DUPLICATION.getStatus()));
+    }
+
+    @ExceptionHandler(RefreshTokenSaveException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenSaveException(RefreshTokenSaveException e) {
+        log.warn("RefreshTokenSaveException: {}", e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.REFRESH_TOKEN_SAVE_INVALID);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.REFRESH_TOKEN_SAVE_INVALID.getStatus()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.error("handleEntityNotFoundException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
