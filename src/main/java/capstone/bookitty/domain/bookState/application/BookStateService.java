@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +56,7 @@ public class BookStateService {
         }
 
         try {
-            stateRepository.saveAndFlush(bookState);
+            stateRepository.save(bookState);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("BookState already exists for this member and ISBN.");
         }
@@ -104,29 +106,40 @@ public class BookStateService {
     }
 
     public CategoryStaticsResponse findCategoryStateByMemberId(Long memberId) {
-        List<BookState> statesC = stateRepository.findByMemberId(memberId);
-        int total = statesC.size();
-        int literature = 0,humanities = 0, businessEconomics = 0, selfImprovement = 0,scienceTechnology = 0, etc = 0;
-        for(BookState state: statesC) {
-            if (state.getState() == State.READ_ALREADY) {
-                if (state.getCategoryName().contains("경제경영") || state.getCategoryName().contains("경제/경영")) {
-                    businessEconomics++;
-                } else if (state.getCategoryName().contains("소설/시/희곡") || state.getCategoryName().contains("서양고전문학")
-                        || state.getCategoryName().contains("동양고전문학")) {
-                    literature++;
-                } else if (state.getCategoryName().contains("인문학") || state.getCategoryName().contains("인문/사회")) {
-                    humanities++;
-                } else if (state.getCategoryName().contains("과학") || state.getCategoryName().contains("컴퓨터/모바일")
-                        || state.getCategoryName().contains("컴퓨터") || state.getCategoryName().contains("자연과학")) {
-                    scienceTechnology++;
-                } else if (state.getCategoryName().contains("자기계발")) {
-                    selfImprovement++;
-                } else{
-                    etc++;}
-            }
+        List<BookState> states = stateRepository.findByMemberId(memberId);
+
+        Map<String, Long> grouped = states.stream()
+                .filter(state -> state.getState() == State.READ_ALREADY)
+                .map(BookState::getCategoryName)
+                .map(this::mapToCategory)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        return new CategoryStaticsResponse(
+                grouped.getOrDefault("literature", 0L).intValue(),
+                grouped.getOrDefault("humanities", 0L).intValue(),
+                grouped.getOrDefault("businessEconomics", 0L).intValue(),
+                grouped.getOrDefault("selfImprovement", 0L).intValue(),
+                grouped.getOrDefault("scienceTechnology", 0L).intValue(),
+                grouped.getOrDefault("etc", 0L).intValue()
+        );
+    }
+
+    private String mapToCategory(String categoryName) {
+        if (categoryName.contains("경제경영") || categoryName.contains("경제/경영")) {
+            return "businessEconomics";
+        } else if (categoryName.contains("소설/시/희곡") || categoryName.contains("서양고전문학")
+                || categoryName.contains("동양고전문학")) {
+            return "literature";
+        } else if (categoryName.contains("인문학") || categoryName.contains("인문/사회")) {
+            return "humanities";
+        } else if (categoryName.contains("과학") || categoryName.contains("컴퓨터/모바일")
+                || categoryName.contains("컴퓨터") || categoryName.contains("자연과학")) {
+            return "scienceTechnology";
+        } else if (categoryName.contains("자기계발")) {
+            return "selfImprovement";
+        } else {
+            return "etc";
         }
-        return new CategoryStaticsResponse(literature,humanities,businessEconomics,
-                selfImprovement,scienceTechnology,etc);
     }
 
 }
