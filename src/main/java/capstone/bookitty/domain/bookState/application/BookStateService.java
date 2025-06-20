@@ -20,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional(readOnly = true)
@@ -93,17 +95,20 @@ public class BookStateService {
     }
 
     public MonthlyStaticsResponse findMonthlyStatByMemberId(Long memberId, int year) {
-        List<BookState> statesM = stateRepository.findByMemberId(memberId);
-        int[] monthly = new int[12];
-        for(int i=0; i<12; i++){ monthly[i] = 0; }
-        for(BookState state : statesM){
-            if(state.getState()==State.READ_ALREADY){
-                if(state.getReadAt()!=null && state.getReadAt().getYear()==year)
-                    monthly[state.getReadAt().getMonthValue()-1]++;
-            }
-        }
+        Map<Integer, Long> monthCount = stateRepository.findByMemberId(memberId).stream()
+                .filter(s -> s.getState() == State.READ_ALREADY)
+                .map(BookState::getReadAt)
+                .filter(Objects::nonNull)
+                .filter(d -> d.getYear() == year)
+                .collect(Collectors.groupingBy(d -> d.getMonthValue(), Collectors.counting()));
+
+        int[] monthly = IntStream.rangeClosed(1, 12)
+                .map(i -> monthCount.getOrDefault(i, 0L).intValue())
+                .toArray();
+
         return new MonthlyStaticsResponse(monthly);
     }
+
 
     public CategoryStaticsResponse findCategoryStateByMemberId(Long memberId) {
         List<BookState> states = stateRepository.findByMemberId(memberId);
