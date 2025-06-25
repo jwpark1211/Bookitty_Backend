@@ -1,8 +1,7 @@
 package capstone.bookitty.global.error;
 
 
-import capstone.bookitty.domain.member.exception.DuplicateEmailException;
-import capstone.bookitty.domain.member.exception.RefreshTokenSaveException;
+import capstone.bookitty.domain.member.exception.*;
 import capstone.bookitty.global.error.exception.BusinessException;
 import capstone.bookitty.global.error.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +16,6 @@ import java.nio.file.AccessDeniedException;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
-
     @ExceptionHandler(IllegalArgumentException.class) //잘못된 인자 전달
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e){
         log.warn("IllegalArgumentException: {}", e.getMessage());
@@ -67,6 +64,27 @@ public class GlobalExceptionHandler {
         log.warn("RefreshTokenSaveException: {}", e.getMessage());
         final ErrorResponse response = ErrorResponse.of(ErrorCode.REFRESH_TOKEN_SAVE_INVALID);
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.REFRESH_TOKEN_SAVE_INVALID.getStatus()));
+    }
+
+    @ExceptionHandler(UnauthenticatedMemberException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthenticatedMemberException(UnauthenticatedMemberException e) {
+        log.warn("UnauthenticatedMemberException: {}", e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.UNAUTHENTICATED_MEMBER);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.UNAUTHENTICATED_MEMBER.getStatus()));
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshTokenException(InvalidRefreshTokenException e) {
+        log.warn("InvalidRefreshTokenException: {}", e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_REFRESH_TOKEN);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_REFRESH_TOKEN.getStatus()));
+    }
+
+    @ExceptionHandler(NotLoggedInException.class)
+    public ResponseEntity<ErrorResponse> handleNotLoggedInException(NotLoggedInException e) {
+        log.warn("NotLoggedInException: {}", e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_LOGGED_IN);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.NOT_LOGGED_IN.getStatus()));
     }
 
     @ExceptionHandler(Exception.class)

@@ -17,7 +17,10 @@ public enum ErrorCode {
     // Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
-    REFRESH_TOKEN_SAVE_INVALID(500, "M003", "Refresh Token is invalid")
+    REFRESH_TOKEN_SAVE_INVALID(500, "M003", "Refresh Token is invalid"),
+    UNAUTHENTICATED_MEMBER(401, "M004", "Unauthenticated Member"),
+    INVALID_REFRESH_TOKEN(401, "M005", "Refresh token does not match."),
+    NOT_LOGGED_IN(401, "M006", "User is not logged in or refresh token is missing.")
     ;
 
     private final String code;
