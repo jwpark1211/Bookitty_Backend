@@ -38,7 +38,6 @@ class MemberServiceTest {
 
     @InjectMocks private MemberService memberService;
     @Mock private MemberRepository memberRepository;
-    @Mock private PasswordEncoder passwordEncoder;
 
     private static final String EMAIL = "test@example.com";
     private static final String NAME = "테스트";
@@ -49,14 +48,11 @@ class MemberServiceTest {
     Member member;
 
     @BeforeEach
-    void setUp(){
-        request = new MemberSaveRequest(EMAIL, "Password", Gender.MALE,
+    void setUp() {
+        request = new MemberSaveRequest(EMAIL, "!Passwordw23", Gender.MALE,
                 LocalDate.of(2000,1,1), NAME);
-        member = Member.builder()
-                .email(EMAIL)
-                .password("Password")
-                .name(NAME)
-                .build();
+
+        member = Member.create(NAME, EMAIL, "!Passwordw23", "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11));
         member.setId(MEMBER_ID);
     }
 
@@ -77,7 +73,6 @@ class MemberServiceTest {
             IdResponse response = memberService.saveMember(request);
 
             assertThat(response.id()).isEqualTo(MEMBER_ID);
-            verify(passwordEncoder).encode(request.password());
         }
 
         @Test
