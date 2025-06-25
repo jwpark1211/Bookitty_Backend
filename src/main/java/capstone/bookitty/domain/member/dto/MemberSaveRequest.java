@@ -38,20 +38,4 @@ public record MemberSaveRequest(
                 member.getName()
         );
     }
-
-    public Member toEntity() {
-        return Member.builder()
-                .email(email)
-                .password(password)
-                .gender(gender)
-                .birthDate(birthdate)
-                .name(name)
-                .build();
-    }
-
-    /*테스트용*/
-    public static MemberSaveRequest buildForTest(String email, String password, String name){
-        return new MemberSaveRequest(email,password,Gender.MALE,
-                LocalDate.of(1999,2,3),name);
-    }
 }

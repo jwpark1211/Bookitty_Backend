@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.api;
 
+import capstone.bookitty.domain.member.application.AuthService;
 import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.dto.IdResponse;
 import capstone.bookitty.domain.member.dto.MemberInfoResponse;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberApi {
 
     private final MemberService memberService;
+    private final AuthService authService;
 
     @Operation(summary = "회원가입")
     @PostMapping("/new")
@@ -58,7 +60,7 @@ public class MemberApi {
             @RequestBody @Valid MemberLoginRequest request
     ){
         log.info("로그인 요청 - email: {}", request.email());
-        TokenResponse response = memberService.login(request);
+        TokenResponse response = authService.login(request);
 
         log.info("로그인 완료 - 회원 ID: {}, 이름: {}", response.idx(), response.name());
         return ResponseEntity.ok(response);
@@ -70,7 +72,7 @@ public class MemberApi {
             @RequestBody @Valid TokenRequest request
     ){
         log.info("토큰 재발행 요청");
-        TokenResponse response = memberService.reissue(request);
+        TokenResponse response = authService.reissue(request);
 
         log.info("토큰 재발행 완료");
         return ResponseEntity.ok(response);
@@ -95,7 +97,7 @@ public class MemberApi {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody TokenRequest tokenRequest) {
         log.info("로그아웃 요청");
-        memberService.logout(tokenRequest);
+        authService.logout(tokenRequest);
 
         log.info("로그아웃 완료");
         return ResponseEntity.noContent().build();

@@ -1,5 +1,6 @@
-package capstone.bookitty.global.authentication;
+package capstone.bookitty.domain.member.repository;
 
+import capstone.bookitty.global.authentication.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
