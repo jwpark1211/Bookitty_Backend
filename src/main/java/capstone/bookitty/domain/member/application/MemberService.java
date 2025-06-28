@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public IdResponse saveMember(MemberSaveRequest request) {
@@ -33,7 +35,7 @@ public class MemberService {
         }
 
         Member member = Member.create(request.name(),request.email(),request.password(),
-                null, request.gender(), request.birthdate());
+                null, request.gender(), request.birthdate(),passwordEncoder);
 
         memberRepository.save(member);
         log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());

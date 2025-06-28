@@ -1,6 +1,5 @@
 package capstone.bookitty.domain.member.domain;
 
-import capstone.bookitty.global.authentication.SpringPasswordEncoder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,10 +34,9 @@ public class Member {
     private Authority authority;
 
     private static final String DEFAULT_PROFILE_IMG = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
-    private static final PasswordEncoder passwordEncoder = new SpringPasswordEncoder();
 
     public static Member create(String name, String email, String password,
-                                String profileImg, Gender gender, LocalDate birthDate) {
+                                String profileImg, Gender gender, LocalDate birthDate, PasswordEncoder passwordEncoder) {
         validatePassword(password);
         return new Member(name, email, passwordEncoder.encode(password), profileImg, gender, birthDate);
     }
@@ -65,10 +63,5 @@ public class Member {
         if (!encodedPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$")) {
             throw new IllegalArgumentException("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character, and be between 8 and 20 characters long.");
         }
-    }
-
-    //Testing Only
-    public void setId(Long id) {
-        this.id = id;
     }
 }
