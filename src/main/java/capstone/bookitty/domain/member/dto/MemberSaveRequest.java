@@ -2,7 +2,6 @@ package capstone.bookitty.domain.member.dto;
 
 import capstone.bookitty.global.annotation.ValidEnum;
 import capstone.bookitty.domain.member.domain.Gender;
-import capstone.bookitty.domain.member.domain.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -29,13 +28,4 @@ public record MemberSaveRequest(
         return new MemberSaveRequest(email,password,gender,birthDate,name);
     }
 
-    public static MemberSaveRequest from(Member member){
-        return new MemberSaveRequest(
-                member.getEmail(),
-                member.getPassword(),
-                member.getGender(),
-                member.getBirthDate(),
-                member.getName()
-        );
-    }
 }
