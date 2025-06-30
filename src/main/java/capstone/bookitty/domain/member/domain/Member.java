@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.domain;
 
+import capstone.bookitty.domain.member.domain.vo.Password;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +25,8 @@ public class Member {
     private String name;
     private String profileImg;
     private String email;
-    private String password;
+    @Column(name = "password")
+    private String encodedPassword;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private LocalDateTime createdAt;
@@ -35,33 +37,30 @@ public class Member {
 
     private static final String DEFAULT_PROFILE_IMG = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
 
-    public static Member create(String name, String email, String password,
-                                String profileImg, Gender gender, LocalDate birthDate, PasswordEncoder passwordEncoder) {
-        validatePassword(password);
-        return new Member(name, email, passwordEncoder.encode(password), profileImg, gender, birthDate);
+    public static Member create(String name, String email, Password rawPassword,
+                                String profileImg, Gender gender, LocalDate birthDate,
+                                PasswordEncoder encoder) {
+        return Member.builder()
+                .name(name)
+                .email(email)
+                .encodedPassword(rawPassword.encode(encoder))
+                .profileImg(profileImg)
+                .gender(gender)
+                .birthDate(birthDate)
+                .build();
     }
 
     @Builder
     private Member(String name, String email, String encodedPassword, String profileImg,
-                  Gender gender, LocalDate birthDate){
-        this.name =  name;
+                   Gender gender, LocalDate birthDate) {
+        this.name = name;
         this.email = email;
+        this.encodedPassword = encodedPassword;
+        this.profileImg = profileImg != null ? profileImg : DEFAULT_PROFILE_IMG;
         this.gender = gender;
-        this.password = encodedPassword;
         this.birthDate = birthDate;
         this.createdAt = LocalDateTime.now();
-        this.profileImg = profileImg != null ? profileImg : DEFAULT_PROFILE_IMG;
         this.authority = Authority.ROLE_USER;
     }
 
-    private static void validatePassword(String encodedPassword) {
-        if (encodedPassword == null || encodedPassword.isBlank()) {
-            throw new IllegalArgumentException("Password must not be null or blank.");
-        }
-
-        //비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.
-        if (!encodedPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$")) {
-            throw new IllegalArgumentException("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character, and be between 8 and 20 characters long.");
-        }
-    }
 }

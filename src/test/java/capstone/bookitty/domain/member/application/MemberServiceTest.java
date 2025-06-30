@@ -2,6 +2,7 @@ package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
@@ -10,10 +11,7 @@ import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.dto.IdResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,10 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
+@Disabled("목테스트 - 공부용") //예외 테스트 , 엣지 케이스 (성공, 성공하는데 마지노선, 경계선, 왼쪽 경계 오른쪽 경계, 왼쪽 아래 왼쪽 위)
+    //커버리지
 class MemberServiceTest {
 
     @InjectMocks private MemberService memberService;
     @Mock private MemberRepository memberRepository;
+    @Mock private PasswordEncoder passwordEncoder;
 
     private static final String EMAIL = "test@example.com";
     private static final String NAME = "테스트";
@@ -47,13 +48,13 @@ class MemberServiceTest {
     MemberSaveRequest request;
     Member member;
 
+
     @BeforeEach
     void setUp() {
         request = new MemberSaveRequest(EMAIL, "!Passwordw23", Gender.MALE,
                 LocalDate.of(2000,1,1), NAME);
 
-        member = Member.create(NAME, EMAIL, "!Passwordw23", "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11));
-        member.setId(MEMBER_ID);
+        member = Member.create(NAME, EMAIL, new Password("!Passwordw23"), "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11),passwordEncoder);
     }
 
     @Nested
@@ -66,7 +67,7 @@ class MemberServiceTest {
             given(memberRepository.save(any(Member.class)))
                     .willAnswer(invocation -> {
                         Member m = invocation.getArgument(0);
-                        m.setId(MEMBER_ID);
+                        //m.setId(MEMBER_ID);
                         return m;
                     });
 

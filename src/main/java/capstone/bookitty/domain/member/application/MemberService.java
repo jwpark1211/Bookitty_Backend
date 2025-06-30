@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.application;
 
+import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.global.dto.BoolResponse;
@@ -34,8 +35,10 @@ public class MemberService {
             throw new DuplicateEmailException(request.email());
         }
 
-        Member member = Member.create(request.name(),request.email(),request.password(),
-                null, request.gender(), request.birthdate(),passwordEncoder);
+        Password password = new Password(request.password());
+
+        Member member = Member.create(request.name(),request.email(),password,
+                null, request.gender(), request.birthdate(), passwordEncoder);
 
         memberRepository.save(member);
         log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
