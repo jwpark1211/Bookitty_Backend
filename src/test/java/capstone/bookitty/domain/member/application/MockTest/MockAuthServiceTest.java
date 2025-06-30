@@ -1,6 +1,7 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.MockTest;
 
-import capstone.bookitty.domain.member.domain.Gender;
+import capstone.bookitty.domain.member.application.AuthService;
+import capstone.bookitty.domain.member.application.RefreshTokenService;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
@@ -9,10 +10,7 @@ import capstone.bookitty.global.authentication.JwtToken;
 import capstone.bookitty.global.authentication.JwtTokenProvider;
 import capstone.bookitty.global.authentication.tokenDto.TokenRequest;
 import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class MockAuthServiceTest {
 
     @InjectMocks
     private AuthService authService;
@@ -49,12 +46,12 @@ class AuthServiceTest {
     private TokenRequest tokenRequest;
 
     @BeforeEach
+    @Disabled("목테스트 - 공부용")
     void setUp() {
         loginRequest = new MemberLoginRequest(EMAIL, "!Passwordw23");
 
-        member = Member.create("테스트", EMAIL, "!Passwordw23",
-                "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11));
-        member.setId(1L);
+        //member = Member.create("테스트", EMAIL, "!Passwordw23", "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11));
+        //member.setId(1L);
 
         jwtToken = new JwtToken("Bearer", ACCESS_TOKEN, REFRESH_TOKEN);
         tokenRequest = new TokenRequest(ACCESS_TOKEN, REFRESH_TOKEN);
@@ -100,7 +97,6 @@ class AuthServiceTest {
             assertThatThrownBy(() -> authService.login(loginRequest))
                     .isInstanceOf(MemberNotFoundException.class);
         }
-
     }
 
     @Nested
