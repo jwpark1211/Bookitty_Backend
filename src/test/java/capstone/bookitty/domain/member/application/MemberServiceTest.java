@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -151,8 +152,7 @@ class MemberServiceTest {
             Member member2 = Member.create("김철수", "5678abc@naver.com",
                     new Password("Wlqo134@"), null, Gender.MALE,
                     LocalDate.of(2005, 3, 1), passwordEncoder);
-            memberRepository.save(member1);
-            memberRepository.save(member2);
+            memberRepository.saveAll(List.of(member1, member2));
 
             try (MockedStatic<SecurityUtil> ignored = mockSecurityUtil(member1.getEmail())) {
                 // when + then
@@ -171,8 +171,7 @@ class MemberServiceTest {
             Member target = Member.create("김철수", "5678abc@naver.com",
                     new Password("Wlqo134@"), null, Gender.MALE,
                     LocalDate.of(2005, 3, 1), passwordEncoder);
-            memberRepository.save(admin);
-            memberRepository.save(target);
+            memberRepository.saveAll(List.of(admin,target));
 
             try (MockedStatic<SecurityUtil> ignored = mockSecurityUtil(admin.getEmail())) {
                 // when
@@ -257,8 +256,7 @@ class MemberServiceTest {
             Member member2 = Member.create("김영희", "user2@naver.com",
                     new Password("Password2@@!"), null, Gender.FEMALE,
                     LocalDate.of(1992, 2, 2), passwordEncoder);
-            memberRepository.save(member1);
-            memberRepository.save(member2);
+            memberRepository.saveAll(List.of(member1, member2));
 
             // when
             Page<MemberInfoResponse> result = memberService.getAllMemberInfo(pageable);
@@ -299,10 +297,7 @@ class MemberServiceTest {
             Member member4 = Member.create("김영희", "user4@naver.com",
                     new Password("Password2@@!"), null, Gender.FEMALE,
                     LocalDate.of(1992, 2, 2), passwordEncoder);
-            memberRepository.save(member1);
-            memberRepository.save(member2);
-            memberRepository.save(member3);
-            memberRepository.save(member4);
+            memberRepository.saveAll(List.of(member1, member2, member3, member4));
 
             //when
             Page<MemberInfoResponse> result = memberService.getAllMemberInfo(pageable);
