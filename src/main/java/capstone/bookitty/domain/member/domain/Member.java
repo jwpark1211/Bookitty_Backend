@@ -50,6 +50,14 @@ public class Member {
                 .build();
     }
 
+    public static Member createAdmin(String name, String email, Password rawPassword,
+                                     String profileImg, Gender gender, LocalDate birthDate,
+                                     PasswordEncoder encoder) {
+        Member member = create(name, email, rawPassword, profileImg, gender, birthDate, encoder);
+        member.promoteToAdmin();
+        return member;
+    }
+
     @Builder
     private Member(String name, String email, String encodedPassword, String profileImg,
                    Gender gender, LocalDate birthDate) {
@@ -61,6 +69,18 @@ public class Member {
         this.birthDate = birthDate;
         this.createdAt = LocalDateTime.now();
         this.authority = Authority.ROLE_USER;
+    }
+
+    private void promoteToAdmin() {
+        this.authority = Authority.ROLE_ADMIN;
+    }
+
+    public boolean canDelete(Member target) {
+        return this.isAdmin() || this.id.equals(target.id);
+    }
+
+    public boolean isAdmin() {
+        return this.authority == Authority.ROLE_ADMIN;
     }
 
 }
