@@ -54,30 +54,6 @@ public class MemberApi {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "로그인")
-    @PostMapping(path = "/login")
-    public ResponseEntity<TokenResponse> login(
-            @RequestBody @Valid MemberLoginRequest request
-    ){
-        log.info("로그인 요청 - email: {}", request.email());
-        TokenResponse response = authService.login(request);
-
-        log.info("로그인 완료 - 회원 ID: {}, 이름: {}", response.idx(), response.name());
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "토큰 재발행")
-    @PostMapping("/reissue")
-    public ResponseEntity<TokenResponse> reissue(
-            @RequestBody @Valid TokenRequest request
-    ){
-        log.info("토큰 재발행 요청");
-        TokenResponse response = authService.reissue(request);
-
-        log.info("토큰 재발행 완료");
-        return ResponseEntity.ok(response);
-    }
-
     @Operation(summary = "로그인 한 회원 정보 조회")
     @GetMapping("/me")
     public ResponseEntity<MemberInfoResponse> getMyMemberInfo() {
@@ -91,16 +67,6 @@ public class MemberApi {
             log.error("회원 정보 조회 실패", e);
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    @Operation(summary = "로그아웃")
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody TokenRequest tokenRequest) {
-        log.info("로그아웃 요청");
-        authService.logout(tokenRequest);
-
-        log.info("로그아웃 완료");
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "id로 회원 조회")
@@ -126,16 +92,6 @@ public class MemberApi {
         log.info("전체 회원 목록 조회 완료 - 총 회원 수: {}", responseList.getTotalElements());
         return ResponseEntity.ok(responseList);
     }
-
-    /*@Operation(summary = "회원 프로필 업로드 / requestPart 이름 : profile")
-    @PutMapping(path = "/{member-id}/profile")
-    public ResponseEntity<MemberInfoResponse> updateMemberProfile(
-            @PathVariable("member-id") Long memberId,
-            @RequestPart(value = "profile") MultipartFile profileImg
-            ) throws IOException {
-        MemberInfoResponse response = memberService.updateProfile(memberId, profileImg);
-        return ResponseEntity.ok(response);
-    }*/
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping(path = "/{member-id}")
