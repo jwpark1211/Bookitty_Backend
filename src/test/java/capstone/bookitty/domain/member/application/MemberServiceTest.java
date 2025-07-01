@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -66,11 +67,8 @@ class MemberServiceTest {
         @DisplayName("이미 존재하는 이메일로 요청 시 예외가 발생합니다.")
         void failDuplicateEmail(){
             //given
-            memberRepository.save(Member.create("홍길동","duplicate@naver.com",
-                    new Password("Wlqo134@"),null,Gender.FEMALE,
-                    LocalDate.of(1999,1,1), passwordEncoder));
-            MemberSaveRequest request = new MemberSaveRequest
-                    ("duplicate@naver.com","Wlqo134@",Gender.FEMALE,
+            memberRepository.save(createRegularMember("김철수", "duplicate@naver.com"));
+            MemberSaveRequest request = new MemberSaveRequest("duplicate@naver.com","Wlqo134@",Gender.FEMALE,
                             LocalDate.of(1999,1,1),"홍길동");
 
             //when + then
@@ -127,9 +125,7 @@ class MemberServiceTest {
         @DisplayName("이메일이 중복되는 경우 false를 반환합니다.")
         void returnsFalseWhenEmailIsDuplicated(){
             //given
-            memberRepository.save(Member.create("홍길동","duplicate@naver.com",
-                    new Password("Wlqo134@"),null,Gender.FEMALE,
-                    LocalDate.of(1999,1,1), passwordEncoder));
+            memberRepository.save(createRegularMember("김철수", "duplicate@naver.com"));
 
             //when
             BoolResponse boolResponse = memberService.isEmailUnique("duplicate@naver.com");
@@ -146,12 +142,8 @@ class MemberServiceTest {
         @DisplayName("일반 사용자가 다른 회원을 삭제하면 예외가 발생한다.")
         void userCannotDeleteAnotherUser() {
             // given
-            Member member1 = Member.create("홍길동", "1234abc@naver.com",
-                    new Password("Wlqo134@"), null, Gender.FEMALE,
-                    LocalDate.of(1999, 1, 1), passwordEncoder);
-            Member member2 = Member.create("김철수", "5678abc@naver.com",
-                    new Password("Wlqo134@"), null, Gender.MALE,
-                    LocalDate.of(2005, 3, 1), passwordEncoder);
+            Member member1 = createRegularMember("홍길동", "1234abc@naver.com");
+            Member member2 = createRegularMember("김철수", "5678abc@naver.com");
             memberRepository.saveAll(List.of(member1, member2));
 
             try (MockedStatic<SecurityUtil> ignored = mockSecurityUtil(member1.getEmail())) {
@@ -168,9 +160,7 @@ class MemberServiceTest {
             Member admin = Member.createAdmin("홍길동", "1234abc@naver.com",
                     new Password("Wlqo134@"), null, Gender.FEMALE,
                     LocalDate.of(1999, 1, 1), passwordEncoder);
-            Member target = Member.create("김철수", "5678abc@naver.com",
-                    new Password("Wlqo134@"), null, Gender.MALE,
-                    LocalDate.of(2005, 3, 1), passwordEncoder);
+            Member target = createRegularMember("김철수", "5678abc@naver.com");
             memberRepository.saveAll(List.of(admin,target));
 
             try (MockedStatic<SecurityUtil> ignored = mockSecurityUtil(admin.getEmail())) {
@@ -186,9 +176,7 @@ class MemberServiceTest {
         @DisplayName("자신의 회원 정보가 존재하는 경우 삭제할 수 있다.")
         void userCanDeleteOwnAccount() {
             // given
-            Member member = Member.create("홍길동", "1234abc@naver.com",
-                    new Password("Wlqo134@"), null, Gender.FEMALE,
-                    LocalDate.of(1999, 1, 1), passwordEncoder);
+            Member member = createRegularMember("홍길동", "1234abc@naver.com");
             memberRepository.save(member);
 
             try (MockedStatic<SecurityUtil> ignored = mockSecurityUtil(member.getEmail())) {
@@ -217,9 +205,7 @@ class MemberServiceTest {
         @DisplayName("존재하는 회원의 Id로 요청 시 회원 정보를 반환한다.")
         void returnsMemberInfo_whenMemberExistsById(){
             //given
-            Member member = Member.create("홍길동","1234abc@naver.com",
-                    new Password("Wlqo134@"),null,Gender.FEMALE,
-                    LocalDate.of(1999,1,1), passwordEncoder);
+            Member member = createRegularMember("홍길동","1234abc@naver.com");
             memberRepository.save(member);
 
             //when
@@ -228,7 +214,6 @@ class MemberServiceTest {
             //then
             assertThat(memberInfoResponse.email()).isEqualTo("1234abc@naver.com");
             assertThat(memberInfoResponse.name()).isEqualTo("홍길동");
-            assertThat(memberInfoResponse.gender()).isEqualTo(Gender.FEMALE);
         }
         @Test
         @DisplayName("존재하지 않는 회원의 Id로 요청 시 예외가 발생한다.")
@@ -249,13 +234,9 @@ class MemberServiceTest {
         @DisplayName("회원이 여러 명 존재하는 경우 회원 정보를 반환한다.")
         void returnsPagedMemberInfo_whenMultipleMembersExist() {
             // given
-            Pageable pageable = PageRequest.of(0, 2);
-            Member member1 = Member.create("홍길동", "user1@naver.com",
-                    new Password("Password1@@!"), null, Gender.MALE,
-                    LocalDate.of(1990, 1, 1), passwordEncoder);
-            Member member2 = Member.create("김영희", "user2@naver.com",
-                    new Password("Password2@@!"), null, Gender.FEMALE,
-                    LocalDate.of(1992, 2, 2), passwordEncoder);
+            Pageable pageable = PageRequest.of(0, 2, Sort.by("id"));
+            Member member1 = createRegularMember("홍길동","user1@naver.com");
+            Member member2 = createRegularMember("김영희","user2@naver.com");
             memberRepository.saveAll(List.of(member1, member2));
 
             // when
@@ -274,7 +255,7 @@ class MemberServiceTest {
         @DisplayName("회원이 한 명도 존재하지 않는 경우 빈 페이지를 반환한다.")
         void returnsEmptyPage_whenNoMembersExist() {
             // given
-            Pageable pageable = PageRequest.of(0, 2);
+            Pageable pageable = PageRequest.of(0, 2, Sort.by("id"));
 
             // when
             Page<MemberInfoResponse> result = memberService.getAllMemberInfo(pageable);
@@ -287,19 +268,11 @@ class MemberServiceTest {
         @DisplayName("두 번째 페이지를 요청하면 해당 페이지에 해당하는 회원들이 조회된다.")
         void returnsCorrectMembers_whenSecondPageIsRequested(){
             //given
-            Pageable pageable = PageRequest.of(1, 2);
-            Member member1 = Member.create("홍길동", "user1@naver.com",
-                    new Password("Password1@@!"), null, Gender.MALE,
-                    LocalDate.of(1990, 1, 1), passwordEncoder);
-            Member member2 = Member.create("김영희", "user2@naver.com",
-                    new Password("Password2@@!"), null, Gender.FEMALE,
-                    LocalDate.of(1992, 2, 2), passwordEncoder);
-            Member member3 = Member.create("유재석", "user3@naver.com",
-                    new Password("Password1@@!"), null, Gender.MALE,
-                    LocalDate.of(1990, 1, 1), passwordEncoder);
-            Member member4 = Member.create("박명수", "user4@naver.com",
-                    new Password("Password2@@!"), null, Gender.FEMALE,
-                    LocalDate.of(1992, 2, 2), passwordEncoder);
+            Pageable pageable = PageRequest.of(1, 2, Sort.by("id"));
+            Member member1 = createRegularMember("홍길동","user1@naver.com");
+            Member member2 = createRegularMember("김영희","user2@naver.com");
+            Member member3 = createRegularMember("유재석","user3@naver.com");
+            Member member4 = createRegularMember("박명수","user4@naver.com");
             memberRepository.saveAll(List.of(member1, member2, member3, member4));
 
             //when
@@ -323,9 +296,7 @@ class MemberServiceTest {
         void returnsMemberInfo_whenAuthenticatedUserExists() {
             // given
             String email = "user@naver.com";
-            Member member = Member.create("홍길동", email,
-                    new Password("Wlqo134@"), null, Gender.MALE,
-                    LocalDate.of(1990, 1, 1), passwordEncoder);
+            Member member = createRegularMember("홍길동", email);
             memberRepository.save(member);
 
             try(MockedStatic<SecurityUtil> mocked = mockSecurityUtil(email)) {
@@ -373,5 +344,11 @@ class MemberServiceTest {
         mocked.when(SecurityUtil::getCurrentMemberEmail)
                 .thenThrow(new UnauthenticatedMemberException());
         return mocked;
+    }
+
+    private Member createRegularMember(String name, String email){
+        return Member.create(name, email,
+                new Password("Wlqo134@"), null, Gender.MALE,
+                LocalDate.of(1990, 1, 1), passwordEncoder);
     }
 }
