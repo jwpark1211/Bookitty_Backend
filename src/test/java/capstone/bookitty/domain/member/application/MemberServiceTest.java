@@ -264,8 +264,11 @@ class MemberServiceTest {
             // then
             assertThat(result).isNotEmpty();
             assertThat(result.getContent()).hasSize(2);
-            assertThat(result.getContent()).extracting("email")
-                    .containsExactlyInAnyOrder("user1@naver.com", "user2@naver.com");
+            assertThat(result.getContent()).extracting(
+                    "email", "name")
+                    .containsExactlyInAnyOrder(
+                            tuple("user1@naver.com","홍길동"),
+                            tuple("user2@naver.com","김영희"));
         }
         @Test
         @DisplayName("회원이 한 명도 존재하지 않는 경우 빈 페이지를 반환한다.")
@@ -291,10 +294,10 @@ class MemberServiceTest {
             Member member2 = Member.create("김영희", "user2@naver.com",
                     new Password("Password2@@!"), null, Gender.FEMALE,
                     LocalDate.of(1992, 2, 2), passwordEncoder);
-            Member member3 = Member.create("홍길동", "user3@naver.com",
+            Member member3 = Member.create("유재석", "user3@naver.com",
                     new Password("Password1@@!"), null, Gender.MALE,
                     LocalDate.of(1990, 1, 1), passwordEncoder);
-            Member member4 = Member.create("김영희", "user4@naver.com",
+            Member member4 = Member.create("박명수", "user4@naver.com",
                     new Password("Password2@@!"), null, Gender.FEMALE,
                     LocalDate.of(1992, 2, 2), passwordEncoder);
             memberRepository.saveAll(List.of(member1, member2, member3, member4));
@@ -304,8 +307,11 @@ class MemberServiceTest {
 
             //then
             assertThat(result.getContent()).hasSize(2);
-            assertThat(result.getContent()).extracting("email")
-                    .containsExactlyInAnyOrder("user3@naver.com", "user4@naver.com");
+            assertThat(result.getContent()).extracting(
+                            "email", "name")
+                    .containsExactlyInAnyOrder(
+                            tuple("user3@naver.com","유재석"),
+                            tuple("user4@naver.com","박명수"));
         }
     }
 
