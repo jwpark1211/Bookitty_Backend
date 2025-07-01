@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.application;
 
+import capstone.bookitty.domain.member.domain.Authority;
 import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
@@ -56,18 +57,20 @@ public class MemberService {
     @Transactional
     public void deleteMember(Long memberId) {
         log.info("회원 삭제 요청 - memberId: {}", memberId);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        memberRepository.delete(member);
+        Member target = findMemberById(memberId);
+        Member current = findMemberByEmail(SecurityUtil.getCurrentMemberEmail());
+        log.info("회원 삭제 권한 확인 - memberId: {}, currentEmail: {}", memberId, current.getEmail());
+
+        if (!current.canDelete(target)) throw new IllegalArgumentException("삭제 권한이 없습니다.");
+
+        memberRepository.delete(target);
         log.info("회원 삭제 완료 - memberId: {}", memberId);
     }
 
     public MemberInfoResponse getMemberInfoWithId(Long memberId) {
         log.info("회원 정보 조회 요청 - memberId: {}", memberId);
-        return memberRepository.findById(memberId)
-                .map(MemberInfoResponse::from)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        return MemberInfoResponse.from(findMemberById(memberId));
     }
 
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
@@ -76,10 +79,25 @@ public class MemberService {
                 .map(MemberInfoResponse::from);
     }
 
-    public MemberInfoResponse getMyInfo(){
+    public MemberInfoResponse getMyInfo() {
         log.info("로그인 한 회원의 정보 조회 요청");
-        return memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
+
+        String email = SecurityUtil.getCurrentMemberEmail();
+        if (email == null) throw new UnauthenticatedMemberException();
+
+        return memberRepository.findByEmail(email)
                 .map(MemberInfoResponse::from)
+                .orElseThrow(() -> new MemberNotFoundException());
+    }
+
+    //== private Method ==//
+    private Member findMemberById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException(id));
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthenticatedMemberException());
     }
 }
