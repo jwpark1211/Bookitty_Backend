@@ -12,6 +12,8 @@ import capstone.bookitty.domain.member.application.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberApi {
 
     private final MemberService memberService;
-    private final AuthService authService;
 
     @Operation(summary = "회원가입")
     @PostMapping("/new")
@@ -45,7 +46,7 @@ public class MemberApi {
     @Operation(summary = "이메일 중복 확인")
     @GetMapping("/email/unique")
     public ResponseEntity<BoolResponse> isEmailUnique(
-            @RequestParam("email") String email
+            @Email @NotBlank @RequestParam ("email") String email
     ){
         log.info("이메일 중복 확인 요청 - email: {}", email);
         BoolResponse response = memberService.isEmailUnique(email);

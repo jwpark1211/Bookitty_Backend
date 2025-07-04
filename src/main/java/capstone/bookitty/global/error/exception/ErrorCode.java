@@ -7,8 +7,7 @@ public enum ErrorCode {
 
     //Common
     INVALID_INPUT_VALUE(400, "C001", "Invalid Input Value"),
-    METHOD_NOT_ALLOWED(405, "C002", "Invalid Input Value"),
-    ENTITY_NOT_FOUND(400, "C003", "Entity Not Found"),
+    ENTITY_NOT_FOUND(404, "C003", "Entity Not Found"),
     INTERNAL_SERVER_ERROR(500, "C004", "Server Error"),
     INVALID_TYPE_VALUE(400, "C005", "Invalid Type Value"),
     HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"),
@@ -16,7 +15,6 @@ public enum ErrorCode {
 
     // Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
-    LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
     REFRESH_TOKEN_SAVE_INVALID(500, "M003", "Refresh Token is invalid"),
     UNAUTHENTICATED_MEMBER(401, "M004", "Unauthenticated Member"),
     INVALID_REFRESH_TOKEN(401, "M005", "Refresh token does not match."),

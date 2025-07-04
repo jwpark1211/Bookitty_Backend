@@ -92,6 +92,10 @@ public class MemberService {
 
     //== private Method ==//
     private Member findMemberById(Long id) {
+        if(id<=0) {
+            log.warn("잘못된 회원 ID 요청 - id: {}", id);
+            throw new IllegalArgumentException("잘못된 회원 ID입니다.");
+        }
         return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException(id));
     }
