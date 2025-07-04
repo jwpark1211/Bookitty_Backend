@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -27,7 +26,6 @@ public class Member {
     private String email;
     @Column(name = "password")
     private String encodedPassword;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
@@ -58,7 +56,7 @@ public class Member {
         return member;
     }
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Member(String name, String email, String encodedPassword, String profileImg,
                    Gender gender, LocalDate birthDate) {
         this.name = name;
