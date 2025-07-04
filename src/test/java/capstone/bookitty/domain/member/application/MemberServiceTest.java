@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.application;
 
+import capstone.bookitty.domain.member.domain.Authority;
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.vo.Password;
@@ -157,9 +158,9 @@ class MemberServiceTest {
         @DisplayName("관리자 권한이 있는 경우, 다른 회원을 삭제할 수 있다.")
         void adminCanDeleteOtherUser() {
             // given
-            Member admin = Member.createAdmin("홍길동", "1234abc@naver.com",
+            Member admin = Member.create("홍길동", "1234abc@naver.com",
                     new Password("Wlqo134@"), null, Gender.FEMALE,
-                    LocalDate.of(1999, 1, 1), passwordEncoder);
+                    LocalDate.of(1999, 1, 1), Authority.ROLE_ADMIN, passwordEncoder);
             Member target = createRegularMember("김철수", "5678abc@naver.com");
             memberRepository.saveAll(List.of(admin,target));
 
@@ -349,6 +350,6 @@ class MemberServiceTest {
     private Member createRegularMember(String name, String email){
         return Member.create(name, email,
                 new Password("Wlqo134@"), null, Gender.MALE,
-                LocalDate.of(1990, 1, 1), passwordEncoder);
+                LocalDate.of(1990, 1, 1), Authority.ROLE_USER, passwordEncoder);
     }
 }

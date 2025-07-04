@@ -39,7 +39,7 @@ public class MemberService {
         Password password = new Password(request.password());
 
         Member member = Member.create(request.name(),request.email(),password,
-                null, request.gender(), request.birthdate(), passwordEncoder);
+                null, request.gender(), request.birthdate(), Authority.ROLE_USER,passwordEncoder);
 
         memberRepository.save(member);
         log.info("회원 저장 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());

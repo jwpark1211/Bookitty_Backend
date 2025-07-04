@@ -1,6 +1,7 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
 import capstone.bookitty.domain.member.application.MemberService;
+import capstone.bookitty.domain.member.domain.Authority;
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.vo.Password;
@@ -54,7 +55,8 @@ class MockMemberServiceTest {
         request = new MemberSaveRequest(EMAIL, "!Passwordw23", Gender.MALE,
                 LocalDate.of(2000,1,1), NAME);
 
-        member = Member.create(NAME, EMAIL, new Password("!Passwordw23"), "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11),passwordEncoder);
+        member = Member.create(NAME, EMAIL, new Password("!Passwordw23"), "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11),
+                Authority.ROLE_USER, passwordEncoder);
     }
 
     @Nested

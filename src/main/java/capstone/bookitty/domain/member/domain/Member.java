@@ -36,7 +36,7 @@ public class Member {
     private static final String DEFAULT_PROFILE_IMG = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
 
     public static Member create(String name, String email, Password rawPassword,
-                                String profileImg, Gender gender, LocalDate birthDate,
+                                String profileImg, Gender gender, LocalDate birthDate, Authority authority,
                                 PasswordEncoder encoder) {
         return Member.builder()
                 .name(name)
@@ -45,20 +45,13 @@ public class Member {
                 .profileImg(profileImg)
                 .gender(gender)
                 .birthDate(birthDate)
+                .authority(authority)
                 .build();
-    }
-
-    public static Member createAdmin(String name, String email, Password rawPassword,
-                                     String profileImg, Gender gender, LocalDate birthDate,
-                                     PasswordEncoder encoder) {
-        Member member = create(name, email, rawPassword, profileImg, gender, birthDate, encoder);
-        member.promoteToAdmin();
-        return member;
     }
 
     @Builder(access = AccessLevel.PRIVATE)
     private Member(String name, String email, String encodedPassword, String profileImg,
-                   Gender gender, LocalDate birthDate) {
+                   Gender gender, LocalDate birthDate, Authority authority) {
         this.name = name;
         this.email = email;
         this.encodedPassword = encodedPassword;
@@ -66,19 +59,10 @@ public class Member {
         this.gender = gender;
         this.birthDate = birthDate;
         this.createdAt = LocalDateTime.now();
-        this.authority = Authority.ROLE_USER;
-    }
-
-    private void promoteToAdmin() {
-        this.authority = Authority.ROLE_ADMIN;
+        this.authority = authority;
     }
 
     public boolean canDelete(Member target) {
-        return this.isAdmin() || this.id.equals(target.id);
+        return this.authority == Authority.ROLE_ADMIN || this.id.equals(target.id);
     }
-
-    public boolean isAdmin() {
-        return this.authority == Authority.ROLE_ADMIN;
-    }
-
 }

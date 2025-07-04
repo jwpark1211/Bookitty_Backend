@@ -1,5 +1,6 @@
 package capstone.bookitty.domain.member.api;
 
+import capstone.bookitty.domain.member.domain.Authority;
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.vo.Password;
@@ -170,8 +171,7 @@ class MemberApiTest {
         void success_whenEmailDuplicated_thenReturns200() throws Exception {
             //given
             memberRepository.save(Member.create(name, email, new Password("Wj1ofj!sd24"), null,
-                    Gender.MALE, LocalDate.of(2000, 1, 1), passwordEncoder));
-
+                    Gender.MALE, LocalDate.of(2000, 1, 1), Authority.ROLE_USER, passwordEncoder));
             //when + then
             mockMvc.perform(get("/members/email/unique")
                             .param("email", email))
@@ -242,7 +242,7 @@ class MemberApiTest {
         void success_whenValidMemberId_thenReturns200() throws Exception {
             //given
             memberRepository.save(Member.create(name, email, new Password("Wj1ofj!sd24"), null,
-                    Gender.MALE, LocalDate.of(2000, 1, 1), passwordEncoder));
+                    Gender.MALE, LocalDate.of(2000, 1, 1), Authority.ROLE_USER, passwordEncoder));
 
             //when + then
             mockMvc.perform(get("/members/1")
