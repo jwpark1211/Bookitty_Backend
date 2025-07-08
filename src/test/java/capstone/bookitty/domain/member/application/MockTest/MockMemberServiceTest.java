@@ -1,17 +1,15 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
-import capstone.bookitty.domain.member.application.MemberService;
-import capstone.bookitty.domain.member.domain.Authority;
+import capstone.bookitty.domain.member.application.MemberCommandService;
+import capstone.bookitty.domain.member.application.MemberQueryService;
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.dto.BoolResponse;
-import capstone.bookitty.global.dto.IdResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Disabled("목테스트 - 공부용")
 class MockMemberServiceTest {
 
-    @InjectMocks private MemberService memberService;
+    @InjectMocks private MemberQueryService memberQueryService;
+    @InjectMocks private MemberCommandService memberCommandService;
     @Mock private MemberRepository memberRepository;
     @Mock private PasswordEncoder passwordEncoder;
 
@@ -55,8 +54,7 @@ class MockMemberServiceTest {
         request = new MemberSaveRequest(EMAIL, "!Passwordw23", Gender.MALE,
                 LocalDate.of(2000,1,1), NAME);
 
-        member = Member.create(NAME, EMAIL, new Password("!Passwordw23"), "profile.jpg", Gender.MALE, LocalDate.of(2001,12,11),
-                Authority.ROLE_USER, passwordEncoder);
+        member = Member.createUser(NAME, EMAIL, "Wjdof1po3l!",  Gender.MALE, LocalDate.of(2001,12,11));
     }
 
     @Nested
@@ -73,9 +71,9 @@ class MockMemberServiceTest {
                         return m;
                     });
 
-            IdResponse response = memberService.saveMember(request);
+            Long id = memberCommandService.saveMember(request);
 
-            assertThat(response.id()).isEqualTo(MEMBER_ID);
+            assertThat(id).isEqualTo(MEMBER_ID);
         }
 
         @Test
@@ -83,7 +81,7 @@ class MockMemberServiceTest {
         void 이메일_중복() {
             given(memberRepository.existsByEmail(request.email())).willReturn(true);
 
-            assertThatThrownBy(() -> memberService.saveMember(request))
+            assertThatThrownBy(() -> memberCommandService.saveMember(request))
                     .isInstanceOf(DuplicateEmailException.class)
                     .hasMessageContaining("이미 사용 중인 이메일입니다");
 
@@ -99,7 +97,7 @@ class MockMemberServiceTest {
         void 이메일_존재하지_않음() {
             given(memberRepository.existsByEmail("nope@email.com")).willReturn(false);
 
-            BoolResponse result = memberService.isEmailUnique("nope@email.com");
+            BoolResponse result = memberQueryService.isEmailUnique("nope@email.com");
 
             assertThat(result.isUnique()).isTrue();
         }
@@ -109,7 +107,7 @@ class MockMemberServiceTest {
         void 이메일_존재함() {
             given(memberRepository.existsByEmail("exists@email.com")).willReturn(true);
 
-            BoolResponse result = memberService.isEmailUnique("exists@email.com");
+            BoolResponse result = memberQueryService.isEmailUnique("exists@email.com");
 
             assertThat(result.isUnique()).isFalse();
         }
@@ -123,7 +121,7 @@ class MockMemberServiceTest {
         void 회원존재_정상조회() {
             given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member));
 
-            MemberInfoResponse result = memberService.getMemberInfoWithId(MEMBER_ID);
+            MemberInfoResponse result = memberQueryService.getMemberInfoWithId(MEMBER_ID);
 
             assertThat(result.name()).isEqualTo(NAME);
             assertThat(result.email()).isEqualTo(EMAIL);
@@ -134,7 +132,7 @@ class MockMemberServiceTest {
         void 회원없음_예외() {
             given(memberRepository.findById(999L)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> memberService.getMemberInfoWithId(999L))
+            assertThatThrownBy(() -> memberQueryService.getMemberInfoWithId(999L))
                     .isInstanceOf(MemberNotFoundException.class);
         }
     }
@@ -149,7 +147,7 @@ class MockMemberServiceTest {
             Page<Member> page = new PageImpl<>(memberList);
             given(memberRepository.findAll(any(Pageable.class))).willReturn(page);
 
-            Page<MemberInfoResponse> result = memberService.getAllMemberInfo(PAGEABLE);
+            Page<MemberInfoResponse> result = memberQueryService.getAllMemberInfo(PAGEABLE);
 
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getContent().get(0).email()).isEqualTo(EMAIL);
@@ -161,7 +159,7 @@ class MockMemberServiceTest {
             Page<Member> emptyPage = new PageImpl<>(List.of());
             given(memberRepository.findAll(any(Pageable.class))).willReturn(emptyPage);
 
-            Page<MemberInfoResponse> result = memberService.getAllMemberInfo(PAGEABLE);
+            Page<MemberInfoResponse> result = memberQueryService.getAllMemberInfo(PAGEABLE);
 
             assertThat(result.getContent()).isEmpty();
         }
@@ -175,7 +173,7 @@ class MockMemberServiceTest {
         void 회원_삭제_성공() {
             given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member));
 
-            memberService.deleteMember(MEMBER_ID);
+            memberCommandService.deleteMember(MEMBER_ID);
 
             verify(memberRepository).delete(member);
         }
@@ -185,7 +183,7 @@ class MockMemberServiceTest {
         void 회원_삭제_실패_존재하지_않음() {
             given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.empty());
 
-            assertThatThrownBy(() -> memberService.deleteMember(MEMBER_ID))
+            assertThatThrownBy(() -> memberCommandService.deleteMember(MEMBER_ID))
                     .isInstanceOf(MemberNotFoundException.class);
         }
     }

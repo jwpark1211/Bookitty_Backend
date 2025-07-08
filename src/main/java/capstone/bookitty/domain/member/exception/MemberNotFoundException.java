@@ -10,4 +10,7 @@ public class MemberNotFoundException extends EntityNotFoundException {
     public MemberNotFoundException(Long target) {
         super("Member ID[" + target + "] is not found");
     }
+    public MemberNotFoundException(String email) {
+        super("Member EMAIL[" + email + "] is not found");
+    }
 }
