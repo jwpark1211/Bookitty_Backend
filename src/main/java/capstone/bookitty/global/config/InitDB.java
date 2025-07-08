@@ -4,27 +4,23 @@ import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.bookState.domain.State;
 import capstone.bookitty.domain.comment.domain.Comment;
 import capstone.bookitty.domain.comment.domain.Like;
-import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.star.domain.Star;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class initDB {
+public class InitDB {
     private final InitService initService;
 
-    @PostConstruct
+    //@PostConstruct
     public void init(){
         initService.dbInit();
     }
@@ -35,26 +31,25 @@ public class initDB {
     static class InitService{
 
         private final EntityManager em;
-        private final PasswordEncoder pwEncoder;
 
         public void dbInit(){
             List<Member> members = Arrays.asList(
-                    new Member("김민준", "alswns@gmail.com", pwEncoder.encode("Wo1902!si1"), null, Gender.MALE, LocalDate.of(1992, 7, 21)),
-                    new Member("이서현", "dltjgus@gmail.com", pwEncoder.encode("Wo1902!si2"), null, Gender.FEMALE, LocalDate.of(2010, 12, 8)),
-                    new Member("서진호", "tjwlsgn@gmail.com", pwEncoder.encode("Wo1902!si3"), null, Gender.MALE, LocalDate.of(1971, 8, 28)),
-                    new Member("이선희", "dltjsgml@gmail.com", pwEncoder.encode("Wo1902!si4"), null, Gender.FEMALE, LocalDate.of(1969, 2, 5)),
-                    new Member("신준서", "tlswnstj@gmail.com", pwEncoder.encode("Wo1902!si5"), null, Gender.MALE, LocalDate.of(2005, 8, 20)),
-                    new Member("문다연", "ansekdusss@gmail.com", pwEncoder.encode("Wo1902!si6"), null, Gender.FEMALE, LocalDate.of(1999, 1, 14)),
-                    new Member("윤동현", "dbsehdgus@gmail.com", pwEncoder.encode("Wo1902!si7"), null, Gender.MALE, LocalDate.of(1989, 7, 3)),
-                    new Member("송지은", "thdwldms@gmail.com", pwEncoder.encode("Wo1902!si8"), null, Gender.FEMALE, LocalDate.of(1995, 3, 18)),
-                    new Member("김준서", "rlawnstj@gmail.com", pwEncoder.encode("Wo1902!si9"), null, Gender.MALE, LocalDate.of(2001, 12, 11)),
-                    new Member("임지민", "dlawlals@gmail.com", pwEncoder.encode("Wo1902!si10"), null, Gender.FEMALE, LocalDate.of(2009, 3, 14)),
-                    new Member("안지성", "dkswltjd@gmail.com", pwEncoder.encode("Wo1902!si11"), null, Gender.MALE, LocalDate.of(2002, 8, 8)),
-                    new Member("황예린", "ghkddPfls@gmail.com", pwEncoder.encode("Wo1902!si12"), null, Gender.FEMALE, LocalDate.of(1991, 11, 28)),
-                    new Member("송현우", "thdgusdn@gmail.com", pwEncoder.encode("Wo1902!si13"), null, Gender.MALE, LocalDate.of(1999, 9, 8)),
-                    new Member("정우진", "wjddnwls@gmail.com", pwEncoder.encode("Wo1902!si14"), null, Gender.MALE, LocalDate.of(1964, 1, 13)),
-                    new Member("서은우", "tjdnsdmj@gmail.com", pwEncoder.encode("Wo1902!si15"), null, Gender.MALE, LocalDate.of(2008, 2, 20)),
-                    new Member("이예진","dldPwls@gmail.com", pwEncoder.encode("Wo1902!si16"),null,Gender.FEMALE,LocalDate.of(2001,2,16))
+                   /* Member.create("김민준", "alswns@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(1992, 7, 21)),
+                    Member.create("이서현", "dltjgus@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(2010, 12, 8)),
+                    Member.create("서진호", "tjwlsgn@gmail.com","Wo1902!si1", null, Gender.MALE, LocalDate.of(1971, 8, 28)),
+                    Member.create("이선희", "dltjsgml@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(1969, 2, 5)),
+                    Member.create("신준서", "tlswnstj@gmail.com","Wo1902!si1", null, Gender.MALE, LocalDate.of(2005, 8, 20)),
+                    Member.create("문다연", "ansekdusss@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(1999, 1, 14)),
+                    Member.create("윤동현", "dbsehdgus@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(1989, 7, 3)),
+                    Member.create("송지은", "thdwldms@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(1995, 3, 18)),
+                    Member.create("김준서", "rlawnstj@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(2001, 12, 11)),
+                    Member.create("임지민", "dlawlals@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(2009, 3, 14)),
+                    Member.create("안지성", "dkswltjd@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(2002, 8, 8)),
+                    Member.create("황예린", "ghkddPfls@gmail.com", "Wo1902!si1", null, Gender.FEMALE, LocalDate.of(1991, 11, 28)),
+                    Member.create("송현우", "thdgusdn@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(1999, 9, 8)),
+                    Member.create("정우진", "wjddnwls@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(1964, 1, 13)),
+                    Member.create("서은우", "tjdnsdmj@gmail.com", "Wo1902!si1", null, Gender.MALE, LocalDate.of(2008, 2, 20)),
+                    Member.create("이예진","dldPwls@gmail.com", "Wo1902!si1",null,Gender.FEMALE,LocalDate.of(2001,2,16))*/
             );
 
             for (Member member : members) {
@@ -280,9 +275,6 @@ public class initDB {
             for (Like like : likes) {
                 em.persist(like);
             }
-
         }
-
-
     }
 }
