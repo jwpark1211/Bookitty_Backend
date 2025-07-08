@@ -1,6 +1,5 @@
 package capstone.bookitty.domain.bookState.dto;
 
-import capstone.bookitty.global.annotation.ValidEnum;
 import capstone.bookitty.domain.bookState.domain.State;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +9,6 @@ public record StateSaveRequest(
         String isbn,
         @NotNull(message = "memberId is a required entry value.")
         Long memberId,
-        @ValidEnum(enumClass = State.class, message = "State is not valid.")
         State state,
         String categoryName,
         String bookTitle,
