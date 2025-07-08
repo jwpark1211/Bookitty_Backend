@@ -1,11 +1,13 @@
 package capstone.bookitty.global.error;
 
 import capstone.bookitty.global.error.exception.ErrorCode;
+import jakarta.validation.ConstraintViolation;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public record ErrorResponse(
@@ -29,6 +31,10 @@ public record ErrorResponse(
 
     public static ErrorResponse of(final ErrorCode code) {
         return new ErrorResponse(code);
+    }
+
+    public static ErrorResponse of(final ErrorCode code, final String customMessage) {
+        return new ErrorResponse(customMessage, code.getStatus(), new ArrayList<>(), code.getCode());
     }
 
     public static ErrorResponse of(final ErrorCode code, final List<FieldError> errors) {

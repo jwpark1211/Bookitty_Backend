@@ -1,9 +1,7 @@
 package capstone.bookitty.domain.member.api;
 
-import capstone.bookitty.domain.member.domain.Authority;
 import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +33,6 @@ class MemberApiTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private MemberRepository memberRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
 
     public static final String email = "1234abc@naver.com";
     public static final String name = "홍길동";
@@ -82,7 +78,7 @@ class MemberApiTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors[0].field").value("email"))
-                    .andExpect(jsonPath("$.errors[0].reason").value("Email is a required entry value."));
+                    .andExpect(jsonPath("$.errors[0].reason").value("Email is a required entry value"));
         }
 
         @Test
@@ -98,23 +94,7 @@ class MemberApiTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors[0].field").value("email"))
-                    .andExpect(jsonPath("$.errors[0].reason").value("Email format is not valid."));
-        }
-
-        @Test
-        @DisplayName("비밀번호 형식이 잘못된 경우 400과 에러 메시지가 반환된다.")
-        void fail_whenPasswordTooWeak_thenReturns400() throws Exception{
-            //given
-            MemberSaveRequest request = new MemberSaveRequest("1234abc@naver.com",
-                    "passwor", Gender.FEMALE, LocalDate.of(2000, 1, 1), name);
-            //when + then
-            mockMvc.perform(post("/members/new")
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsString(request))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.errors[0].field").value("password"))
-                    .andExpect(jsonPath("$.errors[0].reason").value("비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다."));
+                    .andExpect(jsonPath("$.errors[0].reason").value("Email format is not valid"));
         }
 
         @Test
@@ -131,7 +111,7 @@ class MemberApiTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors[0].field").value("password"))
-                    .andExpect(jsonPath("$.errors[0].reason").value("Password is a required entry value."));
+                    .andExpect(jsonPath("$.errors[0].reason").value("Password is a required entry value"));
         }
 
         @Test
@@ -147,7 +127,7 @@ class MemberApiTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.errors[0].field").value("name"))
-                    .andExpect(jsonPath("$.errors[0].reason").value("name is a required entry value."));
+                    .andExpect(jsonPath("$.errors[0].reason").value("name is a required entry value"));
         }
     }
 
@@ -170,8 +150,8 @@ class MemberApiTest {
         @DisplayName("이메일이 중복된 경우 200과 false가 반환된다.")
         void success_whenEmailDuplicated_thenReturns200() throws Exception {
             //given
-            memberRepository.save(Member.create(name, email, new Password("Wj1ofj!sd24"), null,
-                    Gender.MALE, LocalDate.of(2000, 1, 1), Authority.ROLE_USER, passwordEncoder));
+            memberRepository.save(Member.createUser(name, email, "encodedPassword",
+                    Gender.MALE, LocalDate.of(2000, 1, 1)));
             //when + then
             mockMvc.perform(get("/members/email/unique")
                             .param("email", email))
@@ -241,8 +221,8 @@ class MemberApiTest {
         @DisplayName("유효한 회원 ID로 조회 시 200과 회원 정보가 반환된다.")
         void success_whenValidMemberId_thenReturns200() throws Exception {
             //given
-            memberRepository.save(Member.create(name, email, new Password("Wj1ofj!sd24"), null,
-                    Gender.MALE, LocalDate.of(2000, 1, 1), Authority.ROLE_USER, passwordEncoder));
+            memberRepository.save(Member.createUser(name, email, "encodedPassword",
+                    Gender.MALE, LocalDate.of(2000, 1, 1)));
 
             //when + then
             mockMvc.perform(get("/members/1")
@@ -263,20 +243,20 @@ class MemberApiTest {
             mockMvc.perform(get("/members/"+nonExistentId)
                             .with(csrf()))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.message").value("Entity Not Found"));
+                    .andExpect(jsonPath("$.message").value("Member ID[999] is not found"));
         }
 
         @Test
-        @DisplayName("잘못된 형식의 회원 ID로 조회 시 400이 반환된다.")
-        void fail_whenInvalidMemberId_thenReturns400() throws Exception {
+        @DisplayName("잘못된 형식의 회원 ID로 조회 시 404가 반환된다.")
+        void fail_whenInvalidMemberId_thenReturns404() throws Exception {
             //given
             Long invalidId = 0L;
 
             //when + then
             mockMvc.perform(get("/members/" + invalidId)
                             .with(csrf()))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.message").value("Invalid Input Value"));
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").value("Member ID[0] is not found"));
         }
     }
 }

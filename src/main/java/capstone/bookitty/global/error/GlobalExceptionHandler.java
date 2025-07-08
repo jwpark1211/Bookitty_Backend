@@ -12,19 +12,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.multipart.MultipartException;
 
 import java.nio.file.AccessDeniedException;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.warn("MethodArgumentNotValidException: {}", e.getMessage());
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE,e.getBindingResult());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.INVALID_INPUT_VALUE.getStatus()));
     }
 
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(final EntityNotFoundException e){
         log.warn("EntityNotFoundException: {}", e.getMessage());
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND,e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.ENTITY_NOT_FOUND.getStatus()));
     }
 
