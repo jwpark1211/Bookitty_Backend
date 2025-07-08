@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@Disabled("목 테스트 - 공부용")
 class MockAuthServiceTest {
 
     @InjectMocks

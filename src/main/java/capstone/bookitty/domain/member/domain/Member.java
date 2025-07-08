@@ -49,19 +49,7 @@ public class Member {
                 .build();
     }
 
-    public static Member createAdmin(String name, String email, String encodedPassword,
-                                    Gender gender, LocalDate birthDate){
-        return Member.builder()
-                .name(name)
-                .email(email)
-                .encodedPassword(encodedPassword)
-                .gender(gender)
-                .birthDate(birthDate)
-                .authority(Authority.ROLE_ADMIN)
-                .build();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder
     private Member(String name, String email, String encodedPassword, String profileImg,
                    Gender gender, LocalDate birthDate, Authority authority) {
         this.name = name;

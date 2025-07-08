@@ -1,13 +1,14 @@
 package capstone.bookitty.domain.member.application;
 
-import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
+import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.util.SecurityUtil;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +19,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
+@Transactional
 @SpringBootTest
 @ActiveProfiles("test")
 class MemberQueryServiceTest {
     @Autowired MemberQueryService memberService;
     @Autowired MemberRepository memberRepository;
-
-    @AfterEach
-    void tearDown(){
-        memberRepository.deleteAllInBatch();
-    }
-
+    @Autowired MemberTestFixture memberFixture;
 
     @Nested
     @DisplayName("이메일 중복 확인 메서드 Test Cases")
@@ -56,7 +52,7 @@ class MemberQueryServiceTest {
         @DisplayName("이메일이 중복되는 경우 false를 반환합니다.")
         void returnsFalseWhenEmailIsDuplicated(){
             //given
-            memberRepository.save(createRegularMember("김철수", "duplicate@naver.com"));
+            memberRepository.save(memberFixture.createMember().email("duplicate@naver.com").build());
 
             //when
             BoolResponse boolResponse = memberService.isEmailUnique("duplicate@naver.com");
@@ -73,15 +69,18 @@ class MemberQueryServiceTest {
         @DisplayName("존재하는 회원의 Id로 요청 시 회원 정보를 반환한다.")
         void returnsMemberInfo_whenMemberExistsById(){
             //given
-            Member member = createRegularMember("홍길동","1234abc@naver.com");
+            String name = "홍길동";
+            String email = "1234abc@naver.com";
+
+            Member member = memberFixture.createMember().name(name).email(email).build();
             memberRepository.save(member);
 
             //when
             MemberInfoResponse memberInfoResponse = memberService.getMemberInfoWithId(member.getId());
 
             //then
-            assertThat(memberInfoResponse.email()).isEqualTo("1234abc@naver.com");
-            assertThat(memberInfoResponse.name()).isEqualTo("홍길동");
+            assertThat(memberInfoResponse.email()).isEqualTo(email);
+            assertThat(memberInfoResponse.name()).isEqualTo(name);
         }
         @Test
         @DisplayName("존재하지 않는 회원의 Id로 요청 시 예외가 발생한다.")
@@ -103,8 +102,8 @@ class MemberQueryServiceTest {
         void returnsPagedMemberInfo_whenMultipleMembersExist() {
             // given
             Pageable pageable = PageRequest.of(0, 2, Sort.by("id"));
-            Member member1 = createRegularMember("홍길동","user1@naver.com");
-            Member member2 = createRegularMember("김영희","user2@naver.com");
+            Member member1 = memberFixture.createMember().name("홍길동").email("user1@naver.com").build();
+            Member member2 = memberFixture.createMember().name("김영희").email("user2@naver.com").build();
             memberRepository.saveAll(List.of(member1, member2));
 
             // when
@@ -137,10 +136,10 @@ class MemberQueryServiceTest {
         void returnsCorrectMembers_whenSecondPageIsRequested(){
             //given
             Pageable pageable = PageRequest.of(1, 2, Sort.by("id"));
-            Member member1 = createRegularMember("홍길동","user1@naver.com");
-            Member member2 = createRegularMember("김영희","user2@naver.com");
-            Member member3 = createRegularMember("유재석","user3@naver.com");
-            Member member4 = createRegularMember("박명수","user4@naver.com");
+            Member member1 = memberFixture.createMember().name("홍길동").email("user1@naver.com").build();
+            Member member2 = memberFixture.createMember().name("김영희").email("user2@naver.com").build();
+            Member member3 = memberFixture.createMember().name("유재석").email("user3@naver.com").build();
+            Member member4 = memberFixture.createMember().name("박명수").email("user4@naver.com").build();
             memberRepository.saveAll(List.of(member1, member2, member3, member4));
 
             //when
@@ -164,7 +163,9 @@ class MemberQueryServiceTest {
         void returnsMemberInfo_whenAuthenticatedUserExists() {
             // given
             String email = "user@naver.com";
-            Member member = createRegularMember("홍길동", email);
+            String name = "홍길동";
+
+            Member member =  memberFixture.createMember().email(email).name(name).build();
             memberRepository.save(member);
 
             try(MockedStatic<SecurityUtil> mocked = mockSecurityUtil(email)) {
@@ -212,11 +213,5 @@ class MemberQueryServiceTest {
         mocked.when(SecurityUtil::getCurrentMemberEmail)
                 .thenThrow(new UnauthenticatedMemberException());
         return mocked;
-    }
-
-    private Member createRegularMember(String name, String email){
-        return Member.createUser(name, email,
-                "encodedPassword",  Gender.MALE,
-                LocalDate.of(1990, 1, 1));
     }
 }

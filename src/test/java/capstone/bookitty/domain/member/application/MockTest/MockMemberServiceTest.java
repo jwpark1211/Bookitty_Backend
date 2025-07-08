@@ -61,7 +61,7 @@ class MockMemberServiceTest {
     @DisplayName("회원가입 테스트")
     class SaveMemberTest {
         @Test
-        @DisplayName("회원가입 성공")
+        @DisplayName("회원가입을 성공하면 id값을 반환한다.")
         void 회원가입_성공() {
             given(memberRepository.existsByEmail(request.email())).willReturn(false);
             given(memberRepository.save(any(Member.class)))

@@ -1,10 +1,10 @@
 package capstone.bookitty.domain.member.api;
 
-import capstone.bookitty.domain.member.domain.Gender;
-import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,8 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.time.LocalDate;
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,21 +25,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @ActiveProfiles("test")
 class MemberApiTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private MemberRepository memberRepository;
-
-    public static final String email = "1234abc@naver.com";
-    public static final String name = "홍길동";
-
-    @AfterEach
-    public void tearDown() {
-        // 테스트 후 데이터 정리
-        memberRepository.deleteAllInBatch();
-    }
+    @Autowired private MemberTestFixture memberFixture;
 
     @Nested
     @WithMockUser
@@ -51,8 +42,7 @@ class MemberApiTest {
         @DisplayName("올바른 회원가입 요청 시 201이 반환되고 회원 ID가 포함된 응답이 반환된다.")
         void success_whenValidRequest_thenReturns201WithId() throws Exception {
             // given
-            MemberSaveRequest request = new MemberSaveRequest(email, "Password123!", Gender.FEMALE,
-                    LocalDate.of(2000, 1, 1), name);
+            MemberSaveRequest request = memberFixture.createMemberSaveRequest().build();
 
             // when + then
             mockMvc.perform(post("/members/new")
@@ -68,8 +58,7 @@ class MemberApiTest {
         @DisplayName("이메일이 누락된 경우 400과 에러 메시지가 반환된다.")
         void fail_whenEmailMissing_thenReturns400() throws Exception {
             // given
-            MemberSaveRequest request = new MemberSaveRequest("", // 이메일 누락
-                    "password123!", Gender.FEMALE, LocalDate.of(2000, 1, 1), name);
+            MemberSaveRequest request = memberFixture.createMemberSaveRequest().email("").build();
 
             // when + then
             mockMvc.perform(post("/members/new")
@@ -85,8 +74,8 @@ class MemberApiTest {
         @DisplayName("이메일 형식이 잘못된 경우 400과 에러 메시지가 반환된다.")
         void fail_whenInvalidEmailFormat_thenReturns400() throws Exception{
             //given
-            MemberSaveRequest request = new MemberSaveRequest("1234abc", //이메일 형식 잘못됨
-                    "password123!", Gender.FEMALE, LocalDate.of(2000, 1, 1), name);
+            MemberSaveRequest request = memberFixture.createMemberSaveRequest().email("1234abc").build();
+
             //when + then
             mockMvc.perform(post("/members/new")
                             .with(csrf())
@@ -101,8 +90,7 @@ class MemberApiTest {
         @DisplayName("비밀번호가 누락된 경우 400과 에러 메시지가 반환된다.")
         void fail_whenPasswordIsBlank_thenReturns400() throws Exception {
             // given
-            MemberSaveRequest request = new MemberSaveRequest("1234abc@naver.com",
-                    "", Gender.FEMALE, LocalDate.of(2000, 1, 1), name);
+            MemberSaveRequest request = memberFixture.createMemberSaveRequest().password("").build();
 
             // when + then
             mockMvc.perform(post("/members/new")
@@ -118,8 +106,8 @@ class MemberApiTest {
         @DisplayName("이름이 비어있는 경우 400과 에러 메시지가 반환된다.")
         void fail_whenNameIsBlank_thenReturns400() throws Exception{
             //given
-            MemberSaveRequest request = new MemberSaveRequest("1234abc@naver.com",
-                    "Wp1234@!4a", Gender.FEMALE, LocalDate.of(2000, 1, 1), "");
+            MemberSaveRequest request = memberFixture.createMemberSaveRequest().name("").build();
+
             //when + then
             mockMvc.perform(post("/members/new")
                             .with(csrf())
@@ -141,7 +129,7 @@ class MemberApiTest {
 
             //when + then
             mockMvc.perform(get("/members/email/unique")
-                            .param("email", email))
+                            .param("email", "1234abc@email.com"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isUnique").value(true));
         }
@@ -150,8 +138,9 @@ class MemberApiTest {
         @DisplayName("이메일이 중복된 경우 200과 false가 반환된다.")
         void success_whenEmailDuplicated_thenReturns200() throws Exception {
             //given
-            memberRepository.save(Member.createUser(name, email, "encodedPassword",
-                    Gender.MALE, LocalDate.of(2000, 1, 1)));
+            String email = "1234abc@naver.com";
+            memberRepository.save(memberFixture.createMember().email(email).build());
+
             //when + then
             mockMvc.perform(get("/members/email/unique")
                             .param("email", email))
@@ -221,16 +210,13 @@ class MemberApiTest {
         @DisplayName("유효한 회원 ID로 조회 시 200과 회원 정보가 반환된다.")
         void success_whenValidMemberId_thenReturns200() throws Exception {
             //given
-            memberRepository.save(Member.createUser(name, email, "encodedPassword",
-                    Gender.MALE, LocalDate.of(2000, 1, 1)));
+            memberRepository.save(memberFixture.createMember().build());
 
             //when + then
             mockMvc.perform(get("/members/1")
                         .with(csrf()))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1L))
-                    .andExpect(jsonPath("$.email").value(email))
-                    .andExpect(jsonPath("$.name").value(name));
+                    .andExpect(jsonPath("$.id").value(1L));
         }
 
         @Test

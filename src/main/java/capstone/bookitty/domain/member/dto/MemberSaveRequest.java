@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,7 @@ public record MemberSaveRequest(
     String name
 
 ) {
+    @Builder
     public static MemberSaveRequest of(String email, String password, Gender gender, LocalDate birthDate, String name){
         return new MemberSaveRequest(email,password,gender,birthDate,name);
     }
