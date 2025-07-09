@@ -1,8 +1,19 @@
 package capstone.bookitty.domain.member.domain;
 
-import lombok.RequiredArgsConstructor;
+import capstone.bookitty.global.converter.PersistableEnum;
 
-@RequiredArgsConstructor
-public enum Authority {
-    ROLE_ADMIN, ROLE_USER
+
+public enum Authority implements PersistableEnum<Integer> {
+    ROLE_ADMIN(0), ROLE_USER(1);
+
+    private final int value;
+
+    Authority(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return value;
+    }
 }
