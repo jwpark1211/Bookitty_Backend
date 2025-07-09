@@ -27,10 +27,12 @@ public class AuthService {
     private final TokenBlacklistService tokenBlacklistService;
 
     public TokenResponse login(MemberLoginRequest request) {
-        Authentication authentication = authenticateUser(request.email(), request.password());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
         refreshTokenService.save(authentication.getName(), jwtToken.refreshToken());
-        Member member = getMemberByEmail(request.email());
+        Member member = memberRepository.findByEmail(request.email())
+                .orElseThrow(() -> new MemberNotFoundException(request.email()));
 
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
@@ -44,7 +46,8 @@ public class AuthService {
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
         refreshTokenService.update(authentication.getName(), jwtToken.refreshToken());
 
-        Member member = getMemberByEmail(authentication.getName());
+        Member member = memberRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new MemberNotFoundException(authentication.getName()));
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
@@ -57,16 +60,5 @@ public class AuthService {
         tokenBlacklistService.blacklist(request.accessToken());
     }
 
-    //== Private Methods ==//
-
-    private Authentication authenticateUser(String email, String password) {
-        return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password));
-    }
-
-    private Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException(email));
-    }
 }
 
