@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MemberCommandService {
+
     private final MemberRepository memberRepository;
     private final MemberFactory memberFactory;
 
@@ -26,12 +27,13 @@ public class MemberCommandService {
 
     @Transactional
     public void deleteMember(Long id) {
-        Member target = memberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException(id));
-        Member current = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail())
-                .orElseThrow(() -> new UnauthenticatedMemberException());
-        if (!current.canDelete(target)) throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        Member target = memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException(id));
 
+        String email = SecurityUtil.getCurrentMemberEmail();
+        if (email == null) throw new UnauthenticatedMemberException();
+        Member current = memberRepository.findByEmail(email).orElseThrow(() -> new UnauthenticatedMemberException(email));
+
+        current.validatePermissionTo(target);
         memberRepository.delete(target);
     }
 
