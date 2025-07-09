@@ -13,19 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberCommandService {
 
     private final MemberRepository memberRepository;
     private final MemberFactory memberFactory;
 
-    @Transactional
     public Long saveMember(MemberSaveRequest request) {
         Member member = memberFactory.create(request);
         memberRepository.save(member);
         return member.getId();
     }
 
-    @Transactional
     public void deleteMember(Long id) {
         Member target = memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException(id));
 

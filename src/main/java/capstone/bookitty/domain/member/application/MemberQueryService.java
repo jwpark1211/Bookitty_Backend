@@ -11,21 +11,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberQueryService {
     private final MemberRepository memberRepository;
 
     public MemberInfoResponse getMemberInfoWithId(Long id) {
-        return MemberInfoResponse.from(memberRepository.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException(id)));
+        return MemberInfoResponse.from(memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException(id)));
     }
 
     public Page<MemberInfoResponse> getAllMemberInfo(Pageable pageable) {
-        return memberRepository.findAll(pageable)
-                .map(MemberInfoResponse::from);
+        return memberRepository.findAll(pageable).map(MemberInfoResponse::from);
     }
 
     public MemberInfoResponse getMyInfo() {

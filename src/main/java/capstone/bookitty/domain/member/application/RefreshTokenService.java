@@ -5,11 +5,13 @@ import capstone.bookitty.domain.member.exception.NotLoggedInException;
 import capstone.bookitty.domain.member.repository.RefreshTokenRepository;
 
 import capstone.bookitty.global.authentication.RefreshToken;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RefreshTokenService {
     private final RefreshTokenRepository repository;
 
@@ -18,16 +20,14 @@ public class RefreshTokenService {
     }
 
     public void validate(String key, String inputToken) {
-        RefreshToken token = repository.findByKey(key)
-                .orElseThrow(() -> new NotLoggedInException());
+        RefreshToken token = repository.findByKey(key).orElseThrow(() -> new NotLoggedInException());
         if (!token.getValue().equals(inputToken)) {
             throw new InvalidRefreshTokenException();
         }
     }
 
     public void update(String key, String newValue) {
-        RefreshToken token = repository.findByKey(key)
-                .orElseThrow(() -> new NotLoggedInException());
+        RefreshToken token = repository.findByKey(key).orElseThrow(() -> new NotLoggedInException());
         token.updateValue(newValue);
         repository.save(token);
     }

@@ -17,14 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
+
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlacklistService tokenBlacklistService;
 
-    @Transactional
     public TokenResponse login(MemberLoginRequest request) {
         Authentication authentication = authenticateUser(request.email(), request.password());
         JwtToken jwtToken = jwtTokenProvider.generateTokenDto(authentication);
@@ -34,7 +35,6 @@ public class AuthService {
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
-    @Transactional
     public TokenResponse reissue(TokenRequest request) {
         jwtTokenProvider.validateToken(request.refreshToken());
 
@@ -48,7 +48,6 @@ public class AuthService {
         return TokenResponse.of(member.getId(), jwtToken, member.getProfileImg(), member.getName());
     }
 
-    @Transactional
     public void logout(TokenRequest request) {
         jwtTokenProvider.validateToken(request.refreshToken());
 
@@ -67,7 +66,7 @@ public class AuthService {
 
     private Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException());
+                .orElseThrow(() -> new MemberNotFoundException(email));
     }
 }
 
