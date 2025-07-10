@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.domain;
+package capstone.bookitty.domain.member.domain.type;
 
 import capstone.bookitty.global.converter.PersistableEnum;
 
