@@ -1,15 +1,15 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
+import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
+import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.application.MemberCommandService;
 import capstone.bookitty.domain.member.application.MemberQueryService;
-import capstone.bookitty.domain.member.domain.Gender;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dto.MemberInfoResponse;
-import capstone.bookitty.domain.member.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.domain.type.Gender;
+import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
-import capstone.bookitty.global.dto.BoolResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,19 +26,23 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 @Disabled("목테스트 - 공부용")
 class MockMemberServiceTest {
 
-    @InjectMocks private MemberQueryService memberQueryService;
-    @InjectMocks private MemberCommandService memberCommandService;
-    @Mock private MemberRepository memberRepository;
-    @Mock private PasswordEncoder passwordEncoder;
+    @InjectMocks
+    private MemberQueryService memberQueryService;
+    @InjectMocks
+    private MemberCommandService memberCommandService;
+    @Mock
+    private MemberRepository memberRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private static final String EMAIL = "test@example.com";
     private static final String NAME = "테스트";
@@ -52,9 +56,11 @@ class MockMemberServiceTest {
     @BeforeEach
     void setUp() {
         request = new MemberSaveRequest(EMAIL, "!Passwordw23", Gender.MALE,
-                LocalDate.of(2000,1,1), NAME);
+                LocalDate.of(2000, 1, 1), NAME);
 
-        member = Member.createUser(NAME, EMAIL, "Wjdof1po3l!",  Gender.MALE, LocalDate.of(2001,12,11));
+        member = Member.builder().name(NAME).email(EMAIL)
+                .password(Password.ofEncrypted("encodedPassword"))
+                .gender(Gender.MALE).birthDate(LocalDate.of(2001, 12, 11)).build();
     }
 
     @Nested
@@ -97,9 +103,9 @@ class MockMemberServiceTest {
         void 이메일_존재하지_않음() {
             given(memberRepository.existsByEmail("nope@email.com")).willReturn(false);
 
-            BoolResponse result = memberQueryService.isEmailUnique("nope@email.com");
+            boolean isUnique = memberQueryService.isEmailUnique("nope@email.com");
 
-            assertThat(result.isUnique()).isTrue();
+            assertThat(isUnique).isTrue();
         }
 
         @Test
@@ -107,9 +113,9 @@ class MockMemberServiceTest {
         void 이메일_존재함() {
             given(memberRepository.existsByEmail("exists@email.com")).willReturn(true);
 
-            BoolResponse result = memberQueryService.isEmailUnique("exists@email.com");
+            boolean isUnique = memberQueryService.isEmailUnique("exists@email.com");
 
-            assertThat(result.isUnique()).isFalse();
+            assertThat(isUnique).isFalse();
         }
     }
 

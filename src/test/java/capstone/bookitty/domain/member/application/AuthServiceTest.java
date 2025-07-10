@@ -1,6 +1,7 @@
 package capstone.bookitty.domain.member.application;
 
-import capstone.bookitty.domain.member.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;
 import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
@@ -24,10 +25,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 public class AuthServiceTest {
 
-    @Autowired MemberTestFixture memberFixture;
-    @Autowired MemberRepository memberRepository;
-    @Autowired PasswordEncoder passwordEncoder;
-    @Autowired AuthService authService;
+    @Autowired
+    MemberTestFixture memberFixture;
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    AuthService authService;
 
     @Nested
     @DisplayName("로그인 메서드 Test Cases")
@@ -38,10 +43,10 @@ public class AuthServiceTest {
         void shouldReturnJwtToken_whenLoginSucceeds() {
             // given
             String email = "testuser@example.com";
-            String password = "Test1234@";
+            String password = "Test1234!";
             String name = "홍길동";
-            String encodedPassword = passwordEncoder.encode(password);
-            memberRepository.save(memberFixture.createMember().email(email).encodedPassword(encodedPassword).build());
+            memberRepository.save(memberFixture.createMember().email(email)
+                    .password(Password.fromRaw(password, passwordEncoder)).build());
 
             MemberLoginRequest request = new MemberLoginRequest(email, password);
 
@@ -76,8 +81,8 @@ public class AuthServiceTest {
             // given
             String email = "testuser@example.com";
             String password = "Test1234@";
-            String encodedPassword = passwordEncoder.encode(password);
-            memberRepository.save(memberFixture.createMember().email(email).encodedPassword(encodedPassword).build());
+            memberRepository.save(memberFixture.createMember().email(email)
+                    .password(Password.fromRaw(password, passwordEncoder)).build());
 
             MemberLoginRequest request = new MemberLoginRequest(email, "wrongPAssword!2@");
 
@@ -98,8 +103,8 @@ public class AuthServiceTest {
             String email = "testuser@example.com";
             String password = "Test1234@";
             String name = "홍길동";
-            String encodedPassword = passwordEncoder.encode(password);
-            memberRepository.save(memberFixture.createMember().email(email).encodedPassword(encodedPassword).build());
+            memberRepository.save(memberFixture.createMember().email(email)
+                    .password(Password.fromRaw(password, passwordEncoder)).build());
 
             MemberLoginRequest loginRequest = new MemberLoginRequest(email, password);
             TokenResponse loginResponse = authService.login(loginRequest);
@@ -122,8 +127,8 @@ public class AuthServiceTest {
             // given
             String email = "testuser@example.com";
             String password = "Test1234@";
-            String encodedPassword = passwordEncoder.encode(password);
-            memberRepository.save(memberFixture.createMember().email(email).encodedPassword(encodedPassword).build());
+            memberRepository.save(memberFixture.createMember().email(email)
+                    .password(Password.fromRaw(password, passwordEncoder)).build());
 
             MemberLoginRequest loginRequest = new MemberLoginRequest(email, password);
             TokenResponse loginResponse = authService.login(loginRequest);

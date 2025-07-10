@@ -1,26 +1,58 @@
 package capstone.bookitty.domain.member.domain.vo;
 
-public class Password {
-    private final String rawPassword;
+import capstone.bookitty.global.authentication.PasswordEncoder;
+import jakarta.persistence.Embeddable;
 
-    public Password(String rawPassword) {
-        validate(rawPassword);
-        this.rawPassword = rawPassword;
+import java.util.Objects;
+
+@Embeddable
+public class Password {
+
+    private String password;
+
+    protected Password() {
     }
 
-    private void validate(String password) {
+    private Password(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public static Password fromRaw(String raw, PasswordEncoder encoder) {
+        validate(raw);
+        return new Password(encoder.encode(raw));
+    }
+
+    public static Password ofEncrypted(String encrypted) {
+        if (encrypted == null || !encrypted.startsWith("$2")) {
+            throw new IllegalArgumentException("Expected bcrypt encoded password.");
+        }
+        return new Password(encrypted);
+    }
+
+    public String password() {
+        return password;
+    }
+
+    private static void validate(String password) {
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Password cannot be null or blank");
         }
 
-        // 영문 대소문자 + 숫자 + 특수문자 1개 이상씩 포함, 길이 8~20자
         if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$")) {
-            throw new IllegalArgumentException("Passwords must contain at least one English case, number, and " +
-                    "special characters, and must be 8 or more and 20 or less in length");
+            throw new IllegalArgumentException("Passwords must contain at least one English case, number, and special characters, and must be 8 or more and 20 or less in length");
         }
     }
 
-    public String getRaw() {
-        return rawPassword;
+    // equals, hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Password that)) return false;
+        return Objects.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(password);
     }
 }

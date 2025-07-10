@@ -1,11 +1,11 @@
 package capstone.bookitty.global.converter;
 
-import capstone.bookitty.domain.member.domain.Authority;
-import capstone.bookitty.domain.member.domain.Gender;
+import capstone.bookitty.domain.member.domain.type.Authority;
+import capstone.bookitty.domain.member.domain.type.Gender;
 import jakarta.persistence.Converter;
 
-public class Converters {
-    private Converters() {
+public class EnumConverters {
+    private EnumConverters() {
     }
 
     @Converter(autoApply = false)

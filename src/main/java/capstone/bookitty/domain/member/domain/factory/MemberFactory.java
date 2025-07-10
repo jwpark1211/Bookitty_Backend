@@ -1,8 +1,8 @@
-package capstone.bookitty.domain.member.application.factory;
+package capstone.bookitty.domain.member.domain.factory;
 
+import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.vo.Password;
-import capstone.bookitty.domain.member.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.PasswordEncoder;
@@ -13,22 +13,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberFactory {
 
-    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Member create(MemberSaveRequest request) {
         validateEmailUniqueness(request.email());
 
-        Password password = new Password(request.password());
-        String encodedPassword = passwordEncoder.encode(password.getRaw());
-
-        return Member.createUser(
-                request.name(),
-                request.email(),
-                encodedPassword,
-                request.gender(),
-                request.birthdate()
-        );
+        return Member.builder()
+                .name(request.name())
+                .email(request.email())
+                .password(Password.fromRaw(request.password(), passwordEncoder))
+                .gender(request.gender())
+                .birthDate(request.birthdate())
+                .build();
     }
 
     private void validateEmailUniqueness(String email) {

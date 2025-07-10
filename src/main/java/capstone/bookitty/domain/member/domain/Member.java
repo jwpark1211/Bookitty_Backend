@@ -1,6 +1,9 @@
 package capstone.bookitty.domain.member.domain;
 
-import capstone.bookitty.global.converter.Converters;
+import capstone.bookitty.domain.member.domain.type.Authority;
+import capstone.bookitty.domain.member.domain.type.Gender;
+import capstone.bookitty.domain.member.domain.vo.Password;
+import capstone.bookitty.global.converter.EnumConverters;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,48 +31,60 @@ public class Member {
     private String profileImg;
     private String email;
 
-    @Column(name = "password")
-    private String encodedPassword;
+    @Embedded
+    private Password password;
     private LocalDate birthDate;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Convert(converter = Converters.GenderConverter.class)
+    @Convert(converter = EnumConverters.GenderConverter.class)
     private Gender gender;
 
-    @Convert(converter = Converters.AuthorityConverter.class)
+    @Convert(converter = EnumConverters.AuthorityConverter.class)
     private Authority authority;
 
     private static final String DEFAULT_PROFILE_IMG = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
 
-    public static Member createUser(String name, String email, String encodedPassword,
-                                    Gender gender, LocalDate birthDate) {
-        return Member.builder()
-                .name(name)
-                .email(email)
-                .encodedPassword(encodedPassword)
-                .gender(gender)
-                .birthDate(birthDate)
-                .authority(Authority.ROLE_USER)
-                .build();
-    }
-
     @Builder
-    private Member(String name, String email, String encodedPassword, String profileImg,
+    private Member(String name, String email, Password password, String profileImg,
                    Gender gender, LocalDate birthDate, Authority authority) {
+
+        validateMemberInfo(name, email, birthDate, gender);
+
         this.name = name;
         this.email = email;
-        this.encodedPassword = encodedPassword;
-        this.profileImg = StringUtils.hasText(profileImg) ? profileImg : DEFAULT_PROFILE_IMG;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.createdAt = LocalDateTime.now();
-        this.authority = authority;
+        this.password = password;
+        this.authority = authority == null ? Authority.ROLE_USER : authority;
+        this.profileImg = StringUtils.hasText(profileImg) ? profileImg : DEFAULT_PROFILE_IMG;
+
     }
 
     public void validatePermissionTo(Member target) {
         if (!(this.authority == Authority.ROLE_ADMIN || this.id.equals(target.id)))
-            throw new IllegalArgumentException("Access denied: You do not have permission to perform this action.");
+            throw new IllegalArgumentException("Access denied: You do not have permission to perform this action");
     }
+
+    //== validation ==//
+    private void validateMemberInfo(String name, String email, LocalDate birthDate, Gender gender) {
+        // name 검증
+        if (!StringUtils.hasText(name)) throw new IllegalArgumentException("Name must not be blank");
+        if (name.length() > 10) throw new IllegalArgumentException("Name must not exceed 10 characters");
+
+        // email 검증
+        if (!StringUtils.hasText(email)) throw new IllegalArgumentException("Email must not be blank.");
+        if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
+            throw new IllegalArgumentException("Email format is invalid.");
+
+        // birthDate 검증
+        if (birthDate == null) throw new IllegalArgumentException("Birth date is required.");
+        if (birthDate.isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("Birth date must be a date in the past.");
+
+        // gender 검증
+        if (gender == null) throw new IllegalArgumentException("Gender is required.");
+    }
+
 }

@@ -7,6 +7,8 @@ import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.star.domain.Star;
+import capstone.bookitty.global.authentication.PasswordEncoder;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,7 @@ import java.util.List;
 public class InitDB {
     private final InitService initService;
 
-    //@PostConstruct
+    @PostConstruct
     public void init() {
         initService.dbInit();
     }
@@ -32,6 +34,7 @@ public class InitDB {
     static class InitService {
 
         private final EntityManager em;
+        private final PasswordEncoder passwordEncoder;
 
         public void dbInit() {
             List<Member> members = Arrays.asList(
@@ -238,12 +241,12 @@ public class InitDB {
             }
         }
 
-        public static Member createUser(String name, String email, String encodedPassword,
-                                        Gender gender, LocalDate birthDate) {
+        public Member createUser(String name, String email, String password,
+                                 Gender gender, LocalDate birthDate) {
             return Member.builder()
                     .name(name)
                     .email(email)
-                    .encodedPassword(Password.ofEncrypted(encodedPassword))
+                    .password(Password.fromRaw(password, passwordEncoder))
                     .gender(gender)
                     .birthDate(birthDate)
                     .authority(Authority.ROLE_USER)

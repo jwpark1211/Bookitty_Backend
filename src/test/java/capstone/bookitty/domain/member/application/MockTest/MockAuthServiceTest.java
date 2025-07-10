@@ -1,9 +1,9 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
+import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.application.AuthService;
 import capstone.bookitty.domain.member.application.RefreshTokenService;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.JwtToken;
@@ -31,11 +31,16 @@ class MockAuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    @Mock private AuthenticationManager authenticationManager;
-    @Mock private JwtTokenProvider jwtTokenProvider;
-    @Mock private MemberRepository memberRepository;
-    @Mock private RefreshTokenService refreshTokenService;
-    @Mock private Authentication authentication;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private MemberRepository memberRepository;
+    @Mock
+    private RefreshTokenService refreshTokenService;
+    @Mock
+    private Authentication authentication;
 
     private static final String EMAIL = "test@example.com";
     private static final String ACCESS_TOKEN = "access-token";
