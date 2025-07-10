@@ -15,11 +15,6 @@ public record MemberInfoResponse(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate birthDate
 ) {
-    public static MemberInfoResponse of(Long id, String email, String profileImg, String name,
-                                        Gender gender, LocalDate birthDate) {
-        return new MemberInfoResponse(id, email, profileImg, name, gender, birthDate);
-    }
-
     public static MemberInfoResponse from(Member member) {
         return new MemberInfoResponse(
                 member.getId(),

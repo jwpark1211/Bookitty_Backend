@@ -9,6 +9,7 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 
+@Builder
 public record MemberSaveRequest(
         @NotBlank(message = "Email is a required entry value")
         @Email(message = "Email format is not valid")
@@ -28,8 +29,4 @@ public record MemberSaveRequest(
         String name
 
 ) {
-    @Builder
-    public static MemberSaveRequest of(String email, String password, Gender gender, LocalDate birthDate, String name) {
-        return new MemberSaveRequest(email, password, gender, birthDate, name);
-    }
 }
