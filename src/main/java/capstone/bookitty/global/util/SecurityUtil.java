@@ -1,5 +1,6 @@
 package capstone.bookitty.global.util;
 
+import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.global.authentication.CustomUserDetails;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,8 @@ public class SecurityUtil {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails.getUsername() == null) throw new UnauthenticatedMemberException();
+
         log.info("Authenticated user Email: {}", userDetails.getUsername());
         return userDetails.getUsername();
     }

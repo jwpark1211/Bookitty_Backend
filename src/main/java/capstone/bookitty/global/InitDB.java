@@ -8,7 +8,6 @@ import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.star.domain.Star;
 import capstone.bookitty.global.authentication.PasswordEncoder;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ import java.util.List;
 public class InitDB {
     private final InitService initService;
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         initService.dbInit();
     }

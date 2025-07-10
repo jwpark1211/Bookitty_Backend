@@ -2,7 +2,6 @@ package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
-import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberQueryService {
+
     private final MemberRepository memberRepository;
 
     public MemberInfoResponse getMemberInfoWithId(Long id) {
@@ -29,7 +29,6 @@ public class MemberQueryService {
 
     public MemberInfoResponse getMyInfo() {
         String email = SecurityUtil.getCurrentMemberEmail();
-        if (email == null) throw new UnauthenticatedMemberException();
 
         return memberRepository.findByEmail(email)
                 .map(MemberInfoResponse::from)
@@ -39,4 +38,5 @@ public class MemberQueryService {
     public boolean isEmailUnique(String email) {
         return !memberRepository.existsByEmail(email);
     }
+
 }

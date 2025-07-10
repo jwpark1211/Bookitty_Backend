@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TokenBlacklistService {
+
     private final RedisUtil redisUtil;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -15,5 +16,6 @@ public class TokenBlacklistService {
         long exp = jwtTokenProvider.getExpiration(accessToken);
         redisUtil.setBlackList(accessToken, "access_token", exp);
     }
+
 }
 

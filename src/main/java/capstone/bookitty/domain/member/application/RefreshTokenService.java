@@ -3,7 +3,6 @@ package capstone.bookitty.domain.member.application;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;
 import capstone.bookitty.domain.member.exception.NotLoggedInException;
 import capstone.bookitty.domain.member.repository.RefreshTokenRepository;
-
 import capstone.bookitty.global.authentication.RefreshToken;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Transactional
 public class RefreshTokenService {
+
     private final RefreshTokenRepository repository;
 
     public void save(String key, String value) {
@@ -35,4 +35,5 @@ public class RefreshTokenService {
     public void delete(String key) {
         repository.findByKey(key).ifPresent(repository::delete);
     }
+
 }
