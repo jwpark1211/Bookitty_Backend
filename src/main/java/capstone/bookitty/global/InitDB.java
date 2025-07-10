@@ -1,7 +1,5 @@
 package capstone.bookitty.global;
 
-import capstone.bookitty.domain.comment.domain.Comment;
-import capstone.bookitty.domain.comment.domain.Like;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.domain.type.Gender;
@@ -193,51 +191,6 @@ public class InitDB {
                 em.persist(star);
             }
 
-            // Comments
-            List<Comment> comments = Arrays.asList(
-                    new Comment(members.get(0), "9791189327156", "자연엔 순위가 없다. 다윈이 말한 것처럼 문명화된 인간들은 약자들을 제거하는 과정을 최대한 자제하려 한다고 말한다. 어울려 살아가며 서로의 존재가치를 인정하는 것, 무엇인가에 우위를 나누지 않는 것에 대해 생각하게 된다.\n" +
-                            "이 사다리, 그것은 아직도 살아 있다.\n" +
-                            "이 사다리, 그것은 위험한 허구다.\n" +
-                            "물고기는 존재하지 않는다.\n" +
-                            "이 말은 그 허구를 쪼개버릴 물고기모양의 대형망치다.(268쪽)!"),
-                    new Comment(members.get(1), "9791189327156", "잘 읽히긴 하는데...이렇게 극찬 받을 책인가 하는 생각이 들었다. 한 번 읽어봤으면 됐다 싶은 정도"),
-                    new Comment(members.get(2), "9791189327156", "2022 올해의 책으로 유명했던데 정말 구성도 재밌고 이 책의 장르도 이것 저것 믹스되면서 독특한 재미가 있습니다. 친구들에게도 많이 추천했어요.\n" +
-                            "대신 스포없이 처음부터 끝까지 다 읽는게 좋기 때문에 미리 정보를 찾아보지 않는게 중요한거 같습니다."),
-                    new Comment(members.get(3), "9791189327156", "중요한 개개인이라는 존재의 만남, 선물같은 생명들"),
-                    new Comment(members.get(4), "9788901276533", "생각보다 지루한 부분이 많았지만 미술관의 규모와 다양하고 방대한 소장품에 대해 관심을 갖게 하고 복제품이 아닌 모두 진품이라는 사실에 메트에 가보고 싶게 만드는 책."),
-                    new Comment(members.get(5), "9788901276533", "마음이 힘들고 울적하고 우울할 때 이 책을 읽으면 치유돼요." +
-                            "세계 3대 미술관’이라 불리는 메트로폴리탄 미술관을 배경으로 한 도서예요"),
-                    new Comment(members.get(6), "9788901276533", "비틀기와 뒤집기가 적절히 배치된 선동형 책.\n" +
-                            "한 인물을 집요하게 탐구했던 저자의 의도가 정말 무엇이었을까?"),
-                    new Comment(members.get(7), "9788957365793", "일부는 밑줄도 긋고, 공부하듯 잘 보았습니다."),
-                    new Comment(members.get(8), "9788957365793", "책 진짜 좋아요 굿굿"),
-                    new Comment(members.get(9), "9788957365793", "사회의 시스템을 이해하기에 적합한 책,\n" +
-                            "툴러플래그로 밑줄치면서 학창시절 공부하던 것처럼 읽었다.")
-            );
-
-            for (Comment comment : comments) {
-                em.persist(comment);
-            }
-
-            // Likes
-            List<Like> likes = Arrays.asList(
-                    new Like(members.get(0), comments.get(0)),
-                    new Like(members.get(1), comments.get(0)),
-                    new Like(members.get(2), comments.get(0)),
-                    new Like(members.get(1), comments.get(1)),
-                    new Like(members.get(2), comments.get(2)),
-                    new Like(members.get(3), comments.get(3)),
-                    new Like(members.get(4), comments.get(4)),
-                    new Like(members.get(5), comments.get(5)),
-                    new Like(members.get(6), comments.get(6)),
-                    new Like(members.get(7), comments.get(7)),
-                    new Like(members.get(8), comments.get(8)),
-                    new Like(members.get(9), comments.get(9))
-            );
-
-            for (Like like : likes) {
-                em.persist(like);
-            }
         }
 
         public Member createUser(String name, String email, String password,
