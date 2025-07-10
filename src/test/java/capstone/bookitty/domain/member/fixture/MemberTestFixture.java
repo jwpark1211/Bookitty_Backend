@@ -22,6 +22,10 @@ public class MemberTestFixture {
 
     private final PasswordEncoder passwordEncoder;
 
+    public Password createPassword(String rawPassword) {
+        return Password.fromRaw(rawPassword, passwordEncoder);
+    }
+
     public MemberSaveRequest.MemberSaveRequestBuilder createMemberSaveRequest() {
         return MemberSaveRequest.builder()
                 .email(email)
@@ -36,7 +40,7 @@ public class MemberTestFixture {
                 .email(email)
                 .name(name)
                 .birthDate(birthDate)
-                .password(Password.fromRaw(password, passwordEncoder))
+                .password(createPassword(password))
                 .authority(Authority.ROLE_USER)
                 .gender(Gender.FEMALE);
     }

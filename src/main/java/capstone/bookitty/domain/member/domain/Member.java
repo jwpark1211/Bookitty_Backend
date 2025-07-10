@@ -76,17 +76,17 @@ public class Member {
         if (name.length() > 10) throw new IllegalArgumentException("Name must not exceed 10 characters");
 
         // email 검증
-        if (!StringUtils.hasText(email)) throw new IllegalArgumentException("Email must not be blank.");
+        if (!StringUtils.hasText(email)) throw new IllegalArgumentException("Email must not be blank");
         if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
-            throw new IllegalArgumentException("Email format is invalid.");
+            throw new IllegalArgumentException("Email format is invalid");
 
         // birthDate 검증
-        if (birthDate == null) throw new IllegalArgumentException("Birth date is required.");
+        if (birthDate == null) throw new IllegalArgumentException("Birth date is required");
         if (birthDate.isAfter(LocalDate.now()))
-            throw new IllegalArgumentException("Birth date must be a date in the past.");
+            throw new IllegalArgumentException("Birth date must be a date in the past");
 
         // gender 검증
-        if (gender == null) throw new IllegalArgumentException("Gender is required.");
+        if (gender == null) throw new IllegalArgumentException("Gender is required");
     }
 
 }

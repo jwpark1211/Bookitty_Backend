@@ -23,7 +23,7 @@ public class Password {
     }
 
     public static Password ofEncrypted(String encrypted) {
-        if (encrypted == null || !encrypted.startsWith("$2")) {
+        if (encrypted == null || !encrypted.startsWith("{bcrypt}$2a$")) {
             throw new IllegalArgumentException("Expected bcrypt encoded password.");
         }
         return new Password(encrypted);
