@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.member.application;
 
+import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.JwtToken;

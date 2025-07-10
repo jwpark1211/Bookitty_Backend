@@ -1,10 +1,9 @@
 package capstone.bookitty.domain.member.application;
 
-import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
-import capstone.bookitty.domain.member.dto.MemberInfoResponse;
+import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
+import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
-import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +36,7 @@ public class MemberQueryService {
                 .orElseThrow(() -> new MemberNotFoundException(email));
     }
 
-    public BoolResponse isEmailUnique(String email) {
-        boolean isUnique = !memberRepository.existsByEmail(email);
-        return BoolResponse.of(isUnique);
+    public boolean isEmailUnique(String email) {
+        return !memberRepository.existsByEmail(email);
     }
 }

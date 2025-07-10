@@ -1,11 +1,10 @@
 package capstone.bookitty.domain.member.api;
 
-import capstone.bookitty.domain.member.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,15 +29,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class MemberApiTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private MemberRepository memberRepository;
-    @Autowired private MemberTestFixture memberFixture;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private MemberTestFixture memberFixture;
 
     @Nested
     @WithMockUser
     @DisplayName("회원가입 API Test Cases")
-    class saveMemberTest{
+    class saveMemberTest {
         @Test
         @DisplayName("올바른 회원가입 요청 시 201이 반환되고 회원 ID가 포함된 응답이 반환된다.")
         void success_whenValidRequest_thenReturns201WithId() throws Exception {
@@ -72,7 +76,7 @@ class MemberApiTest {
 
         @Test
         @DisplayName("이메일 형식이 잘못된 경우 400과 에러 메시지가 반환된다.")
-        void fail_whenInvalidEmailFormat_thenReturns400() throws Exception{
+        void fail_whenInvalidEmailFormat_thenReturns400() throws Exception {
             //given
             MemberSaveRequest request = memberFixture.createMemberSaveRequest().email("1234abc").build();
 
@@ -104,7 +108,7 @@ class MemberApiTest {
 
         @Test
         @DisplayName("이름이 비어있는 경우 400과 에러 메시지가 반환된다.")
-        void fail_whenNameIsBlank_thenReturns400() throws Exception{
+        void fail_whenNameIsBlank_thenReturns400() throws Exception {
             //given
             MemberSaveRequest request = memberFixture.createMemberSaveRequest().name("").build();
 
@@ -161,7 +165,7 @@ class MemberApiTest {
                     .andExpect(jsonPath("$.message").value("Invalid Input Value"));
 
         }
-        
+
         @Test
         @DisplayName("이메일이 비어 있는 경우 400과 에러 메시지가 반환된다.")
         void fail_whenEmailIsNull_thenReturns400() throws Exception {
@@ -177,7 +181,7 @@ class MemberApiTest {
 
         @Test
         @DisplayName("특수문자 포함된 유효한 이메일이 주어지면 200과 true가 반환된다.")
-        void suceess_whenEmailContainsSpecial_thenReturns200() throws Exception{
+        void suceess_whenEmailContainsSpecial_thenReturns200() throws Exception {
             //given
             String specialEmail = "12343%ab@gmail.com";
 
@@ -214,7 +218,7 @@ class MemberApiTest {
 
             //when + then
             mockMvc.perform(get("/members/1")
-                        .with(csrf()))
+                            .with(csrf()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1L));
         }
@@ -226,7 +230,7 @@ class MemberApiTest {
             Long nonExistentId = 999L; // 존재하지 않는 ID
 
             //when + then
-            mockMvc.perform(get("/members/"+nonExistentId)
+            mockMvc.perform(get("/members/" + nonExistentId)
                             .with(csrf()))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message").value("Member ID[999] is not found"));

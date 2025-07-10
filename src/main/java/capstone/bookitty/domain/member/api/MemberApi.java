@@ -1,11 +1,11 @@
 package capstone.bookitty.domain.member.api;
 
+import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
+import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.application.MemberCommandService;
 import capstone.bookitty.domain.member.application.MemberQueryService;
 import capstone.bookitty.global.dto.BoolResponse;
 import capstone.bookitty.global.dto.IdResponse;
-import capstone.bookitty.domain.member.dto.MemberInfoResponse;
-import capstone.bookitty.domain.member.dto.MemberSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,7 +31,7 @@ public class MemberApi {
     @Operation(summary = "회원가입")
     @PostMapping("/new")
     public ResponseEntity<IdResponse> createMember(
-            @RequestBody @Valid MemberSaveRequest request){
+            @RequestBody @Valid MemberSaveRequest request) {
         IdResponse response = new IdResponse(memberCommandService.saveMember(request));
         return ResponseEntity.status(201).body(response);
     }
@@ -39,9 +39,9 @@ public class MemberApi {
     @Operation(summary = "이메일 중복 확인")
     @GetMapping("/email/unique")
     public ResponseEntity<BoolResponse> isEmailUnique(
-            @Email @NotBlank @RequestParam ("email") String email
-    ){
-        BoolResponse response = memberQueryService.isEmailUnique(email);
+            @Email @NotBlank @RequestParam("email") String email
+    ) {
+        BoolResponse response = new BoolResponse(memberQueryService.isEmailUnique(email));
         return ResponseEntity.ok(response);
     }
 
@@ -56,7 +56,7 @@ public class MemberApi {
     @GetMapping(path = "/{member-id}")
     public ResponseEntity<MemberInfoResponse> findOneMember(
             @PathVariable("member-id") Long memberId
-    ){
+    ) {
         MemberInfoResponse response = memberQueryService.getMemberInfoWithId(memberId);
         return ResponseEntity.ok(response);
     }
@@ -64,8 +64,8 @@ public class MemberApi {
     @Operation(summary = "전체 회원 조회")
     @GetMapping
     public ResponseEntity<Page<MemberInfoResponse>> findAllMembers(
-            @PageableDefault(sort="id",size = 10) Pageable pageable
-    ){
+            @PageableDefault(sort = "id", size = 10) Pageable pageable
+    ) {
         Page<MemberInfoResponse> responseList = memberQueryService.getAllMemberInfo(pageable);
         return ResponseEntity.ok(responseList);
     }
@@ -74,7 +74,7 @@ public class MemberApi {
     @DeleteMapping(path = "/{member-id}")
     public ResponseEntity<Void> deleteMember(
             @PathVariable("member-id") Long memberId
-    ){
+    ) {
         memberCommandService.deleteMember(memberId);
         return ResponseEntity.noContent().build();
     }

@@ -2,7 +2,6 @@ package capstone.bookitty.domain.star.repository;
 
 import capstone.bookitty.domain.book.dto.BookPair;
 import capstone.bookitty.domain.book.dto.RatingPair;
-import capstone.bookitty.domain.bookState.domain.BookState;
 import capstone.bookitty.domain.star.domain.QStar;
 import capstone.bookitty.domain.star.domain.Star;
 import com.querydsl.core.BooleanBuilder;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class StarCustomRepositoryImpl implements StarCustomRepository{
+public class StarCustomRepositoryImpl implements StarCustomRepository {
 
     private final JPAQueryFactory queryFactory;
     private final QStar s1 = new QStar("s1");

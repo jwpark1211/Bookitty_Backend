@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.member.api;
 
+import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.application.AuthService;
-import capstone.bookitty.domain.member.dto.MemberLoginRequest;
 import capstone.bookitty.global.authentication.tokenDto.TokenRequest;
 import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ public class AuthApi {
     @PostMapping(path = "/login")
     public ResponseEntity<TokenResponse> login(
             @RequestBody @Valid MemberLoginRequest request
-    ){
+    ) {
         log.info("로그인 요청 - email: {}", request.email());
         TokenResponse response = authService.login(request);
 
@@ -40,7 +40,7 @@ public class AuthApi {
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissue(
             @RequestBody @Valid TokenRequest request
-    ){
+    ) {
         log.info("토큰 재발행 요청");
         TokenResponse response = authService.reissue(request);
 

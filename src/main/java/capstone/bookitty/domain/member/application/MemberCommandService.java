@@ -1,8 +1,8 @@
 package capstone.bookitty.domain.member.application;
 
-import capstone.bookitty.domain.member.application.factory.MemberFactory;
+import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.domain.factory.MemberFactory;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
