@@ -2,10 +2,12 @@ package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.domain.Member;
-import capstone.bookitty.domain.member.domain.factory.MemberFactory;
+import capstone.bookitty.domain.member.domain.vo.Password;
+import capstone.bookitty.domain.member.exception.DuplicateEmailException;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
+import capstone.bookitty.global.authentication.PasswordEncoder;
 import capstone.bookitty.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberCommandService {
 
     private final MemberRepository memberRepository;
-    private final MemberFactory memberFactory;
+    private final PasswordEncoder passwordEncoder;
 
     public Long saveMember(MemberSaveRequest request) {
-        Member member = memberFactory.create(request);
+        validateEmailUniqueness(request.email());
+
+        Member member = Member.builder()
+                .name(request.name())
+                .email(request.email())
+                .password(Password.fromRaw(request.password(), passwordEncoder))
+                .gender(request.gender())
+                .birthDate(request.birthdate())
+                .build();
+
         memberRepository.save(member);
         return member.getId();
     }
@@ -34,6 +45,14 @@ public class MemberCommandService {
 
         current.validatePermissionTo(target);
         memberRepository.delete(target);
+    }
+
+    //== private methods ==//
+
+    private void validateEmailUniqueness(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new DuplicateEmailException(email);
+        }
     }
 
 }

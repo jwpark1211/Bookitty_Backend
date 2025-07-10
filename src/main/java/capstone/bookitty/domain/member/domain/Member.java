@@ -3,7 +3,6 @@ package capstone.bookitty.domain.member.domain;
 import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;
-import capstone.bookitty.global.converter.EnumConverters;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,6 +13,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static capstone.bookitty.global.converter.EnumConverters.AuthorityConverter;
+import static capstone.bookitty.global.converter.EnumConverters.GenderConverter;
 
 @Entity
 @Getter
@@ -38,10 +40,10 @@ public class Member {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Convert(converter = EnumConverters.GenderConverter.class)
+    @Convert(converter = GenderConverter.class)
     private Gender gender;
 
-    @Convert(converter = EnumConverters.AuthorityConverter.class)
+    @Convert(converter = AuthorityConverter.class)
     private Authority authority;
 
     private static final String DEFAULT_PROFILE_IMG = "https://bookitty-bucket.s3.ap-northeast-2.amazonaws.com/Jiji.jpeg";
