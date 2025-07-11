@@ -1,5 +1,6 @@
 package capstone.bookitty.global.authentication;
 
+import capstone.bookitty.global.application.CustomUserDetailsService;
 import capstone.bookitty.global.util.RedisUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -32,7 +32,7 @@ public class MemberCommandService {
                 .birthDate(request.birthdate())
                 .build();
 
-        memberRepository.save(member);
+        member = memberRepository.save(member);
         return member.getId();
     }
 

@@ -1,6 +1,6 @@
 package capstone.bookitty.domain.star.dto;
 
-import capstone.bookitty.global.annotation.ValidScore;
+import capstone.bookitty.domain.star.annotation.ValidScore;
 import jakarta.validation.constraints.NotNull;
 
 public record StarUpdateRequest(
@@ -8,7 +8,7 @@ public record StarUpdateRequest(
         @ValidScore
         double score
 ) {
-    public static StarUpdateRequest of(double score){
+    public static StarUpdateRequest of(double score) {
         return new StarUpdateRequest(score);
     }
 }

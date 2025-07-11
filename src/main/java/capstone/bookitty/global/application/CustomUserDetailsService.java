@@ -1,7 +1,8 @@
-package capstone.bookitty.global.authentication;
+package capstone.bookitty.global.application;
 
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.repository.MemberRepository;
+import capstone.bookitty.global.authentication.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

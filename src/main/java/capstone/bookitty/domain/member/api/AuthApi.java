@@ -1,9 +1,9 @@
 package capstone.bookitty.domain.member.api;
 
 import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.member.application.AuthService;
-import capstone.bookitty.global.authentication.tokenDto.TokenRequest;
-import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

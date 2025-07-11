@@ -1,6 +1,8 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
 import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.member.application.AuthService;
 import capstone.bookitty.domain.member.application.RefreshTokenService;
 import capstone.bookitty.domain.member.domain.Member;
@@ -8,8 +10,6 @@ import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.JwtToken;
 import capstone.bookitty.global.authentication.JwtTokenProvider;
-import capstone.bookitty.global.authentication.tokenDto.TokenRequest;
-import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

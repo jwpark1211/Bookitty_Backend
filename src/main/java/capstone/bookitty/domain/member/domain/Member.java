@@ -63,7 +63,7 @@ public class Member {
         this.profileImg = StringUtils.hasText(profileImg) ? profileImg : DEFAULT_PROFILE_IMG;
 
     }
-
+    
     public void validatePermissionTo(Member target) {
         if (!(this.authority == Authority.ROLE_ADMIN || this.id.equals(target.id)))
             throw new IllegalArgumentException("Access denied: You do not have permission to perform this action");

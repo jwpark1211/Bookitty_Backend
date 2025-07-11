@@ -1,13 +1,13 @@
 package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenRequest;
+import capstone.bookitty.domain.member.api.dto.tokenDto.TokenResponse;
 import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;
 import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.global.authentication.PasswordEncoder;
-import capstone.bookitty.global.authentication.tokenDto.TokenRequest;
-import capstone.bookitty.global.authentication.tokenDto.TokenResponse;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

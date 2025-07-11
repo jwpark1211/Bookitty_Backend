@@ -1,11 +1,12 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
 import capstone.bookitty.domain.member.application.RefreshTokenService;
+import capstone.bookitty.domain.member.domain.RefreshToken;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;
 import capstone.bookitty.domain.member.exception.NotLoggedInException;
 import capstone.bookitty.domain.member.repository.RefreshTokenRepository;
-import capstone.bookitty.global.authentication.RefreshToken;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,8 +15,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @Disabled("목테스트 - 공부용")
 @ExtendWith(MockitoExtension.class)

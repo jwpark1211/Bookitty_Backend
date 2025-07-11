@@ -1,6 +1,5 @@
-package capstone.bookitty.global.annotation.validator;
+package capstone.bookitty.domain.star.annotation;
 
-import capstone.bookitty.global.annotation.ValidScore;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
