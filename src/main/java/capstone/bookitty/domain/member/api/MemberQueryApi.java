@@ -1,14 +1,10 @@
 package capstone.bookitty.domain.member.api;
 
 import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
-import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
-import capstone.bookitty.domain.member.application.MemberCommandService;
-import capstone.bookitty.domain.member.application.MemberQueryService;
+import capstone.bookitty.domain.member.application.memberApplication.MemberQueryService;
 import capstone.bookitty.global.dto.BoolResponse;
-import capstone.bookitty.global.dto.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-public class MemberApi {
+public class MemberQueryApi {
 
     private final MemberQueryService memberQueryService;
-    private final MemberCommandService memberCommandService;
-
-
-    @Operation(summary = "회원가입")
-    @PostMapping("/new")
-    public ResponseEntity<IdResponse> createMember(
-            @RequestBody @Valid MemberSaveRequest request) {
-        IdResponse response = new IdResponse(memberCommandService.saveMember(request));
-        return ResponseEntity.status(201).body(response);
-    }
 
     @Operation(summary = "이메일 중복 확인")
     @GetMapping("/email/unique")
@@ -68,15 +54,6 @@ public class MemberApi {
     ) {
         Page<MemberInfoResponse> responseList = memberQueryService.getAllMemberInfo(pageable);
         return ResponseEntity.ok(responseList);
-    }
-
-    @Operation(summary = "회원 탈퇴")
-    @DeleteMapping(path = "/{member-id}")
-    public ResponseEntity<Void> deleteMember(
-            @PathVariable("member-id") Long memberId
-    ) {
-        memberCommandService.deleteMember(memberId);
-        return ResponseEntity.noContent().build();
     }
 
 }
