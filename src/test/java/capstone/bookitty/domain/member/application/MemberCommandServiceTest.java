@@ -1,8 +1,11 @@
 package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.application.memberApplication.MemberCommandService;
 import capstone.bookitty.domain.member.domain.Member;
+import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
+import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
 import capstone.bookitty.domain.member.fixture.MemberTestFixture;
 import capstone.bookitty.domain.member.repository.MemberRepository;
@@ -62,30 +65,79 @@ class MemberCommandServiceTest {
                     .isInstanceOf(DuplicateEmailException.class)
                     .hasMessageContaining("email is already in use");
         }
+    }
+
+    @Nested
+    @DisplayName("회원 삭제 메서드 deleteMember Test Cases")
+    class DeleteMemberTest {
 
         @Test
-        @DisplayName("비밀번호가 생성 규칙(길이)에 맞지 않는 경우 예외가 발생합니다.")
-            // 비밀번호는 8~20자 사이여야 합니다.
-        void failUnValidPassword() {
-            //given
-            MemberSaveRequest request = memberFixture.createMemberSaveRequest().password("Wlqo13").build();
+        @DisplayName("본인이 본인을 삭제 요청하는 경우 성공적으로 삭제된다.")
+        void successDeleteSelf() {
+            // given
+            String email = "email@gmail.com";
+            Member member = memberRepository.save(
+                    memberFixture.createMember().email(email).build());
 
-            //when + then
-            assertThatThrownBy(() -> memberService.saveMember(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Passwords must contain at least one English case, number, and special characters, and must be 8 or more and 20 or less in length");
+            try (MockedStatic<SecurityUtil> mocked = mockSecurityUtil(email)) {
+                // when
+                memberService.deleteMember(member.getId());
+
+                // then
+                boolean exists = memberRepository.existsById(member.getId());
+                assertThat(exists).isFalse();
+            }
         }
 
         @Test
-        @DisplayName("비밀번호가 비어있는 경우 예외가 발생합니다.")
-        void failNullPassword() {
-            //given
-            MemberSaveRequest request = memberFixture.createMemberSaveRequest().password(null).build();
+        @DisplayName("Admin이 회원 삭제 요청 시 성공적으로 삭제된다.")
+        void successDeleteAdmin() {
+            // given
+            String adminEmail = "admin@gmail.com";
+            Member admin = memberRepository.save(memberFixture.createMember()
+                    .email(adminEmail).authority(Authority.ROLE_ADMIN).build());
+            Member member = memberRepository.save(memberFixture.createMember().build());
 
-            //when + then
-            assertThatThrownBy(() -> memberService.saveMember(request))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Password cannot be null or blank");
+            try (MockedStatic<SecurityUtil> mocked = mockSecurityUtil(adminEmail)) {
+                // when
+                memberService.deleteMember(member.getId());
+
+                // then
+                boolean exists = memberRepository.existsById(member.getId());
+                assertThat(exists).isFalse();
+            }
+        }
+
+        @Test
+        @DisplayName("본인이 아닌 다른 사람을 삭제 요청 시 예외가 발생한다.")
+        void failDeleteOtherMember() {
+            // given
+            Member member = memberRepository.save(
+                    memberFixture.createMember().build());
+            Member other = memberRepository.save(
+                    memberFixture.createMember().email("other@gmail.com").build());
+
+            try (MockedStatic<SecurityUtil> mocked = mockSecurityUtil("other@gmail.com")) {
+                // when + then
+                assertThatThrownBy(() -> memberService.deleteMember(member.getId()))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining("Access denied");
+            }
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 회원의 id로 삭제 요청 시 예외가 발생한다.")
+        void failDeleteNonExistentMember() {
+            // given
+            Long nonExistentId = 999L; // Assuming this ID does not exist
+            Member member = memberRepository.save(
+                    memberFixture.createMember().email("logined@gmail.com").build());
+
+            try (MockedStatic<SecurityUtil> mocked = mockSecurityUtil("logined@gmail.com")) {
+                assertThatThrownBy(() -> memberService.deleteMember(nonExistentId))
+                        .isInstanceOf(MemberNotFoundException.class)
+                        .hasMessageContaining("not found");
+            }
         }
     }
 

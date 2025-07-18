@@ -1,6 +1,7 @@
 package capstone.bookitty.domain.member.application;
 
 import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
+import capstone.bookitty.domain.member.application.memberApplication.MemberQueryService;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;

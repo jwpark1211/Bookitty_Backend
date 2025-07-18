@@ -2,8 +2,8 @@ package capstone.bookitty.domain.member.application.MockTest;
 
 import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
-import capstone.bookitty.domain.member.application.MemberCommandService;
-import capstone.bookitty.domain.member.application.MemberQueryService;
+import capstone.bookitty.domain.member.application.memberApplication.MemberCommandService;
+import capstone.bookitty.domain.member.application.memberApplication.MemberQueryService;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;

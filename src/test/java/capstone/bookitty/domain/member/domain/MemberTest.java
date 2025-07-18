@@ -24,14 +24,14 @@ class MemberTest {
     MemberTestFixture memberFixture;
 
     @Nested
-    @DisplayName("회원 생성 검증")
+    @DisplayName("회원 생성자 Test Cases")
     class CreateMember {
 
         private static final String VALID_NAME = "홍길동";
         private static final String VALID_EMAIL = "valid@gmail.com";
 
         @Test
-        @DisplayName("성공: 필수값이 유효하면 생성된다")
+        @DisplayName("필수값이 유효하면 정상적으로 생성된다.")
         void success_when_valid_inputs() {
             Member member = memberFixture.createMember()
                     .name(VALID_NAME).email(VALID_EMAIL).build();
@@ -43,7 +43,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 이름이 공백일 경우")
+        @DisplayName("이름이 공백일 경우 예외가 발생한다.")
         void fail_when_name_blank() {
             assertThatThrownBy(() -> memberFixture.createMember()
                     .name(" ")
@@ -53,7 +53,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 이름이 10자를 초과할 경우")
+        @DisplayName("이름이 10자를 초과할 경우 예외가 발생한다.")
         void fail_when_name_too_long() {
             assertThatThrownBy(() -> memberFixture.createMember()
                     .name("ABCDEFGHIJK")
@@ -63,7 +63,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 이메일 형식이 잘못된 경우")
+        @DisplayName("이메일 형식이 잘못된 경우 예외가 발생한다.")
         void fail_when_email_invalid() {
             assertThatThrownBy(() -> memberFixture.createMember()
                     .email("invalid-email")
@@ -73,7 +73,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 생년월일이 미래인 경우")
+        @DisplayName("생년월일이 미래인 경우 예외가 발생한다.")
         void fail_when_birthDate_in_future() {
             assertThatThrownBy(() -> memberFixture.createMember()
                     .birthDate(LocalDate.now().plusDays(1))
@@ -83,7 +83,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 성별이 null인 경우")
+        @DisplayName("성별 정보가 없는 경우 예외가 발생한다.")
         void fail_when_gender_null() {
             assertThatThrownBy(() -> memberFixture.createMember()
                     .gender(null)
@@ -94,11 +94,11 @@ class MemberTest {
     }
 
     @Nested
-    @DisplayName("권한 검증 validatePermissionTo()")
+    @DisplayName("권한 검증 Test Cases")
     class PermissionValidation {
 
         @Test
-        @DisplayName("성공: 동일한 사용자")
+        @DisplayName("동일한 사용자에 접근할 때 권한이 있다.")
         void success_when_same_user() {
             Member member1 = createMemberWithId(1L, Authority.ROLE_USER);
             Member member2 = createMemberWithId(1L, Authority.ROLE_USER);
@@ -107,7 +107,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("성공: 관리자 권한")
+        @DisplayName("관리자 사용자가 다른 사용자에 접근할 때 권한이 있다.")
         void success_when_admin_user() {
             Member admin = createMemberWithId(99L, Authority.ROLE_ADMIN);
             Member target = createMemberWithId(100L, Authority.ROLE_USER);
@@ -116,7 +116,7 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("실패: 일반 사용자가 다른 사용자에 접근")
+        @DisplayName("일반 사용자가 다른 사용자에 접근할 때 권한이 없다.")
         void fail_when_other_user_and_not_admin() {
             Member user1 = createMemberWithId(1L, Authority.ROLE_USER);
             Member user2 = createMemberWithId(2L, Authority.ROLE_USER);

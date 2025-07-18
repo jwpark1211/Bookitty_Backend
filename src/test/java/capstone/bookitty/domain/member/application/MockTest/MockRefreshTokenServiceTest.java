@@ -1,6 +1,6 @@
 package capstone.bookitty.domain.member.application.MockTest;
 
-import capstone.bookitty.domain.member.application.RefreshTokenService;
+import capstone.bookitty.domain.member.application.authApplication.RefreshTokenService;
 import capstone.bookitty.domain.member.domain.RefreshToken;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;
 import capstone.bookitty.domain.member.exception.NotLoggedInException;
