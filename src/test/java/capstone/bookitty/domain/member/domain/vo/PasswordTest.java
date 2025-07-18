@@ -30,7 +30,7 @@ class PasswordTest {
             String raw = "Valid123!";
             Password password = Password.fromRaw(raw, encoder);
 
-            assertThat(password.password()).startsWith("{bcrypt}$2a$");
+            assertThat(password.value()).startsWith("{bcrypt}$2a$");
         }
 
         @Test
@@ -60,7 +60,7 @@ class PasswordTest {
             String encrypted = encoder.encode("Valid123!");
             Password password = Password.ofEncrypted(encrypted);
 
-            assertThat(password.password()).isEqualTo(encrypted);
+            assertThat(password.value()).isEqualTo(encrypted);
         }
 
         @Test

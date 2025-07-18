@@ -30,7 +30,7 @@ public class Password {
         return new Password(encrypted);
     }
 
-    public String password() {
+    public String value() {
         return password;
     }
 
