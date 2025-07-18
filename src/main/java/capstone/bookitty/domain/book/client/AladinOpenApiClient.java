@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.book.client;
 
-import capstone.bookitty.domain.book.dto.AladinBestSellerListResponse;
-import capstone.bookitty.domain.book.dto.AladinBookSearchListResponse;
+import capstone.bookitty.domain.book.api.dto.AladinBestSellerListResponse;
+import capstone.bookitty.domain.book.api.dto.AladinBookSearchListResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class AladinOpenApiClient {
 
     private final WebClient aladinWebClientApi;
 
-    public AladinOpenApiClient(@Qualifier("AladinWebClient") WebClient aladinWebClientApi){
+    public AladinOpenApiClient(@Qualifier("AladinWebClient") WebClient aladinWebClientApi) {
         this.aladinWebClientApi = aladinWebClientApi;
     }
 
@@ -32,27 +32,27 @@ public class AladinOpenApiClient {
                         .path(BOOK_ISBN_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("ItemId", isbn)
-                        .queryParam("ItemIdType","ISBN13")
-                        .queryParam("Version",20131101)
-                        .queryParam("Cover","Big")
-                        .queryParam("OptResult","ratingInfo,cardReviewImgList")
-                        .queryParam("output","js")
+                        .queryParam("ItemIdType", "ISBN13")
+                        .queryParam("Version", 20131101)
+                        .queryParam("Cover", "Big")
+                        .queryParam("OptResult", "ratingInfo,cardReviewImgList")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBookSearchListResponse.class);
     }
 
-    public Mono<AladinBookSearchListResponse> searchByKeyword(String keyword){
+    public Mono<AladinBookSearchListResponse> searchByKeyword(String keyword) {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(BOOK_SEARCH_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("Query", keyword)
-                        .queryParam("Version",20131101)
-                        .queryParam("Cover","Big")
-                        .queryParam("OptResult","ratingInfo,cardReviewImgList")
-                        .queryParam("output","js")
+                        .queryParam("Version", 20131101)
+                        .queryParam("Cover", "Big")
+                        .queryParam("OptResult", "ratingInfo,cardReviewImgList")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBookSearchListResponse.class);
@@ -65,10 +65,10 @@ public class AladinOpenApiClient {
                         .path(BOOK_BESTSELLER_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("QueryType", "Bestseller")
-                        .queryParam("SearchTarget","Book")
-                        .queryParam("Version",20131101)
-                        .queryParam("Cover","Big")
-                        .queryParam("output","js")
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("Version", 20131101)
+                        .queryParam("Cover", "Big")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBestSellerListResponse.class);
@@ -90,43 +90,43 @@ public class AladinOpenApiClient {
                         .path(BOOK_BESTSELLER_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("QueryType", "Bestseller")
-                        .queryParam("SearchTarget","Book")
-                        .queryParam("Version",20131101)
-                        .queryParam("CategoryId",category)
-                        .queryParam("Cover","Big")
-                        .queryParam("output","js")
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("Version", 20131101)
+                        .queryParam("CategoryId", category)
+                        .queryParam("Cover", "Big")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBestSellerListResponse.class);
     }
 
-    public Mono<AladinBestSellerListResponse> getNewBook(){
+    public Mono<AladinBestSellerListResponse> getNewBook() {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(BOOK_BESTSELLER_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("QueryType", "ItemNewSpecial")
-                        .queryParam("SearchTarget","Book")
-                        .queryParam("Version",20131101)
-                        .queryParam("Cover","Big")
-                        .queryParam("output","js")
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("Version", 20131101)
+                        .queryParam("Cover", "Big")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBestSellerListResponse.class);
     }
 
-    public Mono<AladinBestSellerListResponse> getBlogChoice(){
+    public Mono<AladinBestSellerListResponse> getBlogChoice() {
         return aladinWebClientApi
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path(BOOK_BESTSELLER_URI)
                         .queryParam("ttbkey", ttb)
                         .queryParam("QueryType", "BlogBest")
-                        .queryParam("SearchTarget","Book")
-                        .queryParam("Version",20131101)
-                        .queryParam("Cover","Big")
-                        .queryParam("output","js")
+                        .queryParam("SearchTarget", "Book")
+                        .queryParam("Version", 20131101)
+                        .queryParam("Cover", "Big")
+                        .queryParam("output", "js")
                         .build())
                 .retrieve()
                 .bodyToMono(AladinBestSellerListResponse.class);
