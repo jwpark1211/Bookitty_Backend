@@ -34,6 +34,7 @@ public class Member {
     private String email;
 
     @Embedded
+    //FIXME : 값객체엔 embeddable을 쓰는 게 타당할까 아님 converter를 쓰는 게 타당할까?
     private Password password;
     private LocalDate birthDate;
 
@@ -63,7 +64,7 @@ public class Member {
         this.profileImg = StringUtils.hasText(profileImg) ? profileImg : DEFAULT_PROFILE_IMG;
 
     }
-    
+
     public void validatePermissionTo(Member target) {
         if (!(this.authority == Authority.ROLE_ADMIN || this.id.equals(target.id)))
             throw new IllegalArgumentException("Access denied: You do not have permission to perform this action");
