@@ -1,18 +1,18 @@
 package capstone.bookitty.domain.star.domain;
 
-import capstone.bookitty.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
-@Entity @Getter
+@Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "star",
@@ -22,49 +22,73 @@ import java.time.LocalDateTime;
 )
 public class Star {
 
-    @Id @Column(name = "star_id")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @Column(nullable = false)
     private String isbn;
+    private double score;
 
-    /** 2 ~ 10 사이의 정수 값 (0.5 단위 저장: 1.0 → 2, 1.5 → 3, ..., 5.0 → 10) */
-    @Getter(AccessLevel.NONE)
-    private int score;
-
-    @Version
-    private int version;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @CreatedDate
     private LocalDateTime createdAt;
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+
+    @LastModifiedDate
     private LocalDateTime modifiedAt;
 
     @Builder
-    public Star(Member member, String isbn, double score) {
-        this.member = member;
+    private Star(Long memberId, String isbn, double score) {
+        validateStarInfo(memberId, isbn, score);
+
+        this.memberId = memberId;
         this.isbn = isbn;
-        this.score = toInternalScore(score);
-        this.createdAt = LocalDateTime.now();
+        this.score = score;
     }
 
-    public void updateStar(double score){
-        this.modifiedAt = LocalDateTime.now();
-        this.score = toInternalScore(score);
+    public void updateStar(double score) {
+        validateScore(score);
+        this.score = score;
     }
 
-    /** getter Override */
-    /** 사용자에게 보여줄 점수 (예: 7 → 3.5) */
-    public double getScore() {
-        return score / 2.0;
+    //== private methods ==//
+
+    private void validateStarInfo(Long memberId, String isbn, double score) {
+        validateMemberId(memberId);
+        validateIsbn(isbn);
+        validateScore(score);
     }
 
-    /** 내부적으로 저장할 점수로 변환 (예: 3.5 → 7) */
-    private int toInternalScore(double inputScore) {
-        return (int) (inputScore * 2);
+    private void validateMemberId(Long memberId) {
+        if (memberId == null)
+            throw new IllegalArgumentException("Member ID cannot be null");
+    }
+
+    private void validateIsbn(String isbn) {
+        if (!StringUtils.hasText(isbn)) // ISBN이 비어있거나 null일 수 없음
+            throw new IllegalArgumentException("ISBN cannot be null or empty");
+
+        if (isbn.length() != 13)  // ISBN은 정확히 13자리여야 함
+            throw new IllegalArgumentException("ISBN must be exactly 13 characters");
+
+        if (!isbn.matches("\\d{13}")) // 숫자로만 구성되어야 함
+            throw new IllegalArgumentException("ISBN must contain only digits");
+
+        if (!isbn.startsWith("978") && !isbn.startsWith("979")) // 978 또는 979로 시작해야 함
+            throw new IllegalArgumentException("ISBN must start with 978 or 979");
+
+    }
+
+    private void validateScore(double score) {
+        if (score < 0.5 || score > 5.0)
+            throw new IllegalArgumentException("Score must be between 0.5 and 5.0");
+
+        // 0.5 단위로만 허용 (0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
+        double multipliedScore = score * 2;
+        if (multipliedScore != Math.floor(multipliedScore)) {
+            throw new IllegalArgumentException("Score must be in 0.5 increments (0.5, 1.0, 1.5, ..., 5.0)");
+        }
     }
 }
