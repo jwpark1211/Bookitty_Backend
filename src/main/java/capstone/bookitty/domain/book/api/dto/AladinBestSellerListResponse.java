@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.book.dto;
+package capstone.bookitty.domain.book.api.dto;
 
 import java.util.List;
 
@@ -18,5 +18,6 @@ public record AladinBestSellerListResponse(
             String description,
             String pubDate,
             int bestRank
-    ){}
+    ) {
+    }
 }

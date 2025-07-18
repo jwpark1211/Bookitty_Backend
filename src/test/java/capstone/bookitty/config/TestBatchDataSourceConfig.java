@@ -1,4 +1,4 @@
-package capstone.bookitty;
+package capstone.bookitty.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;

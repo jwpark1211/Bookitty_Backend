@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.book.dto;
+package capstone.bookitty.domain.book.api.dto;
 
 import java.util.List;
 
@@ -17,5 +17,6 @@ public record AladinBookSearchListResponse(
             String publisher,
             String categoryName,
             String mallType
-    ){}
+    ) {
+    }
 }

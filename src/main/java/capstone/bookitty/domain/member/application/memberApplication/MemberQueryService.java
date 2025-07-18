@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.memberApplication;
 
 import capstone.bookitty.domain.member.api.dto.MemberInfoResponse;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;

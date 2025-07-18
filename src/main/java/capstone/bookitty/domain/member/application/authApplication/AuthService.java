@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.authApplication;
 
 import capstone.bookitty.domain.member.api.dto.MemberLoginRequest;
 import capstone.bookitty.domain.member.api.dto.tokenDto.TokenRequest;

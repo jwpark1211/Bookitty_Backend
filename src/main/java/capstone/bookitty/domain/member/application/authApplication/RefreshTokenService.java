@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.authApplication;
 
 import capstone.bookitty.domain.member.domain.RefreshToken;
 import capstone.bookitty.domain.member.exception.InvalidRefreshTokenException;

@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.memberApplication;
 
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
 import capstone.bookitty.domain.member.domain.Member;
@@ -37,14 +37,17 @@ public class MemberCommandService {
     }
 
     public void deleteMember(Long id) {
-        Member target = memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException(id));
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException(id));
 
         String email = SecurityUtil.getCurrentMemberEmail();
         if (email == null) throw new UnauthenticatedMemberException();
-        Member current = memberRepository.findByEmail(email).orElseThrow(() -> new UnauthenticatedMemberException(email));
+        Member current = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthenticatedMemberException(email));
 
-        current.validatePermissionTo(target);
-        memberRepository.delete(target);
+        current.validatePermissionTo(member);
+
+        memberRepository.delete(member);
     }
 
     //== private methods ==//

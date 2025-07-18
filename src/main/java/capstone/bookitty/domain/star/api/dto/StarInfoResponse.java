@@ -1,7 +1,8 @@
-package capstone.bookitty.domain.star.dto;
+package capstone.bookitty.domain.star.api.dto;
 
 import capstone.bookitty.domain.star.domain.Star;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 public record StarInfoResponse(
@@ -14,15 +15,11 @@ public record StarInfoResponse(
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime modifiedAt
 ) {
-    public static StarInfoResponse of(Long id, Long memberId, String isbn, double score,
-                                      LocalDateTime createdAt, LocalDateTime modifiedAt){
-        return new StarInfoResponse(id, memberId, isbn, score, createdAt, modifiedAt);
-    }
 
-    public static StarInfoResponse from(Star star){
+    public static StarInfoResponse from(Star star) {
         return new StarInfoResponse(
                 star.getId(),
-                star.getMember().getId(),
+                star.getMemberId(),
                 star.getIsbn(),
                 star.getScore(),
                 star.getCreatedAt(),

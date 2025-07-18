@@ -1,4 +1,4 @@
-package capstone.bookitty.domain.member.application;
+package capstone.bookitty.domain.member.application.authApplication;
 
 import capstone.bookitty.global.authentication.JwtTokenProvider;
 import capstone.bookitty.global.util.RedisUtil;
