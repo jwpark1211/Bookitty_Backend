@@ -2,6 +2,7 @@ package capstone.bookitty.domain.member.domain.vo;
 
 import capstone.bookitty.global.authentication.PasswordEncoder;
 import jakarta.persistence.Embeddable;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class Password {
     }
 
     private static void validate(String password) {
-        if (password == null || password.isBlank()) {
+        if (StringUtils.hasText(password)) {
             throw new IllegalArgumentException("Password cannot be null or blank");
         }
 
