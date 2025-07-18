@@ -1,7 +1,7 @@
 package capstone.bookitty.domain.bookSimilarity.batchSchedule;
 
-import capstone.bookitty.domain.book.dto.BookPair;
-import capstone.bookitty.domain.book.dto.RatingPair;
+import capstone.bookitty.domain.book.api.dto.BookPair;
+import capstone.bookitty.domain.book.api.dto.RatingPair;
 import capstone.bookitty.domain.bookSimilarity.domain.BookSimilarity;
 import capstone.bookitty.domain.bookSimilarity.repository.BookSimilarityRepository;
 import capstone.bookitty.domain.star.repository.StarRepository;
@@ -12,7 +12,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
@@ -21,16 +20,12 @@ import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -47,10 +42,10 @@ public class BookSimilarityBatch {
     private final SkipPolicy customSkipPolicy;
 
     @Bean
-        public Job bookSimilarityJob() {
-            return new JobBuilder("bookSimilarityJob", jobRepository)
-                    .start(calculateBookSimilarityStep())
-                    .build();
+    public Job bookSimilarityJob() {
+        return new JobBuilder("bookSimilarityJob", jobRepository)
+                .start(calculateBookSimilarityStep())
+                .build();
     }
 
     @Bean

@@ -7,10 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface StarRepository extends JpaRepository<Star, Long>, StarCustomRepository {
     long countByIsbn(String isbn);
+
+    boolean existsByIsbnAndMemberId(String isbn, Long memberId);
+
     List<Star> findByMemberIdAndScoreGreaterThanEqual(Long memberId, double score);
+
+    Page<Star> findByMemberId(Long memberId, Pageable pageable);
+
+    Page<Star> findByIsbn(String isbn, Pageable pageable);
 }

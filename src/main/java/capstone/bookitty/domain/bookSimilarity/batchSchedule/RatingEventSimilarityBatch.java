@@ -1,6 +1,6 @@
 package capstone.bookitty.domain.bookSimilarity.batchSchedule;
 
-import capstone.bookitty.domain.book.dto.RatingPair;
+import capstone.bookitty.domain.book.api.dto.RatingPair;
 import capstone.bookitty.domain.bookSimilarity.domain.BookSimilarity;
 import capstone.bookitty.domain.bookSimilarity.domain.RatingEvent;
 import capstone.bookitty.domain.bookSimilarity.repository.BookSimilarityRepository;
