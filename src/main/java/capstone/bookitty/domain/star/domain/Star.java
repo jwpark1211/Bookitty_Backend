@@ -1,15 +1,12 @@
 package capstone.bookitty.domain.star.domain;
 
+import capstone.bookitty.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,7 +17,7 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(name = "unique_member_isbn", columnNames = {"member_id", "isbn"})
         }
 )
-public class Star {
+public class Star extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +29,6 @@ public class Star {
     @Column(nullable = false)
     private String isbn;
     private double score;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime modifiedAt;
 
     @Builder
     private Star(Long memberId, String isbn, double score) {

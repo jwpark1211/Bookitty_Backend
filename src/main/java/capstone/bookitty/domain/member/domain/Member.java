@@ -3,16 +3,15 @@ package capstone.bookitty.domain.member.domain;
 import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;
+import capstone.bookitty.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static capstone.bookitty.global.converter.EnumConverters.AuthorityConverter;
 import static capstone.bookitty.global.converter.EnumConverters.GenderConverter;
@@ -23,7 +22,7 @@ import static capstone.bookitty.global.converter.EnumConverters.GenderConverter;
 @Table(name = "member", uniqueConstraints = {
         @UniqueConstraint(name = "unique_email", columnNames = {"email"})
 })
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @Column(name = "member_id")
@@ -37,9 +36,6 @@ public class Member {
     //FIXME : 값객체엔 embeddable을 쓰는 게 타당할까 아님 converter를 쓰는 게 타당할까?
     private Password password;
     private LocalDate birthDate;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 
     @Convert(converter = GenderConverter.class)
     private Gender gender;
