@@ -4,9 +4,6 @@ import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.star.domain.Star;
 
 public record IdResponse(Long id) {
-    public static IdResponse of(Long id) {
-        return new IdResponse(id);
-    }
 
     public static IdResponse of(Star star) {
         return new IdResponse(star.getId());
