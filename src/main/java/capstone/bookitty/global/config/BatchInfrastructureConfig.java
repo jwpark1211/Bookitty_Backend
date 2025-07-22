@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Profile;
         dataSourceRef = MetaDBConfig.META_DATASOURCE,
         transactionManagerRef = MetaDBConfig.META_TRANSACTION_MANAGER
 )
-public class BatchConfig {
+public class BatchInfrastructureConfig {
 }

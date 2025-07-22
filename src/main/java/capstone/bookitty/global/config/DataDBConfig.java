@@ -57,6 +57,10 @@ public class DataDBConfig {
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         em.setJpaPropertyMap(properties);
 
+        // 배치 성능 최적화 설정
+        properties.put("hibernate.jdbc.batch_size", "100");
+        properties.put("hibernate.order_inserts", "true");
+
         return em;
     }
 

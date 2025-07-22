@@ -35,7 +35,7 @@ public class Password {
     }
 
     private static void validate(String password) {
-        if (StringUtils.hasText(password)) {
+        if (!StringUtils.hasText(password)) {
             throw new IllegalArgumentException("Password cannot be null or blank");
         }
 
