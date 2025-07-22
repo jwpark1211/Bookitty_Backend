@@ -1,7 +1,5 @@
 package capstone.bookitty.domain.star.application;
 
-import capstone.bookitty.domain.bookSimilarity.domain.RatingEvent;
-import capstone.bookitty.domain.bookSimilarity.repository.RatingEventRepository;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.exception.MemberNotFoundException;
 import capstone.bookitty.domain.member.exception.UnauthenticatedMemberException;
@@ -23,7 +21,6 @@ public class StarCommandService {
 
     private final StarRepository starRepository;
     private final MemberRepository memberRepository;
-    private final RatingEventRepository ratingEventRepository;
 
     public Long saveStar(StarSaveRequest request) {
 
@@ -38,7 +35,6 @@ public class StarCommandService {
                 .memberId(request.memberId())
                 .build();
 
-        ratingEventRepository.save(new RatingEvent(request.memberId(), request.isbn()));
         return star.getId();
 
     }
@@ -48,7 +44,6 @@ public class StarCommandService {
         Star star = starRepository.findById(starId)
                 .orElseThrow(() -> new StarNotFoundException(starId));
         star.updateStar(request.score());
-        ratingEventRepository.save(new RatingEvent(star.getMemberId(), star.getIsbn()));
 
     }
 

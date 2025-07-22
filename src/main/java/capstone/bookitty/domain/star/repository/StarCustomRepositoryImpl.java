@@ -19,6 +19,7 @@ public class StarCustomRepositoryImpl implements StarCustomRepository {
 
     @Override
     public List<RatingPair> findCommonRatings(String isbn1, String isbn2) {
+
         return queryFactory
                 .select(Projections.constructor(RatingPair.class, s1.score, s2.score))
                 .from(s1)
@@ -26,18 +27,7 @@ public class StarCustomRepositoryImpl implements StarCustomRepository {
                 //.on(s1.member.id.eq(s2.member.id))
                 .where(s1.isbn.eq(isbn1), s2.isbn.eq(isbn2))
                 .fetch();
-    }
 
-    @Override
-    public List<String> findIsbnsRatedWith(String isbn) {
-        return queryFactory
-                .select(s2.isbn)
-                .distinct()
-                .from(s1)
-                .join(s2)
-                // .on(s1.member.id.eq(s2.member.id))
-                .where(s1.isbn.eq(isbn).and(s2.isbn.ne(isbn)))
-                .fetch();
     }
 
 }

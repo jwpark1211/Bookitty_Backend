@@ -1,6 +1,5 @@
 package capstone.bookitty.domain.bookSimilarity.domain;
 
-import capstone.bookitty.domain.bookSimilarity.domain.BookSimilarityId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -9,7 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity @Getter
+@Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(BookSimilarityId.class)
 public class BookSimilarity {
