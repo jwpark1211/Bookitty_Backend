@@ -78,6 +78,9 @@ public class BookSimilarityProcessor implements ItemProcessor<BookPairDto, BookS
                 ));
     }
 
+    /**
+     * 배치 작업 종료 시(SpringApplication 종료 시) 캐시를 정리합니다.
+     */
     @PreDestroy
     public void cleanup() {
         cache.clear();
