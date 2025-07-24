@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class BookSimilarityProcessor implements ItemProcessor<BookPairDto, BookS
     private final StarRepository starRepository;
     private final CosineSimilarityCalculator similarityCalculator;
 
-    private final Map<String, Map<Long, Double>> cache = new ConcurrentHashMap<>();
+    private final Map<String, Map<Long, Double>> cache = new HashMap<>();
 
     private static final int MIN_COMMON_USERS = 3;
     private static final double MIN_SIMILARITY_THRESHOLD = 0.1;
@@ -69,13 +69,18 @@ public class BookSimilarityProcessor implements ItemProcessor<BookPairDto, BookS
     }
 
     private Map<Long, Double> getRatingsMap(String isbn) {
-        log.debug("DB 조회: {}", isbn); // 각 책마다 1번만 출력되어야 함
+        log.debug("DB 조회: {}", isbn); // 각 책마다 1번만 출력되어야 함\
         List<Star> stars = starRepository.findByIsbn(isbn);
         return stars.stream()
                 .collect(Collectors.toMap(
                         Star::getMemberId,
                         Star::getScore
                 ));
+    }
+
+    public void clearCache() {
+        cache.clear();
+        log.info("배치 시작 전 캐시 수동 정리 완료");
     }
 
     /**
@@ -86,4 +91,5 @@ public class BookSimilarityProcessor implements ItemProcessor<BookPairDto, BookS
         cache.clear();
         log.info("평점 캐시 정리 완료");
     }
+
 }

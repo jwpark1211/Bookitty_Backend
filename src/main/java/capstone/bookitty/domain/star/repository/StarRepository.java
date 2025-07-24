@@ -23,9 +23,6 @@ public interface StarRepository extends JpaRepository<Star, Long> {
 
     List<Star> findByIsbn(String isbn);
 
-    @Query("SELECT DISTINCT s.isbn FROM Star s")
-    List<String> findAllDistinctIsbns();
-
     @Query("""
             SELECT s.isbn 
             FROM Star s 
