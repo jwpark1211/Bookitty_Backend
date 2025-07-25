@@ -34,6 +34,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-actuator' //actuator 추가
     implementation 'io.micrometer:micrometer-registry-prometheus' //마이크로미터-프로메테우스 추가
+    implementation 'org.springframework.boot:spring-boot-starter-aop' //AOP for logging
     compileOnly 'org.projectlombok:lombok:1.18.30'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
