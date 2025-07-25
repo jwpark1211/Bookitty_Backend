@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookSimilarityRepository extends JpaRepository<BookSimilarity, BookSimilarityId> {
+    void deleteByIsbn1OrIsbn2(String isbn1, String isbn2);
 }

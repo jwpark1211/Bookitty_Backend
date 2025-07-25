@@ -6,7 +6,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -18,7 +17,7 @@ public class BookSimilarityScheduler {
     private final Job bookSimilarityCalculationJob;
 
     //@Scheduled(cron = "0 0 4 * * ?") // 매일 새벽 4시 실행
-    @Scheduled(cron = "0 * * * * ?") // 매 분 0초에 실행
+    //@Scheduled(cron = "0 * * * * ?") // 매 분 0초에 실행
     public void runBookSimilarityCalculation() {
 
         try {

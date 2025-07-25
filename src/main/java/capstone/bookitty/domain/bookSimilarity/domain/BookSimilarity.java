@@ -47,6 +47,11 @@ public class BookSimilarity extends BaseEntity {
         this.similarity = similarity;
     }
 
+    public void updateSimilarity(double similarity) {
+        validateSimilarity(similarity);
+        this.similarity = similarity;
+    }
+
     //== private methods ==//
 
     private void validateSimilarity(double similarity) {

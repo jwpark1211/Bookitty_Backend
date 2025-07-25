@@ -7,6 +7,7 @@ import capstone.bookitty.domain.member.repository.MemberRepository;
 import capstone.bookitty.domain.star.api.dto.StarSaveRequest;
 import capstone.bookitty.domain.star.api.dto.StarUpdateRequest;
 import capstone.bookitty.domain.star.domain.Star;
+import capstone.bookitty.domain.star.event.StarEventPublisher;
 import capstone.bookitty.domain.star.exception.StarNotFoundException;
 import capstone.bookitty.domain.star.repository.StarRepository;
 import capstone.bookitty.global.util.SecurityUtil;
@@ -21,6 +22,7 @@ public class StarCommandService {
 
     private final StarRepository starRepository;
     private final MemberRepository memberRepository;
+    private final StarEventPublisher starEventPublisher;
 
     public Long saveStar(StarSaveRequest request) {
 
@@ -34,8 +36,13 @@ public class StarCommandService {
                 .isbn(request.isbn())
                 .memberId(request.memberId())
                 .build();
+        
+        Star savedStar = starRepository.save(star);
+        
+        // Publish star created event
+        starEventPublisher.publishStarCreated(request.isbn(), request.memberId(), request.score());
 
-        return star.getId();
+        return savedStar.getId();
 
     }
 
@@ -43,7 +50,12 @@ public class StarCommandService {
 
         Star star = starRepository.findById(starId)
                 .orElseThrow(() -> new StarNotFoundException(starId));
+        
+        Double previousScore = star.getScore();
         star.updateStar(request.score());
+        
+        // Publish star updated event
+        starEventPublisher.publishStarUpdated(star.getIsbn(), star.getMemberId(), previousScore, request.score());
 
     }
 
@@ -62,6 +74,9 @@ public class StarCommandService {
 
         current.validatePermissionTo(member);
 
+        // Publish star deleted event before deletion
+        starEventPublisher.publishStarDeleted(star.getIsbn(), star.getMemberId(), star.getScore());
+        
         starRepository.delete(star);
 
     }
