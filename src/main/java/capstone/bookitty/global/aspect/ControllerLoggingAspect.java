@@ -1,5 +1,7 @@
 package capstone.bookitty.global.aspect;
 
+import capstone.bookitty.global.notification.CriticalErrorNotificationService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,7 +14,10 @@ import java.util.Arrays;
 @Aspect
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ControllerLoggingAspect {
+
+    private final CriticalErrorNotificationService criticalErrorNotificationService;
 
     @Around("execution(* capstone.bookitty.domain.*.api.*.*(..))")
     public Object logControllerMethods(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -43,6 +48,10 @@ public class ControllerLoggingAspect {
             long executionTime = System.currentTimeMillis() - startTime;
             log.error("[Controller] {}.{} 요청 처리 중 예외 발생 - 응답시간: {}ms, 예외: {}", 
                 className, methodName, executionTime, e.getMessage(), e);
+            
+            // Handle critical error notification
+            criticalErrorNotificationService.handleException(e, "Controller", className, methodName, executionTime);
+            
             throw e;
         }
     }
