@@ -5,7 +5,6 @@ import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.BookSimilari
 import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.BookSimilarityReader;
 import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.BookSimilarityWriter;
 import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.dto.BookPairDto;
-import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.listener.BookSimilarityJobListener;
 import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.listener.BookSimilarityStepListener;
 import capstone.bookitty.global.config.DataDBConfig;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,6 @@ public class BookSimilarityBatchConfig {
     public Job bookSimilarityCalculationJob(Step bookSimilarityCalculationStep) {
         return new JobBuilder("bookSimilarityCalculationJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .listener(BookSimilarityJobListener.class)
                 .start(bookSimilarityCalculationStep)
                 .build();
     }
