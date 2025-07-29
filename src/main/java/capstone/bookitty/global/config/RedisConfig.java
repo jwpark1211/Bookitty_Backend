@@ -54,14 +54,22 @@ public class RedisConfig {
 
     @Bean("cacheManager")
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration defaultConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
                         new GenericJackson2JsonRedisSerializer()))
                 .entryTtl(Duration.ofSeconds(cacheTtl))
                 .disableCachingNullValues();
 
+        // 평점 캐시용 별도 설정 (1시간 TTL)
+        RedisCacheConfiguration bookRatingsConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                        new GenericJackson2JsonRedisSerializer()))
+                .entryTtl(Duration.ofHours(1))
+                .disableCachingNullValues();
+
         return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(configuration)
+                .cacheDefaults(defaultConfiguration)
+                .withCacheConfiguration("book-ratings", bookRatingsConfiguration)
                 .build();
     }
 

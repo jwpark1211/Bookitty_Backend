@@ -12,6 +12,8 @@ import capstone.bookitty.domain.star.exception.StarNotFoundException;
 import capstone.bookitty.domain.star.repository.StarRepository;
 import capstone.bookitty.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +25,9 @@ public class StarCommandService {
     private final StarRepository starRepository;
     private final MemberRepository memberRepository;
     private final StarEventPublisher starEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
+    @CacheEvict(value = "book-ratings", key = "#request.isbn()")
     public Long saveStar(StarSaveRequest request) {
 
         validateStarUniqueness(request.isbn(), request.memberId());
@@ -36,9 +40,9 @@ public class StarCommandService {
                 .isbn(request.isbn())
                 .memberId(request.memberId())
                 .build();
-        
+
         Star savedStar = starRepository.save(star);
-        
+
         // Publish star created event
         starEventPublisher.publishStarCreated(request.isbn(), request.memberId(), request.score());
 
@@ -50,10 +54,11 @@ public class StarCommandService {
 
         Star star = starRepository.findById(starId)
                 .orElseThrow(() -> new StarNotFoundException(starId));
-        
+
         Double previousScore = star.getScore();
+        String isbn = star.getIsbn();
         star.updateStar(request.score());
-        
+
         // Publish star updated event
         starEventPublisher.publishStarUpdated(star.getIsbn(), star.getMemberId(), previousScore, request.score());
 
@@ -76,7 +81,7 @@ public class StarCommandService {
 
         // Publish star deleted event before deletion
         starEventPublisher.publishStarDeleted(star.getIsbn(), star.getMemberId(), star.getScore());
-        
+
         starRepository.delete(star);
 
     }

@@ -7,6 +7,7 @@ import capstone.bookitty.domain.bookSimilarity.similarityBatch.item.calculator.C
 import capstone.bookitty.domain.star.domain.Star;
 import capstone.bookitty.domain.star.repository.StarRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +29,9 @@ public class BookSimilarityService {
     private static final double MIN_SIMILARITY_THRESHOLD = 0.1;
     
     public BookSimilarity calculateAndSaveSimilarity(String isbn1, String isbn2) {
-        return calculateAndSaveSimilarity(isbn1, isbn2, null);
-    }
-    
-    public BookSimilarity calculateAndSaveSimilarity(String isbn1, String isbn2, Map<String, Map<Long, Double>> ratingsCache) {
-        Map<Long, Double> isbn1Ratings = ratingsCache != null ? 
-            ratingsCache.computeIfAbsent(isbn1, this::getRatingsMap) : getRatingsMap(isbn1);
-        Map<Long, Double> isbn2Ratings = ratingsCache != null ? 
-            ratingsCache.computeIfAbsent(isbn2, this::getRatingsMap) : getRatingsMap(isbn2);
+        // Redis 캐시를 통해 평점 데이터 조회
+        Map<Long, Double> isbn1Ratings = getRatingsMap(isbn1);
+        Map<Long, Double> isbn2Ratings = getRatingsMap(isbn2);
         
         Set<Long> commonUsers = isbn1Ratings.keySet().stream()
                 .filter(isbn2Ratings::containsKey)
@@ -74,6 +70,7 @@ public class BookSimilarityService {
         }
     }
     
+    @Cacheable(value = "book-ratings", key = "#isbn", unless = "#result.isEmpty()")
     public Map<Long, Double> getRatingsMap(String isbn) {
         List<Star> stars = starRepository.findByIsbn(isbn);
         return stars.stream()
