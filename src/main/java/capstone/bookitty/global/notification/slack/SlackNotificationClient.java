@@ -53,6 +53,21 @@ public class SlackNotificationClient {
         }
     }
 
+    public void sendRedisFailureNotification(String errorMessage) {
+        if (!notificationEnabled || webhookUrl.isEmpty()) {
+            log.debug("Slack notification is disabled or webhook URL is not configured");
+            return;
+        }
+
+        try {
+            String message = buildRedisFailureMessage(errorMessage);
+            SlackMessage slackMessage = SlackMessage.error(message);
+            sendMessage(slackMessage);
+        } catch (Exception e) {
+            log.error("Failed to send Redis failure notification", e);
+        }
+    }
+
     private void sendMessage(SlackMessage message) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -92,6 +107,19 @@ public class SlackNotificationClient {
                 jobName,
                 stepName != null ? stepName : "N/A",
                 exception.getMessage()
+        );
+    }
+
+    private String buildRedisFailureMessage(String errorMessage) {
+        return String.format(
+                "```\n" +
+                        "⏰ Time: %s\n" +
+                        "🔴 Redis: Connection Failed\n" +
+                        "❌ Error: %s\n" +
+                        "📋 Impact: Cache disabled, using API directly\n" +
+                        "```",
+                java.time.LocalDateTime.now(),
+                errorMessage
         );
     }
 }
