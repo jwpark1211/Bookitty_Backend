@@ -49,7 +49,7 @@ public class BookSimilarityBatchConfig {
     public Step bookSimilarityCalculationStep() {
 
         return new StepBuilder("bookSimilarityCalculationStep", jobRepository)
-                .<BookPairDto, BookSimilarity>chunk(1000, dataTransactionManager)
+                .<BookPairDto, BookSimilarity>chunk(100, dataTransactionManager)
                 .reader(bookSimilarityReader)
                 .processor(bookSimilarityProcessor)
                 .writer(bookSimilarityWriter)
