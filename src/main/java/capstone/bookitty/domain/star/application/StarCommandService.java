@@ -56,7 +56,6 @@ public class StarCommandService {
                 .orElseThrow(() -> new StarNotFoundException(starId));
 
         Double previousScore = star.getScore();
-        String isbn = star.getIsbn();
         star.updateStar(request.score());
 
         // Publish star updated event
@@ -90,7 +89,7 @@ public class StarCommandService {
 
     private void validateStarUniqueness(String isbn, Long memberId) {
 
-        if (!starRepository.existsByIsbnAndMemberId(isbn, memberId)) {
+        if (starRepository.existsByIsbnAndMemberId(isbn, memberId)) {
             throw new IllegalArgumentException("Star rating already exists for this member and ISBN.");
         }
 
