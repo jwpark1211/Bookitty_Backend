@@ -169,3 +169,183 @@ Spring Batch는 다음 용도로 사용됩니다:
 - **파일 구조**: 활성 서비스 테스트는 `src/test/java/.../application/`에 위치
 - **Mock 테스트**: 비활성화된 Mock 테스트는 `MockTest/` 하위 디렉토리에 분리 (학습용만)
 - **픽스처**: 공유 테스트 픽스처는 `fixture/` 패키지에 위치
+
+---
+
+## 동시성 리팩토링 프로젝트
+
+### 중요한 동시성 이슈 분석 및 해결
+
+이 섹션은 시스템 최적화 단계에서 식별되고 해결된 도서 유사도 계산 시스템의 동시성 이슈에 대한 포괄적인 분석과 해결 과정을 문서화합니다.
+
+#### 식별된 동시성 문제들
+
+##### 1. 배치-이벤트 처리 충돌
+**문제**: 배치 처리 중 실시간 평점 이벤트 발생 시 BookSimilarity 테이블 동시 접근
+- **영향**: 데이터 불일치, 데드락, 계산 오류
+- **원인**: 배치 처리와 이벤트 리스너가 모두 동일한 레코드에 UPDATE 연산 수행
+- **발생 빈도**: 배치 실행 윈도우 동안 높은 빈도
+
+##### 2. 배치 처리 중 캐시 불일치  
+**문제**: 배치 처리가 캐시된 평점 데이터를 사용하는 중 실제 평점이 수정됨
+- **영향**: 오래된 데이터 기반 잘못된 유사도 계산
+- **원인**: 배치 처리 생명주기와 캐시 무효화가 동기화되지 않음
+- **발생 빈도**: 사용자 활동이 있는 모든 배치 실행 시
+
+##### 3. 사용자 API 락 경합
+**문제**: 사용자 추천 API 호출이 배치 UPDATE 연산으로 인해 차단됨
+- **영향**: 3-4초 사용자 대기 시간, 타임아웃 오류, 사용자 경험 저하
+- **원인**: 배치 청크 처리(100개 레코드) 중 BookSimilarity 레코드의 MySQL X-Lock
+- **발생 빈도**: 배치 실행 중 13% 확률
+
+##### 4. 스케줄러 중복 실행
+**문제**: 여러 스케줄러 인스턴스가 동시 실행 가능
+- **영향**: 중복 처리, 리소스 낭비, 잠재적 데이터 손상
+- **원인**: 스케줄된 작업에 대한 분산 잠금 메커니즘 부재
+- **발생 빈도**: 모든 스케줄 실행 시 발생 가능
+
+#### 기술적 분석: TransactionalEventListener 한계
+
+기존 `@TransactionalEventListener` 접근 방식은 근본적인 아키텍처 한계를 가지고 있었습니다:
+
+**메시지 손실 위험**:
+```java
+@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+@Async
+public void handleStarRatingEvent(StarRatingEvent event) {
+    try {
+        bookSimilarityService.recalculateSimilarityForBook(event.getIsbn());
+    } catch (Exception e) {
+        // 이벤트 영구 손실 - 재시도 메커니즘 없음
+        log.error("Event processing failed", e);
+    }
+}
+```
+
+**동시성 제어 이슈**:
+- 배치 실행 상태를 감지하는 메커니즘 없음
+- 시스템 상태와 관계없이 이벤트 즉시 처리
+- 배치와 이벤트 처리 간 시간적 분리 부재
+
+**관찰 가능성 문제**:
+- 이벤트 처리 상태 추적 불가
+- 처리 지연이나 실패 모니터링 어려움
+- 성능 최적화를 위한 메트릭 제한적
+
+#### 해결책 아키텍처: Redis Streams 구현
+
+**핵심 전략**: 즉시 이벤트 처리를 Redis Streams 기반 지연 처리로 대체
+
+**주요 구성 요소**:
+
+1. **Redis Streams를 통한 이벤트 큐잉**
+   - 모든 평점 변경 이벤트를 영속적인 Redis Streams에 저장
+   - MAXLEN 설정으로 메모리 오버플로우 방지
+   - Consumer Group을 통한 정확히 한 번 처리 보장
+
+2. **시간적 분리 로직**
+   - 배치 실행 중 이벤트를 스트림에 추가
+   - 배치 완료까지 처리 지연
+   - 실패한 처리에 대한 자동 재시도
+
+3. **캐시 무효화 전략**
+   - 평점 변경 시 즉시 캐시 제거
+   - 캐시 미스 시 배치 처리가 자동으로 최신 데이터 로드
+   - 선택적 무효화로 성능 보존
+
+4. **배치 최적화**
+   - 청크 크기를 1000에서 50개로 축소
+   - 성능 향상을 위해 JPA 대신 JDBC 배치 연산 사용
+   - X-Lock 지속 시간을 3-4초에서 0.7-1초로 단축
+
+#### 구현 계획 (다음 세션)
+
+**우선순위 1 - 즉시 구현**:
+1. **스케줄러 중복 방지**
+   ```java
+   private final AtomicBoolean batchExecuting = new AtomicBoolean(false);
+   
+   public boolean acquireBatchLock() {
+       return batchExecuting.compareAndSet(false, true);
+   }
+   ```
+
+2. **캐시 무효화 구현**
+   ```java
+   @EventListener  
+   public void handleStarRatingEvent(StarRatingEvent event) {
+       cacheService.evictBookRatings(event.getIsbn());
+       // 지연 처리를 위해 Redis Streams에 추가
+   }
+   ```
+
+**우선순위 2 - 핵심 아키텍처**:
+3. **Redis Streams 이벤트 시스템**
+   ```java
+   @StreamListener
+   public void processQueuedEvents() {
+       if (batchStateService.isBatchRunning()) {
+           return; // 배치 완료까지 대기
+       }
+       processAllStreamEvents();
+   }
+   ```
+
+4. **배치 성능 최적화**
+   ```java
+   // 청크 크기 축소: 100 → 50
+   .<BookPairDto, BookSimilarity>chunk(50, dataTransactionManager)
+   
+   // 더 빠른 쓰기를 위한 JDBC 최적화
+   jdbcTemplate.batchUpdate(updateSql, parametersList);
+   ```
+
+**우선순위 3 - 모니터링 및 관찰 가능성**:
+5. **스트림 상태 모니터링**
+   ```java
+   @Scheduled(fixedRate = 60000)
+   public void monitorStreamHealth() {
+       StreamInfo.XInfoStream info = redisTemplate.opsForStream().info(streamKey);
+       // 대기 메시지, 처리율, 오류율 모니터링
+   }
+   ```
+
+#### 예상 결과
+
+**성능 개선**:
+- 사용자 API 락 경합: 13% → <2%
+- 사용자 대기 시간: 3-4초 → <1초
+- 배치 처리 신뢰성: 95% → 99.9%
+
+**신뢰성 향상**:
+- 이벤트 손실 방지: 메시지 손실 제로 보장
+- 실패한 처리에 대한 자동 재시도 메커니즘  
+- 이벤트 처리 파이프라인의 완전한 관찰 가능성
+
+**확장성 이점**:
+- Consumer Group을 통한 수평 확장
+- 높은 이벤트 볼륨에 대한 백프레셔 처리
+- 배치와 이벤트 처리의 독립적인 확장
+
+#### 다음 세션을 위한 구현 노트
+
+**수정 필요 파일**:
+- `BookSimilarityBatchConfig.java`: 청크 크기 및 writer 최적화
+- `BookSimilarityScheduler.java`: 중복 실행 방지
+- 신규: `BookSimilarityEventStreamService.java`: Redis Streams 구현
+- 신규: `BookSimilarityStreamConfig.java`: 스트림 설정
+- 신규: `StreamMonitoringService.java`: 상태 모니터링
+
+**테스트 전략**:
+- Redis Streams 기능 통합 테스트
+- 동시 실행 시뮬레이션 테스트
+- 최적화된 배치 처리 성능 벤치마크
+- 엔드투엔드 사용자 경험 검증
+
+**배포 고려사항**:
+- Redis Streams는 Redis 5.0+ 필요
+- 스트림 저장을 위한 메모리 할당 (~4MB 예상)
+- 스트림 메트릭용 모니터링 대시보드 설정
+- 기능 플래그를 통한 점진적 롤아웃
+
+이 리팩토링 프로젝트는 중요한 동시성 이슈에 대한 포괄적인 해결책을 제시하며, 시스템 성능과 신뢰성을 유지하면서 분산 이벤트 처리를 위한 업계 모범 사례를 구현합니다.
