@@ -1,6 +1,7 @@
 package capstone.bookitty.domain.member.application.memberApplication;
 
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.api.dto.PasswordChangeRequest;
 import capstone.bookitty.domain.member.domain.Member;
 import capstone.bookitty.domain.member.domain.vo.Password;
 import capstone.bookitty.domain.member.exception.DuplicateEmailException;
@@ -48,6 +49,16 @@ public class MemberCommandService {
         current.validatePermissionTo(member);
 
         memberRepository.delete(member);
+    }
+
+    public void changePassword(PasswordChangeRequest request) {
+        String email = SecurityUtil.getCurrentMemberEmail();
+        if (email == null) throw new UnauthenticatedMemberException();
+        
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthenticatedMemberException(email));
+        
+        member.changePassword(request.currentPassword(), request.newPassword(), passwordEncoder);
     }
 
     //== private methods ==//

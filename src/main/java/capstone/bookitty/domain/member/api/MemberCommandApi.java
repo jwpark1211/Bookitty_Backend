@@ -1,6 +1,7 @@
 package capstone.bookitty.domain.member.api;
 
 import capstone.bookitty.domain.member.api.dto.MemberSaveRequest;
+import capstone.bookitty.domain.member.api.dto.PasswordChangeRequest;
 import capstone.bookitty.domain.member.application.memberApplication.MemberCommandService;
 import capstone.bookitty.global.dto.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,17 @@ public class MemberCommandApi {
     ) {
 
         memberCommandService.deleteMember(memberId);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @Operation(summary = "비밀번호 변경")
+    @PatchMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody @Valid PasswordChangeRequest request
+    ) {
+
+        memberCommandService.changePassword(request);
         return ResponseEntity.noContent().build();
 
     }

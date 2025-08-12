@@ -3,6 +3,7 @@ package capstone.bookitty.domain.member.domain;
 import capstone.bookitty.domain.member.domain.type.Authority;
 import capstone.bookitty.domain.member.domain.type.Gender;
 import capstone.bookitty.domain.member.domain.vo.Password;
+import capstone.bookitty.global.authentication.PasswordEncoder;
 import capstone.bookitty.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -33,7 +34,6 @@ public class Member extends BaseEntity {
     private String email;
 
     @Embedded
-    //FIXME : 값객체엔 embeddable을 쓰는 게 타당할까 아님 converter를 쓰는 게 타당할까?
     private Password password;
     private LocalDate birthDate;
 
@@ -64,6 +64,10 @@ public class Member extends BaseEntity {
     public void validatePermissionTo(Member target) {
         if (!(this.authority == Authority.ROLE_ADMIN || this.id.equals(target.id)))
             throw new IllegalArgumentException("Access denied: You do not have permission to perform this action");
+    }
+
+    public void changePassword(String currentPassword, String newPassword, PasswordEncoder encoder) {
+        this.password = this.password.changePassword(currentPassword, newPassword, encoder);
     }
 
     //== validation ==//

@@ -28,12 +28,13 @@ public class AuthServiceTest {
 
     @Autowired
     MemberTestFixture memberFixture;
+
     @Autowired
     MemberRepository memberRepository;
-    //FIXME : PasswordEncoder를 Mock으로 주입받는 게 옳을까, 실제 객체를 사용하는 게 옳을까
-    //       판단(7/16) : 애플리케이션을 통해서만 접근 가능한 "관리 의존성"이므로 실제 인스턴스 DI 받아 사용
+
     @Autowired
     PasswordEncoder passwordEncoder;
+    
     @Autowired
     AuthService authService;
 

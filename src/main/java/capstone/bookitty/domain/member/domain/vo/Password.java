@@ -44,6 +44,13 @@ public class Password {
         }
     }
 
+    public Password changePassword(String currentRawPassword, String newRawPassword, PasswordEncoder encoder) {
+        if (!encoder.matches(currentRawPassword, this.password)) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+        return Password.fromRaw(newRawPassword, encoder);
+    }
+
     // equals, hashCode
     @Override
     public boolean equals(Object o) {
